@@ -285,6 +285,32 @@ body{overflow-x:hidden}
 .hero.flip .mw{animation:sway 3.4s ease-in-out infinite}
 @keyframes sway{0%,100%{transform:rotate(-8deg) translateY(4px)}50%{transform:rotate(-3deg) translateY(-2px)}}
 .hero.peek .bubble{max-width:56%}
+
+/* jembatan benar/salah */
+.bsrows{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.bsrow{padding:9px 10px;border-radius:10px;background:var(--plate);border:1.5px solid #cdd7ea;box-shadow:0 2px 0 #dbe3f1}
+.bsrow.ok{background:var(--ok-soft);border-color:var(--green)}.bsrow.bad{background:var(--bad-soft);border-color:var(--red)}
+.bst{font-size:14px;line-height:1.4}
+.bsn{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:5px;background:#eef2f9;border:1.5px solid #cdd7ea;color:var(--muted);font-size:11.5px;font-weight:700;margin-right:7px;vertical-align:1px}
+.bsbtns{display:flex;gap:6px;margin-top:8px}
+.bsb{flex:1;font-size:11.5px;font-weight:700;padding:6px 4px;border-radius:8px;border:1.5px solid #cdd7ea;background:#f6f8fc;color:var(--muted);letter-spacing:.2px}
+.bsb.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.bsb.key{background:var(--green);border-color:var(--green);color:#fff}
+.bsb.wrong{background:var(--red);border-color:var(--red);color:#fff}
+
+:root{--purple:#8f7ae8}
+.names{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.nm{padding:5px 10px;border-radius:8px;border:1.5px solid #cdd7ea;background:#fff;font-weight:600;font-size:13px;box-shadow:0 2px 0 #dbe3f1}
+.nm.sel{background:var(--blue);color:#fff;border-color:var(--blue)}.nm.used{opacity:.4}
+.seats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+.seat{min-height:58px;border-radius:10px;border:1.5px dashed #b9c6de;background:#f6f8fc;font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 2px;word-break:break-word}
+.seat small{font-size:10px;color:var(--muted);font-weight:600}
+.seat.f{border-style:solid;border-color:color-mix(in srgb,var(--lime) 60%,#1f2a4d);background:var(--lime);color:#2c3a14}
+.seat.f small{color:#2c3a14;opacity:.7}
+.seq{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.seq span{min-width:44px;padding:9px 6px;text-align:center;border-radius:9px;background:#fff;border:1.5px solid #cdd7ea;font-weight:700;font-size:17px;box-shadow:0 2px 0 #dbe3f1}
+.seq span.q{background:var(--yellow);border-color:color-mix(in srgb,var(--yellow) 55%,#6b4a00)}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -307,8 +333,8 @@ body{overflow-x:hidden}
 /* ================= DATA DASAR ================= */
 const KEY='nalarHarian.v1', KEY_RING='nalarHarian:ringkasan';
 const SKILLS={N1:'Membongkar argumen',N2:'Logika pernyataan',N3:'Kuantor',N4:'Logika cerita & kualitas simpulan',N5:'Penalaran induktif',N6:'Korelasi & kausalitas',N7:'Memperkuat & memperlemah',N8:'Nalar angka sehari-hari'};
-const SKILL_DESC={N1:'klaim, alasan, asumsi tersembunyi',N2:'negasi, dan, atau, jika-maka, kontraposisi',N3:'semua, sebagian, tidak ada, dan penyangkalannya',N4:'logika dalam cerita; pasti, mungkin, tidak dapat disimpulkan',N5:'generalisasi, analogi, sampel',N6:'korelasi vs sebab, penjelasan alternatif',N7:'memperkuat, memperlemah, asumsi, informasi yang perlu dicek',N8:'persen, rasio, membaca data, kecukupan informasi, pola (membaca angka, bukan hitungan panjang)'};
-const TRAPS={J1:'Membalik implikasi',J2:'Menyangkal anteseden',J3:'Salah menyangkal dan/atau',J4:'Kuantor dibalik/diperluas',J5:'Terpancing kalimat pengalih',J6:'Simpulan terlalu kuat',J7:'Generalisasi tergesa',J8:'Korelasi dianggap sebab',J9:'Pembanding tidak setara',J10:'Analogi lemah',J11:'Informasi luar teks',J12:'Salah basis angka'};
+const SKILL_DESC={N1:'klaim, alasan, asumsi tersembunyi',N2:'negasi, dan, atau, jika-maka, kontraposisi',N3:'semua, sebagian, tidak ada, dan penyangkalannya',N4:'logika dalam cerita; pasti, mungkin, tidak dapat dinilai',N5:'generalisasi, analogi, definisi',N6:'korelasi vs sebab, penjelasan alternatif, pemoderasi',N7:'penguat, pelemah, asumsi, informasi yang perlu dicek, strategi',N8:'persen, rasio, membaca data, kecukupan informasi, pola (membaca angka, bukan hitungan panjang)'};
+const TRAPS={J1:'Membalik implikasi',J2:'Menyangkal anteseden',J3:'Salah menyangkal dan/atau',J4:'Kuantor dibalik/diperluas',J5:'Terpancing kalimat pengalih',J6:'Simpulan terlalu kuat',J7:'Generalisasi tergesa',J8:'Korelasi dianggap sebab',J9:'Pembanding tidak setara',J10:'Analogi lemah',J11:'Informasi luar teks',J12:'Salah basis angka',J13:'Tertukar mungkin benar dan tidak dapat dinilai'};
 const TAHAP=['','Terang','Tersembunyi','Berantakan'];
 const BENTUK=['','lama','2026','2027'];
 const KONTEKS=['chat grup','promo dan iklan toko','pengumuman dan syarat','klaim kesehatan di media sosial','hasil survei dan grafik','debat di kolom komentar','keputusan pribadi','aturan permainan dan jadwal'];
@@ -401,7 +427,23 @@ const COND=[
 [['film dimulai pukul 19.00','film tidak dimulai pukul 19.00'],['kami makan malam dulu','kami tidak makan malam dulu']],
 [['nilai rapor naik','nilai rapor tidak naik'],['Ayah memberi hadiah','Ayah tidak memberi hadiah']],
 [['jumlah peserta kurang dari 10','jumlah peserta tidak kurang dari 10'],['kelas dibatalkan','kelas tidak dibatalkan']],
-[['Gilang lupa alarm','Gilang tidak lupa alarm'],['Gilang bangun kesiangan','Gilang tidak bangun kesiangan']]
+[['Gilang lupa alarm','Gilang tidak lupa alarm'],['Gilang bangun kesiangan','Gilang tidak bangun kesiangan']],
+[['Rani lolos seleksi OSN','Rani tidak lolos seleksi OSN'],['Rani mewakili sekolah','Rani tidak mewakili sekolah']],
+[['kartu ujian hilang','kartu ujian tidak hilang'],['peserta melapor ke panitia','peserta tidak melapor ke panitia']],
+[['pesanan dibatalkan','pesanan tidak dibatalkan'],['dana dikembalikan','dana tidak dikembalikan']],
+[['Bayu terpilih jadi ketua kelas','Bayu tidak terpilih jadi ketua kelas'],['Bayu memimpin rapat kelas','Bayu tidak memimpin rapat kelas']],
+[['nilai ujian praktik lengkap','nilai ujian praktik tidak lengkap'],['rapor dibagikan','rapor tidak dibagikan']],
+[['jumlah pendaftar melebihi kuota','jumlah pendaftar tidak melebihi kuota'],['panitia membuka gelombang dua','panitia tidak membuka gelombang dua']],
+[['harga cabai naik','harga cabai tidak naik'],['warung Bu Sri menaikkan harga sambal','warung Bu Sri tidak menaikkan harga sambal']],
+[['Tari ikut kelas daring','Tari tidak ikut kelas daring'],['Tari menyalakan kamera','Tari tidak menyalakan kamera']],
+[['ada pemadaman air','tidak ada pemadaman air'],['warga menampung air sejak pagi','warga tidak menampung air sejak pagi']],
+[['jadwal try out dimajukan','jadwal try out tidak dimajukan'],['Dimas mengulang materi minggu ini','Dimas tidak mengulang materi minggu ini']],
+[['tim debat menang di semifinal','tim debat tidak menang di semifinal'],['tim debat berangkat ke Surabaya','tim debat tidak berangkat ke Surabaya']],
+[['Wulan mendapat beasiswa','Wulan tidak mendapat beasiswa'],['Wulan membayar uang pangkal','Wulan tidak membayar uang pangkal']],
+[['aplikasi diperbarui','aplikasi tidak diperbarui'],['fitur baru muncul','fitur baru tidak muncul']],
+[['perpustakaan buka sampai malam','perpustakaan tidak buka sampai malam'],['ruang baca penuh','ruang baca tidak penuh']],
+[['Kevin terlambat tiga kali','Kevin tidak terlambat tiga kali'],['Kevin dipanggil wali kelas','Kevin tidak dipanggil wali kelas']],
+[['diskon akhir tahun dimulai','diskon akhir tahun belum dimulai'],['toko buku ramai pembeli','toko buku tidak ramai pembeli']]
 ];
 const QB=[
 ['siswa kelas 12','ikut try out','tidak ikut try out','Nadia'],
@@ -415,7 +457,15 @@ const QB=[
 ['pemain futsal sekolah','datang latihan','tidak datang latihan','Kevin'],
 ['pendaftar beasiswa','melampirkan rapor','tidak melampirkan rapor','Wulan'],
 ['warga kompleks','ikut kerja bakti','tidak ikut kerja bakti','Pak Darto'],
-['siswa yang ikut bimbel','belajar di perpustakaan','tidak belajar di perpustakaan','Bela']
+['siswa yang ikut bimbel','belajar di perpustakaan','tidak belajar di perpustakaan','Bela'],
+['peserta seminar','mendapat sertifikat','tidak mendapat sertifikat','Tari'],
+['menu sarapan kantin','mengandung telur','tidak mengandung telur','Nasi uduk spesial'],
+['anggota klub sains','pernah ikut lomba','tidak pernah ikut lomba','Gilang'],
+['pendaftar jalur prestasi','mengunggah piagam','tidak mengunggah piagam','Rani'],
+['tiket konser kelas festival','berlaku untuk satu orang','tidak berlaku untuk satu orang','Tiket milik Bayu'],
+['siswa kelas 10','mengikuti MPLS','tidak mengikuti MPLS','Fajar'],
+['penumpang bus malam','membawa bantal','tidak membawa bantal','Pak Sarip'],
+['peserta lomba cerdas cermat','berlatih setiap Rabu','tidak berlatih setiap Rabu','Lala']
 ];
 function pq(){const c=rnd(COND);return{P:{pos:c[0][0],neg:c[0][1]},Q:{pos:c[1][0],neg:c[1][1]}}}
 const WARM={
@@ -454,7 +504,7 @@ const WARM={
 function genWarmup(n){const pool=shuffle(['negIf','setara','sah','negQ','kalib','negAnd','negOr','sah','kalib','negQ','setara']).slice(0,n);return pool.map(t=>WARM[t]())}
 
 /* ================= PAKET CONTOH ================= */
-const CONTOH={tgl:'contoh',kasus:{keterampilan:'N2',tahap:1,konteks:'chat grup',judul:'Rapat OSIS sore ini',
+const CONTOH={versi:2,tgl:'contoh',kasus:{keterampilan:'N2',tahap:1,konteks:'chat grup',judul:'Rapat OSIS sore ini',
   kalimat:['Ketua OSIS menulis di grup: “Rapat sore ini diadakan jika aula kosong.”','Rina melihat aula sedang dipakai latihan paduan suara.','Dimas menambahkan bahwa kantin hari ini tutup lebih awal.','Rina menyimpulkan: “Berarti rapat sore ini pasti batal.”'],
   langkah:[
    {jenis:'tandai',perintah:'Tandai peran setiap kalimat.',peran:['alasan','alasan','pengalih','klaim'],pembahasan:'Aturan ketua dan pengamatan Rina adalah alasan. Kabar kantin tidak berkaitan dengan rapat.'},
@@ -462,9 +512,9 @@ const CONTOH={tgl:'contoh',kasus:{keterampilan:'N2',tahap:1,konteks:'chat grup',
    {jenis:'perlu_dicek',perintah:'Informasi apa yang paling menentukan apakah rapat tetap ada?',opsi:['Apakah kantin buka besok','Apakah ketua OSIS punya rencana lain bila aula dipakai','Lagu apa yang sedang dilatih paduan suara','Siapa saja anggota paduan suara'],kunci:1}
   ],jebakan:'J2',pembahasan:'Bentuknya: p → q; bukan p; jadi bukan q. Ini menyangkal anteseden (J2) dan tidak sah. Yang bisa dipastikan hanya: kalau aula kosong, rapat diadakan.'},
  jembatan:[
-  {keterampilan:'N2',bentuk:'lama',teks:'Jika Andi belajar dengan teratur, maka ia lulus ujian.\nAndi tidak lulus ujian.',perintah:'Simpulan yang tepat adalah …',opsi:['Andi belajar dengan teratur.','Andi tidak belajar dengan teratur.','Andi lulus ujian.','Andi tidak lulus karena malas.','Tidak dapat disimpulkan apa pun.'],kunci:1,jebakan_opsi:['J1',null,'J5','J6','J2'],pembahasan:'Modus tollens: p → q, bukan q, jadi bukan p. Opsi D menambah alasan “malas” yang tidak ada di teks.'},
-  {keterampilan:'N3',bentuk:'lama',teks:'Semua peserta membawa kartu ujian.',perintah:'Ingkaran pernyataan tersebut adalah …',opsi:['Semua peserta tidak membawa kartu ujian.','Tidak ada peserta yang membawa kartu ujian.','Ada peserta yang tidak membawa kartu ujian.','Ada peserta yang membawa kartu ujian.','Beberapa peserta membawa kartu ujian.'],kunci:2,jebakan_opsi:['J4','J4',null,'J4','J4'],pembahasan:'Ingkaran “semua” adalah “ada yang tidak”. Cukup satu peserta tanpa kartu untuk membuat pernyataan awal salah.'},
-  {keterampilan:'N2',bentuk:'lama',teks:'Jika hari hujan, maka lapangan becek.\nJika lapangan becek, maka upacara dipindah ke aula.',perintah:'Pernyataan yang pasti benar adalah …',opsi:['Jika upacara dipindah ke aula, maka hari hujan.','Jika hari tidak hujan, maka upacara tidak dipindah ke aula.','Jika upacara tidak dipindah ke aula, maka hari tidak hujan.','Hari hujan dan upacara tidak dipindah ke aula.','Jika lapangan tidak becek, maka hari hujan.'],kunci:2,jebakan_opsi:['J1','J2',null,'J3','J6'],pembahasan:'Silogisme: hujan → upacara dipindah. Kontraposisinya: upacara tidak dipindah → tidak hujan.'}
+  {jenis:'pg',keterampilan:'N2',bentuk:'lama',teks:'Jika Andi belajar dengan teratur, maka ia lulus ujian.\nAndi tidak lulus ujian.',perintah:'Simpulan yang tepat adalah …',opsi:['Andi belajar dengan teratur.','Andi tidak belajar dengan teratur.','Andi lulus ujian.','Andi tidak lulus karena malas.','Tidak dapat disimpulkan apa pun.'],kunci:1,jebakan_opsi:['J6',null,'J5','J11','J13'],pembahasan:'Modus tollens: p → q, bukan q, jadi bukan p. Opsi D menambah alasan “malas” yang tidak ada di teks (J11), dan opsi E keliru karena informasinya justru cukup.'},
+  {jenis:'pg',keterampilan:'N3',bentuk:'lama',teks:'Semua peserta membawa kartu ujian.',perintah:'Ingkaran pernyataan tersebut adalah …',opsi:['Semua peserta tidak membawa kartu ujian.','Tidak ada peserta yang membawa kartu ujian.','Ada peserta yang tidak membawa kartu ujian.','Ada peserta yang membawa kartu ujian.','Beberapa peserta membawa kartu ujian.'],kunci:2,jebakan_opsi:['J4','J4',null,'J4','J4'],pembahasan:'Ingkaran “semua” adalah “ada yang tidak”. Cukup satu peserta tanpa kartu untuk membuat pernyataan awal salah.'},
+  {jenis:'pg',keterampilan:'N2',bentuk:'lama',teks:'Jika hari hujan, maka lapangan becek.\nJika lapangan becek, maka upacara dipindah ke aula.',perintah:'Pernyataan yang pasti benar adalah …',opsi:['Jika upacara dipindah ke aula, maka hari hujan.','Jika hari tidak hujan, maka upacara tidak dipindah ke aula.','Jika upacara tidak dipindah ke aula, maka hari tidak hujan.','Hari hujan dan upacara tidak dipindah ke aula.','Jika lapangan tidak becek, maka hari hujan.'],kunci:2,jebakan_opsi:['J1','J2',null,'J3','J2'],pembahasan:'Silogisme: hujan → upacara dipindah. Kontraposisinya: upacara tidak dipindah → tidak hujan.'}
  ]};
 
 /* ================= VALIDASI PAKET ================= */
@@ -484,7 +534,11 @@ function validate(o){
     });
     if(!isArr(p.jembatan)||!p.jembatan.length)E.push(`${w}.jembatan kosong.`);
     else p.jembatan.forEach((q,j)=>{const qw=`${w}.jembatan[${j}]`;
-      if(!isArr(q.opsi)||q.opsi.length<4)E.push(`${qw}.opsi minimal 4.`);
+      const jn=q.jenis||'pg';
+      if(jn==='bs'){if(!isArr(q.pernyataan)||q.pernyataan.length<3||q.pernyataan.length>5)E.push(`${qw}.pernyataan harus 3–5 baris.`);
+        else if(!isArr(q.kunci)||q.kunci.length!==q.pernyataan.length||q.kunci.some(x=>typeof x!=='boolean'))E.push(`${qw}.kunci harus daftar true/false sepanjang pernyataan.`)}
+      else if(jn!=='pg')E.push(`${qw}.jenis harus "pg" atau "bs".`);
+      else if(!isArr(q.opsi)||q.opsi.length<4)E.push(`${qw}.opsi minimal 4.`);
       else{if(!(Number.isInteger(q.kunci)&&q.kunci>=0&&q.kunci<q.opsi.length))E.push(`${qw}.kunci di luar rentang.`);
         if(q.jebakan_opsi&&(!isArr(q.jebakan_opsi)||q.jebakan_opsi.length!==q.opsi.length))E.push(`${qw}.jebakan_opsi harus sepanjang opsi.`)}
       if(!q.teks&&!q.perintah)E.push(`${qw} butuh teks atau perintah.`);
@@ -509,6 +563,17 @@ function buildPlan(n,start){
     if(!c){c=KONTEKS[ci%8];ci++}recent.add(c);if(recent.size>=8)recent.clear();
     const sk=seq[i],th=S.skills[sk].tahap;plan.push({tgl:addDays(start,i),sk,tahap:th,konteks:c,bentuk:BENTUK[th]})}
   return plan}
+const BENTUK_TAB={
+ N1:['Asumsi yang mendasari argumen; simpulan utama','Argumen dalam laporan atau cerita; informasi tambahan agar simpulan TEPAT','Dua tokoh menafsirkan data yang sama; asumsi yang TIDAK diperlukan'],
+ N2:['Implikasi, modus tollens, silogisme hipotetis tertulis rapi; ingkaran; pernyataan setara','Cerita bertokoh 4–8 kalimat dengan dan, atau, jika, dan kalimat pengalih; "kesimpulan PALING TEPAT"','Aturan lomba, syarat pendaftaran, atau jadwal; tiga aturan; "simpulan yang TIDAK sah" atau "pernyataan setara"'],
+ N3:['Silogisme "semua" dan "sebagian"; ingkaran kuantor','Kuantor di dalam cerita ("setiap", "tidak semua", "ada yang"); dua "sebagian"','Aturan dengan pengecualian (catatan kecil); "PASTI SALAH"'],
+ N4:['Kualitas simpulan 5 opsi baku, premis pendek','Cerita + kualitas simpulan; urutan dan posisi 4 syarat "PASTI BENAR"','Beberapa simpulan dinilai sekaligus (bs); urutan 5 syarat dengan satu syarat bersyarat'],
+ N5:['Generalisasi pengamatan; sebab-akibat PALING MUNGKIN','Contoh sesuai definisi; kesamaan dua definisi; analogi','Definisi dua syarat dengan contoh yang hampir memenuhi; pilih 2 simpulan (bs)'],
+ N6:['"Makin … makin …" sebab-akibat PALING MUNGKIN; penjelasan perbedaan dua kondisi','Dua pengamatan berlawanan (tidak ada hubungan); pemoderasi; penjelasan fenomena berubah','Penelitian peserta vs nonpeserta: informasi tambahan atau kelemahannya (sampel, alat ukur)'],
+ N7:['Memperkuat atau memperlemah pernyataan pejabat atau ahli','Data dan dua pakar (opsi baku); tabel memperlemah (bs); strategi PALING EFEKTIF dengan kendala','Pernyataan yang TIDAK memperlemah; strategi dengan dua kendala'],
+ N8:['Tren selang-seling; persen terbalik; bilangan paling mendekati; tabel 3 seri × 5 periode','Persen bertingkat dua kategori; tabel berbobot; kelipatan waktu; kecukupan data versi PU','Data sebagai struk, jadwal, atau catatan; tabel dengan satu sel kosong; syarat minimum mencapai target']};
+const BENTUK_NOTE=['','gaya UTBK 2020–2025. Stimulus 2–4 kalimat, logika terlihat jelas.','gaya UTBK 2026. Stimulus 4–8 kalimat di dalam cerita, ada 1–2 kalimat pengalih.','perkiraan 2027. Situasi nyata utuh: aturan berlapis, data tidak lengkap, atau dua pendapat.'];
+const TETANGGA={N1:['N7','N4'],N2:['N3','N4'],N3:['N2','N4'],N4:['N2','N3'],N5:['N6','N1'],N6:['N5','N7'],N7:['N1','N6'],N8:['N4','N6']};
 function buildPrompt(n,start){
   const plan=buildPlan(n,start);const tr=topTraps(weekLog(14).filter(x=>x.src!=='game'));
   const L=[];
@@ -521,34 +586,51 @@ function buildPrompt(n,start){
   L.push('- Tahap per keterampilan saat ini: '+Object.keys(SKILLS).map(k=>`${k} T${S.skills[k].tahap}`).join(', ')+'.');
   L.push(tr.length?'- Jebakan yang paling sering menjerat 14 hari terakhir: '+tr.map(([k,c])=>`${k} ${TRAPS[k]} (${c}x)`).join(', ')+'. Sisipkan pengecoh berlabel jebakan ini bila cocok.':'- Belum ada data jebakan; sebar jebakan secara merata.');
   L.push('\n## Peta keterampilan');Object.keys(SKILLS).forEach(k=>L.push(`- ${k} ${SKILLS[k]}: ${SKILL_DESC[k]}`));
-  L.push('\n## Tahap');
-  L.push('- Tahap 1 Terang: struktur logika jelas, kata penanda ("jika", "semua") terlihat. Jembatan bentuk "lama": silogisme dan implikasi tertulis rapi (gaya 2024–2025).');
-  L.push('- Tahap 2 Tersembunyi: logika di dalam cerita atau chat, ada 1–2 kalimat pengalih. Jembatan bentuk "2026": cerita bertokoh, kualitas simpulan, definisi, strategi, informasi tambahan.');
-  L.push('- Tahap 3 Berantakan: situasi nyata utuh, aturan berlapis, data tidak lengkap, dua pendapat. Jembatan bentuk "2027": aturan lomba atau jadwal sebagai stimulus, "simpulan yang TIDAK sah", pernyataan setara, dua tokoh menafsirkan data yang sama.');
-  L.push('\n## Daftar jebakan');Object.keys(TRAPS).forEach(k=>L.push(`- ${k} ${TRAPS[k]}`));
+  L.push('\n## Bentuk UTBK '+(n===1?'hari ini':'per hari'));
+  const seen=new Set();
+  plan.forEach(p=>{const key=p.sk+p.tahap;if(seen.has(key))return;seen.add(key);
+    L.push(`${p.sk}, Tahap ${p.tahap}, bentuk "${p.bentuk}" (${BENTUK_NOTE[p.tahap]})`);
+    BENTUK_TAB[p.sk][p.tahap-1].split('; ').forEach(x=>L.push('- '+cap(x)));
+    const tg=TETANGGA[p.sk];L.push(`Keterampilan tetangga yang boleh dipakai untuk satu soal jembatan: ${tg.join(' atau ')}, dengan bentuk Tahap ${p.tahap} masing-masing:`);
+    tg.forEach(t=>L.push(`- ${t}: ${BENTUK_TAB[t][p.tahap-1]}`));L.push('')});
+  L.push('## Opsi baku (salin persis bila bentuknya dipakai)');
+  L.push('- Kualitas simpulan: A. Simpulan tersebut pasti benar. · B. Simpulan tersebut mungkin benar. · C. Simpulan tersebut pasti salah. · D. Simpulan tidak relevan dengan informasi yang diberikan. · E. Simpulan tidak dapat dinilai karena informasi tidak cukup.');
+  L.push('- Data dan dua pakar: A. Memperkuat pernyataan X. · B. Memperlemah pernyataan X. · C. Memperkuat pernyataan Y. · D. Memperlemah pernyataan Y. · E. Tidak relevan dengan pernyataan X dan Y.');
+  L.push('- Kecukupan data versi PU (pernyataan i dan ii): '+CUKUP_OPSI.map((o,i)=>String.fromCharCode(65+i)+'. '+o).join(' · '));
+  L.push('- Tabel memperlemah: jenis "bs", 5 pernyataan, label B = MEMPERLEMAH, S = TIDAK MEMPERLEMAH.');
+  L.push('- Pilih 2 simpulan: jenis "bs", 5 simpulan, label B = DIDUKUNG, S = TIDAK DIDUKUNG, tepat dua B.');
+  L.push('\n## Arti kalibrasi (kasus dan jembatan)');
+  L.push('- pasti benar: selalu benar menurut informasi.');
+  L.push('- mungkin benar: tidak bertentangan dengan informasi dan subjeknya dibahas, tetapi tidak dipastikan.');
+  L.push('- pasti salah: bertentangan dengan informasi.');
+  L.push('- tidak dapat disimpulkan (di kasus) = tidak relevan atau tidak dapat dinilai (di jembatan): simpulan membahas hal yang tidak disentuh informasi, atau informasinya sama sekali tidak cukup.');
+  L.push('\n## Daftar jebakan');L.push('- '+Object.keys(TRAPS).map(k=>`${k} ${TRAPS[k]}`).join(' · '));
   L.push('\n## Aturan isi');
   L.push('- Bahasa Indonesia. Kasus terasa sehari-hari; soal jembatan bergaya UTBK.');
   L.push('- Semua nama orang, sekolah, toko, dan lembaga fiktif. Jangan memakai tokoh, merek, atau kutipan nyata.');
-  L.push('- Kasus: 3–7 kalimat pendek di "kalimat". Tepat 3 langkah berurutan: (1) Bongkar, (2) Nilai, (3) Putuskan.');
-  L.push('  - Langkah 1: jenis "tandai" (isi "peran" sepanjang "kalimat", nilai: "klaim", "alasan", "contoh", "pengalih"; minimal satu "klaim") atau jenis "bentuk" (pilih bentuk logika, misalnya "(p dan q) → r; bukan r").');
-  L.push('  - Langkah 2: salah satu dari "sah", "celah", "kalibrasi", "baca_angka".');
-  L.push('  - Langkah 3: salah satu dari "perlu_dicek", "penjelasan", "kalibrasi", "keputusan".');
-  L.push('  - Langkah selain "tandai" memakai "opsi" (4 pilihan) dan "kunci" (indeks mulai 0). Opsi kalibrasi selalu ["pasti benar","mungkin benar","pasti salah","tidak dapat disimpulkan"]: "mungkin benar" berarti informasi mendukung tetapi tidak memastikan; "tidak dapat disimpulkan" berarti informasi tidak berkaitan atau sama sekali tidak cukup.');
-  L.push('  - Setiap langkah boleh punya "pembahasan" 1–2 kalimat.');
-  L.push('  - Untuk N8 atau konteks survei/grafik, boleh tambahkan "tabel": {"kolom":[...],"baris":[[...],...]} di dalam kasus.');
-  L.push('- "jebakan" pada kasus: satu kode jebakan utama yang dipakai situasi itu.');
-  L.push('- Jembatan: tepat 3 soal, masing-masing 5 opsi, satu "kunci" (indeks mulai 0), "jebakan_opsi" sepanjang opsi berisi null pada kunci dan kode J1–J12 pada tiap pengecoh. Keterampilannya sama dengan kasus (satu soal boleh memakai keterampilan tetangga). "bentuk" sesuai rencana.');
-  L.push('- N8 melatih membaca dan menilai angka, bukan hitungan panjang.');
+  L.push('- Kasus: 3–7 kalimat pendek di "kalimat". Tepat 3 langkah: (1) Bongkar, (2) Nilai, (3) Putuskan.');
+  L.push('  - Langkah 1: "tandai" ("peran" sepanjang "kalimat"; nilai "klaim", "alasan", "contoh", "pengalih"; minimal satu "klaim") atau "bentuk".');
+  L.push('  - Langkah 2: "sah", "celah", "kalibrasi", atau "baca_angka".');
+  L.push('  - Langkah 3: "perlu_dicek", "penjelasan", "kalibrasi", atau "keputusan".');
+  L.push('  - Langkah selain "tandai" memakai 4 "opsi" dan "kunci" (indeks mulai 0). Opsi kalibrasi selalu ["pasti benar","mungkin benar","pasti salah","tidak dapat disimpulkan"].');
+  L.push('  - Untuk N8 atau konteks survei/grafik, boleh tambahkan "tabel": {"kolom":[...],"baris":[[...]]}.');
+  L.push('- Jembatan: tepat 3 soal. Jenis "pg": 5 opsi, satu "kunci", "jebakan_opsi" sepanjang opsi (null pada kunci, J1–J13 pada pengecoh). Jenis "bs": 3–5 "pernyataan", "kunci" berupa daftar true/false, "label_b" dan "label_s", serta satu "jebakan". Pada Tahap 1 semua soal jenis "pg".');
+  L.push('- Kunci boleh berupa simpulan sah yang lebih lemah (misalnya "beberapa" alih-alih "semua"), asalkan tepat satu opsi yang sah.');
   L.push('- Pembahasan maksimal 3 kalimat: mengapa kunci benar dan jebakan utama pengecoh.');
-  L.push('- Sebar posisi kunci. Periksa ulang setiap kunci; pastikan tepat satu opsi benar.');
+  L.push('\n## Cek sebelum mengirim');
+  ['Setiap kunci diperiksa ulang; untuk deduktif, setiap opsi dicek dengan tabel kebenaran.','Tepat satu opsi sah; tidak ada dua opsi yang sama-sama bisa dibela.','Opsi baku disalin persis.','Label jebakan sesuai kesalahan yang benar-benar diwakili opsi itu.','Bentuk jembatan sesuai bagian "Bentuk UTBK".','Kasus dan jembatan tidak memakai cerita yang sama.'].forEach((x,i)=>L.push(`${i+1}. ${x}`));
+  const p0=plan[0];
   L.push('\n## Bentuk JSON');
-  L.push('```json\n'+JSON.stringify({versi:1,paket:[{tgl:plan[0].tgl,kasus:{keterampilan:plan[0].sk,tahap:plan[0].tahap,konteks:plan[0].konteks,judul:'…',kalimat:['…','…','…'],
+  L.push(JSON.stringify({versi:2,paket:[{tgl:p0.tgl,kasus:{keterampilan:p0.sk,tahap:p0.tahap,konteks:p0.konteks,judul:'…',kalimat:['…','…','…'],tabel:{kolom:['…','…'],baris:[['…','…']]},
     langkah:[{jenis:'tandai',perintah:'Tandai peran setiap kalimat.',peran:['alasan','pengalih','klaim'],pembahasan:'…'},
-      {jenis:'kalibrasi',perintah:'Seberapa pasti simpulan …?',opsi:['pasti benar','mungkin benar','pasti salah','tidak dapat disimpulkan'],kunci:1,pembahasan:'…'},
-      {jenis:'perlu_dicek',perintah:'Informasi apa yang paling perlu dicek?',opsi:['…','…','…','…'],kunci:2}],
-    jebakan:'J6',pembahasan:'…'},
-   jembatan:[{keterampilan:plan[0].sk,bentuk:plan[0].bentuk,teks:'…',perintah:'…',opsi:['…','…','…','…','…'],kunci:3,jebakan_opsi:['J1','J6','J5',null,'J11'],pembahasan:'…'}]}]},null,1)+'\n```');
+      {jenis:'celah',perintah:'…',opsi:['…','…','…','…'],kunci:2,pembahasan:'…'},
+      {jenis:'penjelasan',perintah:'…',opsi:['…','…','…','…'],kunci:0,pembahasan:'…'}],jebakan:'J8',pembahasan:'…'},
+   jembatan:[{jenis:'pg',keterampilan:p0.sk,bentuk:p0.bentuk,teks:'…',perintah:'…',opsi:['…','…','…','…','…'],kunci:3,jebakan_opsi:['J8','J6','J11',null,'J9'],pembahasan:'…'},
+    {jenis:'bs',keterampilan:'N7',bentuk:'2026',teks:'…',perintah:'…',pernyataan:['…','…','…','…','…'],kunci:[true,false,false,true,false],label_b:'MEMPERLEMAH',label_s:'TIDAK MEMPERLEMAH',jebakan:'J11',pembahasan:'…'}]}]}));
+  L.push('(Contoh "bs" hanya menunjukkan bentuknya; pada Tahap 1 ketiga soal jembatan berjenis "pg". "tabel" boleh dihilangkan bila tidak perlu.)');
   return L.join('\n')}
+const CUKUP_OPSI=['Pernyataan (i) SAJA cukup untuk menjawab pertanyaan, tetapi pernyataan (ii) SAJA tidak cukup.','Pernyataan (ii) SAJA cukup untuk menjawab pertanyaan, tetapi pernyataan (i) SAJA tidak cukup.','DUA pernyataan BERSAMA-SAMA cukup untuk menjawab pertanyaan, tetapi SATU pernyataan SAJA tidak cukup.','SALAH SATU pernyataan SAJA cukup untuk menjawab pertanyaan.','Pernyataan (i) dan pernyataan (ii) TIDAK CUKUP untuk menjawab pertanyaan.'];
+const KS_OPSI=['Simpulan tersebut pasti benar.','Simpulan tersebut mungkin benar.','Simpulan tersebut pasti salah.','Simpulan tidak relevan dengan informasi yang diberikan.','Simpulan tidak dapat dinilai karena informasi tidak cukup.'];
 
 /* ================= MASKOT "BLOKI" & LATAR ================= */
 function mascot(pose){
@@ -714,12 +796,18 @@ function vKas(s){
 function kasAnswer(ok,q){const s=sesi(today()),k=S.paket[KAS.pid].kasus;s.kas.n++;if(ok)s.kas.b++;seqPush(s,'k'+(ok?1:0));KAS.answered=true;KAS.ok=ok;record('kasus',k.keterampilan,ok,k.jebakan,q);render()}
 
 /* --- jembatan --- */
+function bsRows(q,sel,answered,act){const lb=q.label_b||'BENAR',ls=q.label_s||'SALAH';
+  return`<div class="bsrows">${q.pernyataan.map((t,i)=>{const v=sel[i];let rc='';if(answered)rc=v===q.kunci[i]?'ok':'bad';
+    const bt=(val,lab)=>{let c=v===val?'on':'';if(answered){c=q.kunci[i]===val?'key':(v===val?'wrong':'')}return`<button class="bsb ${c}" data-act="${act}" data-i="${i}" data-v="${val?1:0}" ${answered?'disabled':''}>${esc(lab)}</button>`};
+    return`<div class="bsrow ${rc}"><div class="bst"><span class="bsn">${i+1}</span>${esc(t)}</div><div class="bsbtns">${bt(true,lb)}${bt(false,ls)}</div></div>`}).join('')}</div>`}
 function vJem(s){const p=s.paketId&&S.paket[s.paketId];if(!p){s.fase=4;save();return vKalimat(s)}
-  if(!JEM)JEM={i:0,answered:false};const Q=p.jembatan,q=Q[JEM.i];
+  if(!JEM)JEM={i:0,answered:false,bs:{}};const Q=p.jembatan,q=Q[JEM.i],bs=(q.jenis||'pg')==='bs';
   let h=`<div class="row sp wrapf" style="margin:2px 2px 0"><span class="lbl w" style="--lc:var(--blue)">Jembatan UTBK · ${JEM.i+1}/${Q.length}</span><div class="row"><span class="chip a">${esc(q.keterampilan||p.kasus.keterampilan)}</span>${q.bentuk?`<span class="chip">bentuk ${esc(q.bentuk)}</span>`:''}</div></div>
-  ${tower(s,1)}<div class="glass card has-st" style="margin-top:16px">${studs(4,COL.jem)}${q.teks?`<div class="stim">${esc(q.teks)}</div>`:''}<div style="font-weight:600;margin-top:8px">${esc(q.perintah||'')}</div>
-  <div class="opts" style="--c:var(--blue)">${q.opsi.map((o,i)=>{let c='';if(JEM.answered){c=i===q.kunci?'ok':i===JEM.chosen?'bad':'dim'}return`<button class="opt ${c}" data-act="jemOpt" data-v="${i}" ${JEM.answered?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
-  if(JEM.answered){const jj=(q.jebakan_opsi||[])[JEM.chosen];h+=`<div class="fb">${JEM.ok?'<b style="color:var(--ok)">Tepat.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}${esc(q.pembahasan||'')}${!JEM.ok&&jj&&TRAPS[jj]?`<div style="margin-top:6px"><span class="chip bad">Pilihanmu: ${jj} · ${TRAPS[jj]}</span></div>`:''}</div>
+  ${tower(s,1)}<div class="glass card has-st" style="margin-top:16px">${studs(4,COL.jem)}${q.teks?`<div class="stim">${esc(q.teks)}</div>`:''}<div style="font-weight:600;margin-top:8px">${esc(q.perintah||'')}</div>`;
+  if(bs){h+=bsRows(q,JEM.bs,JEM.answered,'bsPick');
+    if(!JEM.answered)h+=`<button class="btn p w" style="margin-top:12px" data-act="bsCek" ${Object.keys(JEM.bs).length<q.pernyataan.length?'disabled':''}>Periksa</button>`}
+  else h+=`<div class="opts" style="--c:var(--blue)">${q.opsi.map((o,i)=>{let c='';if(JEM.answered){c=i===q.kunci?'ok':i===JEM.chosen?'bad':'dim'}return`<button class="opt ${c}" data-act="jemOpt" data-v="${i}" ${JEM.answered?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
+  if(JEM.answered){const jj=bs?q.jebakan:(q.jebakan_opsi||[])[JEM.chosen];h+=`<div class="fb">${JEM.ok?'<b style="color:var(--ok)">Tepat.</b> ':`<b style="color:var(--bad)">Belum tepat.</b> ${bs?`<span class="muted">(${q.pernyataan.filter((_,i)=>JEM.bs[i]===q.kunci[i]).length}/${q.pernyataan.length} baris benar; semua baris harus tepat)</span> `:''}`}${esc(q.pembahasan||'')}${!JEM.ok&&jj&&TRAPS[jj]?`<div style="margin-top:6px"><span class="chip bad">${bs?'Jebakan':'Pilihanmu'}: ${jj} · ${TRAPS[jj]}</span></div>`:''}</div>
     <button class="btn p w" style="margin-top:10px" data-act="jemNext">${JEM.i<Q.length-1?'Soal berikutnya':'Lanjut'}</button>`}
   return h+'</div>'}
 
@@ -761,10 +849,16 @@ function vRekap(){const w=weekLog(7);const tr=topTraps(w.filter(x=>x.src!=='game
   h+=sal.length?`<div class="glass card list">${sal.map(x=>`<div class="it"><div style="flex:1;min-width:0"><div class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.perintah||x.teks||'')}</div><div class="tiny muted">${tglPendek(x.t)} · ${x.src} · ${x.sk}</div></div><button class="btn sm" data-act="ulang" data-v="${x.id}">Ulang</button></div>`).join('')}</div>`:'<div class="glass card empty">Belum ada butir salah.</div>';
   const g=S.games;h+=`<h3>Mini game (pendamping)</h3><div class="glass card">${GAMES.map(x=>`<div class="kv"><span>${x.nama}</span><span class="muted">terbaik ${g[x.id]?g[x.id].best:0} · ${g[x.id]?g[x.id].main:0}x main</span></div>`).join('')}</div>`;
   return h}
+let UB=null;
 function openUlang(id){const x=S.salah.find(y=>y.id===id);if(!x)return;
+  if(x.jenis==='bs'){UB={id,sel:{},answered:false};return renderUlangBS()}
   openSheet(`<div class="row sp"><div class="lbl" style="margin:0">Ulang · ${x.sk}</div><button class="btn sm" data-act="closeSheet">Tutup</button></div>
   ${x.teks?`<div class="stim" style="margin-top:8px">${esc(x.teks)}</div>`:''}<div style="font-weight:600;margin-top:8px">${esc(x.perintah||'')}</div>
   <div class="opts" id="uopts">${x.opsi.map((o,i)=>`<button class="opt" data-act="ulangOpt" data-id="${x.id}" data-v="${i}"><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`).join('')}</div><div id="ufb"></div>`)}
+function renderUlangBS(){const x=S.salah.find(y=>y.id===UB.id);if(!x)return;
+  openSheet(`<div class="row sp"><div class="lbl" style="margin:0">Ulang · ${x.sk}</div><button class="btn sm" data-act="closeSheet">Tutup</button></div>
+  ${x.teks?`<div class="stim" style="margin-top:8px">${esc(x.teks)}</div>`:''}<div style="font-weight:600;margin-top:8px">${esc(x.perintah||'')}</div>${bsRows(x,UB.sel,UB.answered,'ubsPick')}
+  ${UB.answered?`<div class="fb">${UB.ok?'<b style="color:var(--ok)">Tepat, butir ini dianggap tuntas.</b> ':'<b style="color:var(--bad)">Masih belum tepat.</b> '}${esc(x.pembahasan||'')}</div>`:`<button class="btn p w" style="margin-top:12px" data-act="ubsCek" ${Object.keys(UB.sel).length<x.pernyataan.length?'disabled':''}>Periksa</button>`}`)}
 function answerUlang(id,i){const x=S.salah.find(y=>y.id===id);if(!x)return;const ok=i===x.kunci;markOpts('#uopts',i,x.kunci);
   S.log.push({t:today(),src:'ulang',sk:x.sk,ok:ok?1:0,j:null});if(ok)x.tuntas=true;save();
   $('#ufb').innerHTML=`<div class="fb">${ok?'<b style="color:var(--ok)">Tepat, butir ini dianggap tuntas.</b> ':'<b style="color:var(--bad)">Masih belum tepat.</b> '}${esc(x.pembahasan||'')}</div>`;if(ok&&route==='rekap')setTimeout(()=>{render()},10)}
@@ -807,7 +901,11 @@ const GAMES=[
  {id:'gerbang',c:'var(--red)',nama:'Penjaga Gerbang',sk:'N2',desc:'Kartu mana yang wajib dibalik untuk menguji aturan?',ic:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18"/>'},
  {id:'venn',c:'var(--blue)',nama:'Venn Kilat',sk:'N3',desc:'Dua premis, satu simpulan: pasti atau belum tentu?',ic:'<circle cx="9" cy="10" r="5"/><circle cx="15" cy="10" r="5"/><circle cx="12" cy="15" r="5"/>'},
  {id:'detektif',c:'var(--green)',nama:'Detektif Chat',sk:'N1 · N4',desc:'Temukan pesan pengalih, lalu nilai simpulannya.',ic:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>'},
- {id:'kasir',c:'var(--orange)',nama:'Kasir Jebakan',sk:'N8',desc:'Promo mana yang paling murah? 15 detik per soal.',ic:'<path d="M3 7h18l-2 11H5z"/><path d="M8 7a4 4 0 0 1 8 0"/>'}];
+ {id:'kasir',c:'var(--orange)',nama:'Kasir Jebakan',sk:'N8',desc:'Promo mana yang paling murah? 15 detik per soal.',ic:'<path d="M3 7h18l-2 11H5z"/><path d="M8 7a4 4 0 0 1 8 0"/>'},
+ {id:'hakim',c:'var(--sky)',nama:'Hakim Simpulan',sk:'N4',desc:'Lima opsi baku kualitas simpulan. 20 detik per ronde.',ic:'<path d="M12 3v18M6 7h12M4 14l2.5-6 2.5 6a2.5 2.5 0 0 1-5 0zM15 14l2.5-6 2.5 6a2.5 2.5 0 0 1-5 0zM8 21h8"/>'},
+ {id:'cukup',c:'var(--pink)',nama:'Cukup Nggak?',sk:'N8 · N4',desc:'Pernyataan (i) dan (ii): mana yang cukup untuk menjawab?',ic:'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>'},
+ {id:'kursi',c:'var(--lime)',nama:'Kursi Rapat',sk:'N4 · N2',desc:'Atur lima orang ke kursi, lalu pilih yang PASTI BENAR.',ic:'<rect x="2.5" y="9" width="5" height="6" rx="1"/><rect x="9.5" y="9" width="5" height="6" rx="1"/><rect x="16.5" y="9" width="5" height="6" rx="1"/><path d="M3 19h18"/>'},
+ {id:'tren',c:'var(--purple)',nama:'Tren Selang-seling',sk:'N8',desc:'Angka naik-turun: isi suku berikutnya atau yang kosong.',ic:'<path d="M3 17l5-6 4 4 4-7 5 5"/>'}];
 function vMain(){if(G)return vGame();
   return`<p class="intro">Pendamping untuk waktu luang. Sesi harian tetap jadi latihan utama, dan skor di sini tidak mengubah tahap keterampilan.</p>
   <div class="grid2">${GAMES.map(g=>`<button class="tile ${yk(g.c)}" style="--c:${g.c}" data-act="gStart" data-v="${g.id}">${studs(3,g.c)}<span class="ic">${svg(g.ic)}</span><b>${g.nama}</b><span class="tiny">${g.desc}</span><span class="best">${g.sk} · terbaik ${S.games[g.id]?S.games[g.id].best:0}</span></button>`).join('')}</div>`}
@@ -819,13 +917,17 @@ function vGame(){if(G.over){const o=G.over,sc=o.max?o.score/o.max:Math.min(1,o.s
   return gHead()+`<div class="glass card has-st" style="text-align:center;padding:24px 16px">${gst()}<div class="cap">Selesai</div><div class="big">${o.score}${o.max?'<span class="muted" style="font-size:24px">/'+o.max+'</span>':''}</div><div class="small muted" style="margin-top:4px">${o.nb?'<span class="chip y">Rekor baru!</span>':'Terbaik: '+S.games[G.id].best}</div>
   <div class="mtower" style="justify-content:center;margin-top:14px">${[...Array(nb)].map((_,i)=>`<span class="b new" style="--c:${gc()};animation-delay:${i*60}ms"></span>`).join('')}</div>
   <div class="row" style="justify-content:center;margin-top:16px"><button class="btn" data-act="gBack">Kembali</button><button class="btn p" data-act="gStart" data-v="${G.id}">Main lagi</button></div></div>`}
-  return({geser:vGeser,gerbang:vGerbang,venn:vVenn,detektif:vDetektif,kasir:vKasir})[G.id]()}
+  return({geser:vGeser,gerbang:vGerbang,venn:vVenn,detektif:vDetektif,kasir:vKasir,hakim:vHakim,cukup:vCukup,kursi:vKursi,tren:vTren})[G.id]()}
 function startGame(id){clearInterval(gTimer);G={id};
   if(id==='geser'){G.end=Date.now()+60000;G.score=0;G.n=0;G.cur=genGeser();gTimer=setInterval(()=>{const l=Math.max(0,G.end-Date.now());const e=$('#gtime');if(e)e.textContent=Math.ceil(l/1000)+' dtk';if(l<=0)gDone(G.score,0)},250)}
   if(id==='gerbang'){G.rounds=shuffle(GERBANG).slice(0,5);G.i=0;G.score=0;G.sel=new Set();G.checked=false}
   if(id==='venn'){G.i=0;G.score=0;G.n=6;G.cur=genVenn();G.ans=null}
   if(id==='detektif'){G.rounds=shuffle(DETEKTIF).slice(0,5);G.i=0;G.score=0;G.step=0;G.pick=null;G.ans=null}
   if(id==='kasir'){G.i=0;G.score=0;G.n=8;newKasir()}
+  if(id==='hakim'){G.i=0;G.score=0;G.n=8;newHakim()}
+  if(id==='cukup'){G.i=0;G.score=0;G.n=6;G.cur=genCukup();G.ans=null}
+  if(id==='kursi'){G.i=0;G.score=0;G.n=4;G.cur=genKursi();G.ans=null;G.place=[null,null,null,null,null];G.selName=null;G.msg=''}
+  if(id==='tren'){G.i=0;G.score=0;G.n=8;G.cur=genTren();G.ans=null}
   render()}
 
 /* --- Geser Setara --- */
@@ -906,7 +1008,7 @@ const DETEKTIF=[
  {judul:'Rapat OSIS',pesan:[['Bayu','Rapat hari ini batal kalau Pak Hadi tidak bisa hadir.'],['Rina','Tadi aku lihat mobil Pak Hadi di parkiran.'],['Dimas','Kantin hari ini ada menu baru lho.'],['Rina','Berarti rapatnya pasti jadi!']],pengalih:2,simpulan:'Rapat hari ini pasti jadi.',v:1,why:'Aturan hanya bilang: Pak Hadi tidak hadir → batal. Mobilnya ada belum tentu ia bisa hadir, dan kalaupun hadir, aturan tidak menjamin rapat jadi (J2).'},
  {judul:'Sertifikat lomba',pesan:[['Panitia','Semua peserta yang mengumpulkan karya sebelum Jumat dapat sertifikat.'],['Fajar','Desain posterku paling keren sih menurutku.'],['Nadia','Aku kumpul hari Kamis.'],['Nadia','Berarti aku pasti dapat sertifikat.']],pengalih:1,simpulan:'Nadia pasti dapat sertifikat.',v:0,why:'Kamis sebelum Jumat, jadi Nadia termasuk kelompok “semua peserta yang mengumpulkan sebelum Jumat”. Pasti benar.'},
  {judul:'Grup keluarga',pesan:[['Om Rudi','Minum air hangat tiap pagi bikin kebal semua penyakit!'],['Kak Sinta','Besok arisan jam berapa ya?'],['Tante Lia','Iya, tetangga saya rutin minum, nggak pernah sakit.'],['Om Rudi','Tuh kan, terbukti.']],pengalih:1,simpulan:'Air hangat membuat kebal semua penyakit.',v:1,why:'Satu contoh tetangga tidak cukup untuk aturan umum (J7), dan “semua penyakit” terlalu kuat (J6). Belum tentu.'},
- {judul:'Nilai Fisika',pesan:[['Bu Ratna','Siswa yang nilainya di bawah 70 wajib ikut remedial.'],['Arga','Nilaiku 72.'],['Putri','Kemarin hujan deras banget ya.'],['Kevin','Arga wajib ikut remedial.']],pengalih:2,simpulan:'Arga wajib ikut remedial.',v:2,why:'Kewajiban hanya untuk nilai di bawah 70. Nilai Arga 72, jadi ia pasti tidak wajib. Simpulan pasti salah.'},
+ {judul:'Nilai Fisika',pesan:[['Bu Ratna','Siswa yang nilainya di bawah 70 wajib ikut remedial.'],['Arga','Nilaiku 72.'],['Putri','Kemarin hujan deras banget ya.'],['Kevin','Arga wajib ikut remedial.']],pengalih:2,simpulan:'Arga wajib ikut remedial.',v:1,why:'Aturan hanya mengatur siswa dengan nilai di bawah 70. Untuk nilai 72 aturan ini diam: bisa saja ada aturan lain, jadi “pasti tidak wajib” juga menyangkal anteseden (J2). Yang tepat: belum tentu.'},
  {judul:'Promo sepatu',pesan:[['Admin Toko Langkah','Semua sepatu diskon 50%* (*khusus warna tertentu)'],['Lala','Parkiran tokonya luas kok.'],['Yoga','Aku mau beli yang hitam.'],['Yoga','Sepatu hitamku pasti diskon 50%.']],pengalih:1,simpulan:'Sepatu hitam Yoga pasti diskon 50%.',v:1,why:'Catatan kecil membatasi “semua” jadi “warna tertentu”. Tidak disebut apakah hitam termasuk (J4). Belum tentu.'},
  {judul:'Jadwal piket',pesan:[['Ketua kelas','Kalau hari Senin, kelompok A piket.'],['Hana','Aku lupa bawa botol minum.'],['Bela','Hari ini kelompok A lagi piket.'],['Bela','Berarti hari ini Senin.']],pengalih:1,simpulan:'Hari ini Senin.',v:1,why:'Aturannya Senin → A piket, bukan sebaliknya. Kelompok A bisa piket di hari lain juga (J1). Belum tentu.'},
  {judul:'Bimbel X',pesan:[['Rafi','Anak yang ikut bimbel X nilainya rata-rata lebih tinggi.'],['Wulan','Tapi yang ikut kebanyakan memang sudah rajin dari awal.'],['Tegar','Wifi sekolah lemot banget hari ini.'],['Rafi','Jadi bimbel X pasti menaikkan nilai.']],pengalih:2,simpulan:'Bimbel X pasti menaikkan nilai.',v:1,why:'Hubungan bersamaan belum tentu sebab-akibat (J8), dan kelompoknya sejak awal berbeda (J9), seperti kata Wulan. Belum tentu.'},
@@ -942,6 +1044,114 @@ function vKasir(){const q=G.cur,min=Math.min(...q.pr.map(x=>x.f));
   return h+'</div>'}
 function answerKasir(i){if(G.ans!==null)return;clearInterval(gTimer);G.ans=i;const min=Math.min(...G.cur.pr.map(x=>x.f));if(i>=0&&G.cur.pr[i].f===min)G.score++;render()}
 
+
+/* --- Hakim Simpulan --- */
+const NAMA=['Rani','Bayu','Tari','Gio','Nadia','Dimas','Lala','Fajar','Wulan','Kevin','Hana','Arga','Sari','Tegar','Mira','Yoga'];
+const HAKIM_SET=[
+ {g1:'peserta lomba debat',g2:'anggota OSIS',g3:'ikut paduan suara',g4:'ikut klub futsal'},
+ {g1:'pembeli paket hemat',g2:'pelanggan member',g3:'mendapat stiker',g4:'membayar ongkir'},
+ {g1:'pemain inti tim basket',g2:'siswa kelas 11',g3:'ikut les sore',g4:'ikut ekskul tari'},
+ {g1:'penumpang gerbong 3',g2:'pemegang tiket ekonomi',g3:'membawa bekal',g4:'duduk di kursi VIP'},
+ {g1:'peserta try out daring',g2:'pendaftar program intensif',g3:'belajar di perpustakaan',g4:'libur pada hari Sabtu'},
+ {g1:'relawan bank sampah',g2:'warga RT 05',g3:'punya kebun di rumah',g4:'tinggal di apartemen'},
+ {g1:'penulis buletin sekolah',g2:'anggota klub literasi',g3:'menulis puisi',g4:'ikut lomba robotik'}];
+const LUAR=['suka makan bakso','punya kucing di rumah','bangun pukul lima pagi','gemar membaca komik','pandai bermain gitar','tinggal dekat stasiun'];
+function genHakim(){const t=rnd(HAKIM_SET),x=rnd(NAMA),v=ri(0,4);
+  const pre=shuffle([`Semua ${t.g1} adalah ${t.g2}.`,`Sebagian ${t.g2} ${t.g3}.`,`Tidak ada ${t.g2} yang ${t.g4}.`]).concat([`${x} adalah ${t.g1}.`]);
+  const C=[
+   [rnd([`${x} adalah ${t.g2}.`,`${x} tidak ${t.g4}.`]),`${x} termasuk ${t.g1}, dan semua ${t.g1} adalah ${t.g2} yang tidak ada satu pun ${t.g4}. Pasti benar.`],
+   [`${x} ${t.g3}.`,`${x} adalah ${t.g2}, dan hanya sebagian ${t.g2} yang ${t.g3}. Tidak bertentangan dan topiknya dibahas, tetapi tidak dipastikan: mungkin benar.`],
+   [`${x} ${t.g4}.`,`${x} adalah ${t.g2}, sedangkan tidak ada ${t.g2} yang ${t.g4}. Pasti salah.`],
+   [`${x} ${rnd(LUAR)}.`,`Informasi sama sekali tidak menyentuh hal ini. Tidak relevan.`],
+   [`Lebih dari separuh ${t.g2} ${t.g3}.`,`Topiknya dibahas, tetapi “sebagian” tidak menyebut berapa banyak, jadi tidak ada cara untuk menilainya: tidak dapat dinilai. Kalau kamu memilih “mungkin benar”, itu jebakan J13.`]];
+  return{pre,sim:C[v][0],why:C[v][1],v}}
+function newHakim(){G.cur=genHakim();G.ans=null;G.end=Date.now()+20000;clearInterval(gTimer);gTimer=setInterval(()=>{if(!G)return;const l=Math.max(0,G.end-Date.now());const e=$('#gtime');if(e)e.textContent=Math.ceil(l/1000)+' dtk';if(l<=0&&G.ans===null)answerHakim(-1)},250)}
+function answerHakim(i){if(!G||G.ans!==null)return;clearInterval(gTimer);G.ans=i;if(i===G.cur.v)G.score++;render()}
+function vHakim(){const q=G.cur;
+  let h=gHead(`<span class="chip" id="gtime">20 dtk</span>`)+`<div class="glass card has-st">${gst()}<div class="row sp"><div class="cap" style="margin:0">Ronde ${G.i+1}/${G.n}</div><span class="tiny muted">Skor ${G.score}</span></div>
+  <div class="cap" style="margin-top:8px">Informasi</div><div class="stim">${q.pre.map(esc).join('\n')}</div>
+  <div class="cap" style="margin-top:10px">Simpulan</div><div style="font-weight:600">${esc(q.sim)}</div>
+  <div class="opts">${KS_OPSI.map((o,i)=>{let c='';if(G.ans!==null)c=i===q.v?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="hAns" data-v="${i}" ${G.ans!==null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
+  if(G.ans!==null)h+=`<div class="fb">${G.ans===-1?'<b style="color:var(--bad)">Waktu habis.</b> ':''}${esc(q.why)}</div><button class="btn p w" style="margin-top:10px" data-act="hNext">${G.i<G.n-1?'Berikutnya':'Lihat skor'}</button>`;
+  return h+'</div>'}
+
+/* --- Cukup Nggak? --- */
+const PERMS4=(()=>{const out=[];const go=(a,r)=>{if(!r.length){out.push(a);return}r.forEach((x,i)=>go(a.concat([x]),r.filter((_,j)=>j!==i)))};go([],[0,1,2,3]);return out})();
+function cEval(p,c){const r=k=>p.indexOf(k);return{gt:()=>r(c.a)<r(c.b),top:()=>r(c.a)===0,bottom:()=>r(c.a)===3,notTop:()=>r(c.a)!==0,notBottom:()=>r(c.a)!==3}[c.f]()}
+function cText(c,N,K){const a=N[c.a],b=N[c.b];return{gt:`${cap(K)} ${a} lebih tinggi daripada ${K} ${b}.`,top:`${a} mendapat ${K} tertinggi.`,bottom:`${a} mendapat ${K} terendah.`,notTop:`${a} tidak mendapat ${K} tertinggi.`,notBottom:`${a} tidak mendapat ${K} terendah.`}[c.f]}
+function genCukup(){const target=ri(0,4);let last=null;
+  for(let t=0;t<800;t++){const N=shuffle(NAMA).slice(0,4),K=rnd(['nilai try out','skor kuis','poin lomba']);
+    const q=Math.random()<.6?{t:'cmp',x:ri(0,3)}:{t:'top'};if(q.t==='cmp'){do{q.y=ri(0,3)}while(q.y===q.x)}
+    const mk=()=>{const f=rnd(['gt','gt','top','bottom','notTop','notBottom']);const c={f,a:ri(0,3)};if(f==='gt'){do{c.b=ri(0,3)}while(c.b===c.a)}return c};
+    const st=()=>{const n=Math.random()<.45?2:1;const a=[];for(let i=0;i<n;i++)a.push(mk());return a};
+    const s1=st(),s2=st();
+    if([...s1,...s2].some(c=>q.t==='cmp'&&c.f==='gt'&&((c.a===q.x&&c.b===q.y)||(c.a===q.y&&c.b===q.x))))continue;
+    const M1=PERMS4.filter(p=>s1.every(c=>cEval(p,c))),M2=PERMS4.filter(p=>s2.every(c=>cEval(p,c))),M12=M1.filter(p=>s2.every(c=>cEval(p,c)));
+    if(!M1.length||!M2.length||!M12.length)continue;
+    const ans=p=>q.t==='cmp'?(p.indexOf(q.x)<p.indexOf(q.y)?'ya':'tidak'):N[p[0]];
+    const det=M=>new Set(M.map(ans)).size===1;const d1=det(M1),d2=det(M2),d12=det(M12);
+    const v=d1&&d2?3:d1?0:d2?1:d12?2:4;
+    last={N,K,q,s1,s2,v,d1,d2,d12,jaw:d12?ans(M12[0]):null};if(v===target)return last}
+  return last}
+function vCukup(){const c=G.cur,N=c.N,K=c.K;const tanya=c.q.t==='cmp'?`Apakah ${K} ${N[c.q.x]} lebih tinggi daripada ${K} ${N[c.q.y]}?`:`Siapa yang mendapat ${K} tertinggi?`;
+  let h=gHead(`<span class="chip">${G.i+1}/${G.n}</span>`)+`<div class="glass card has-st">${gst()}<div class="stim">Empat siswa, yaitu ${N.slice(0,3).join(', ')}, dan ${N[3]}, mendapat ${K} yang berbeda-beda.</div>
+  <div class="cap" style="margin-top:10px">Pertanyaan</div><div style="font-weight:600">${esc(tanya)}</div>
+  <div class="cap" style="margin-top:10px">Pernyataan</div><div class="stim">(i) ${c.s1.map(x=>esc(cText(x,N,K))).join(' ')}\n(ii) ${c.s2.map(x=>esc(cText(x,N,K))).join(' ')}</div>
+  <div class="opts">${CUKUP_OPSI.map((o,i)=>{let cl='';if(G.ans!=null)cl=i===c.v?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${cl}" data-act="cAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
+  if(G.ans!=null){const w=b=>b?'<b style="color:var(--ok)">cukup</b>':'<b style="color:var(--bad)">tidak cukup</b>';
+    h+=`<div class="fb small">(i) saja: ${w(c.d1)} · (ii) saja: ${w(c.d2)} · bersama: ${w(c.d12)}${c.jaw?`<br>Jawabannya: <b>${esc(c.jaw)}</b>.`:''}<br><span class="muted">Cukup berarti semua urutan yang mungkin memberi jawaban yang sama.</span></div>
+    <button class="btn p w" style="margin-top:10px" data-act="cNext">${G.i<G.n-1?'Berikutnya':'Lihat skor'}</button>`}
+  return h+'</div>'}
+
+/* --- Kursi Rapat --- */
+const PERMS5=(()=>{const out=[];const go=(a,r)=>{if(!r.length){out.push(a);return}r.forEach((x,i)=>go(a.concat([x]),r.filter((_,j)=>j!==i)))};go([],[0,1,2,3,4]);return out})();
+function kEval(p,c){const r=k=>p.indexOf(k);switch(c.f){
+  case'pos':return r(c.a)===c.k;case'notPos':return r(c.a)!==c.k;case'left':return r(c.a)<r(c.b);case'imm':return r(c.a)+1===r(c.b);
+  case'adj':return Math.abs(r(c.a)-r(c.b))===1;case'notAdj':return Math.abs(r(c.a)-r(c.b))!==1;case'end':return r(c.a)===0||r(c.a)===4}}
+function kText(c,N){const a=N[c.a],b=N[c.b];return{pos:`${a} duduk di kursi ${c.k+1}.`,notPos:`${a} tidak duduk di kursi ${c.k+1}.`,left:`${a} duduk di sebelah kiri ${b} (tidak harus bersebelahan).`,imm:`${a} duduk tepat di sebelah kiri ${b}.`,adj:`${a} duduk bersebelahan dengan ${b}.`,notAdj:`${a} tidak duduk bersebelahan dengan ${b}.`,end:`${a} duduk di salah satu ujung.`}[c.f]}
+const kKey=c=>c.f+':'+c.a+':'+(c.b??'')+':'+(c.k??'');
+function genKursi(){for(let t=0;t<600;t++){const N=shuffle(NAMA).slice(0,5);const n=ri(3,4);const cons=[];
+    for(let i=0;i<n;i++){const f=rnd(['left','imm','adj','notAdj','end','pos','notPos']);const c={f,a:ri(0,4)};if(['left','imm','adj','notAdj'].includes(f)){do{c.b=ri(0,4)}while(c.b===c.a)}if(f==='pos'||f==='notPos')c.k=ri(0,4);cons.push(c)}
+    const sols=PERMS5.filter(p=>cons.every(c=>kEval(p,c)));if(sols.length<2||sols.length>6)continue;
+    const cand=[];for(let a=0;a<5;a++){for(let k=0;k<5;k++)cand.push({f:'pos',a,k});cand.push({f:'end',a});for(let b=0;b<5;b++)if(b!==a){cand.push({f:'left',a,b});if(a<b)cand.push({f:'adj',a,b})}}
+    const ck=new Set(cons.map(kKey));
+    const must=cand.filter(c=>!ck.has(kKey(c))&&sols.every(p=>kEval(p,c))&&!(c.f==='adj'&&cons.some(x=>x.f==='imm'&&((x.a===c.a&&x.b===c.b)||(x.a===c.b&&x.b===c.a))))&&!(c.f==='left'&&cons.some(x=>x.f==='imm'&&x.a===c.a&&x.b===c.b)));
+    const maybe=cand.filter(c=>sols.some(p=>kEval(p,c))&&!sols.every(p=>kEval(p,c)));
+    if(!must.length||maybe.length<4)continue;
+    const items=shuffle([{c:rnd(must),ok:1},...shuffle(maybe).slice(0,4).map(c=>({c}))]);
+    return{N,cons,sols,opsi:items.map(x=>kText(x.c,N)),kunci:items.findIndex(x=>x.ok)}}
+  return null}
+function vKursi(){const q=G.cur,N=q.N;
+  let h=gHead(`<span class="chip">${G.i+1}/${G.n}</span>`)+`<div class="glass card has-st">${gst()}<div class="stim">Lima pengurus kelas duduk berjajar di kursi 1–5 (dari kiri ke kanan) saat rapat.</div>
+  <div class="cap" style="margin-top:10px">Syarat</div><div class="stim">${q.cons.map((c,i)=>`${i+1}. ${esc(kText(c,N))}`).join('\n')}</div>
+  <div class="cap" style="margin-top:12px">Coret-coret: ketuk nama, lalu ketuk kursi</div>
+  <div class="names">${N.map((n,i)=>`<button class="nm ${G.selName===i?'sel':''} ${G.place.includes(i)?'used':''}" data-act="kuName" data-v="${i}">${esc(n)}</button>`).join('')}</div>
+  <div class="seats">${G.place.map((x,k)=>`<button class="seat ${x!==null?'f':''}" data-act="kuSeat" data-v="${k}"><small>${k+1}</small>${x!==null?esc(N[x]):''}</button>`).join('')}</div>
+  <div class="row" style="margin-top:8px"><button class="btn sm" data-act="kuCek">Cek susunanku</button><button class="btn sm" data-act="kuClear">Kosongkan</button></div><div id="kumsg">${G.msg||''}</div>
+  <div style="font-weight:600;margin-top:14px">Pernyataan yang PASTI BENAR adalah …</div>
+  <div class="opts">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="kuAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
+  if(G.ans!=null)h+=`<div class="fb small">Ada ${q.sols.length} susunan yang memenuhi semua syarat:<br>${q.sols.slice(0,6).map(p=>p.map(k=>esc(N[k])).join(' – ')).join('<br>')}<br><span class="muted">Hanya opsi yang benar di semua susunan itu yang PASTI BENAR.</span></div>
+   <button class="btn p w" style="margin-top:10px" data-act="kuNext">${G.i<G.n-1?'Berikutnya':'Lihat skor'}</button>`;
+  return h+'</div>'}
+
+/* --- Tren Selang-seling --- */
+function genTren(){const type=rnd(['alt2','pm','tm','grow','altmul']);let s=[],d='';
+  if(type==='alt2'){const a0=ri(2,12),d1=ri(2,6),b0=ri(18,34),d2=-ri(1,4);for(let i=0;i<7;i++)s.push(i%2===0?a0+d1*(i/2):b0+d2*((i-1)/2));d=`Dua barisan selang-seling: suku ke-1, 3, 5, … naik ${d1}; suku ke-2, 4, 6, … turun ${-d2}.`}
+  if(type==='pm'){const a=ri(4,9),b=ri(1,a-1);s=[ri(5,20)];for(let i=1;i<7;i++)s.push(s[i-1]+(i%2?a:-b));d=`Bergantian +${a} lalu −${b}.`}
+  if(type==='tm'){const k=ri(1,3);s=[ri(2,5)];for(let i=1;i<7;i++)s.push(i%2?s[i-1]*2:s[i-1]-k);d=`Bergantian ×2 lalu −${k}.`}
+  if(type==='grow'){const d0=ri(1,4);s=[ri(1,10)];for(let i=1;i<7;i++)s.push(s[i-1]+d0+i-1);d=`Selisihnya naik 1: +${d0}, +${d0+1}, +${d0+2}, dan seterusnya.`}
+  if(type==='altmul'){const a0=ri(1,4),b0=ri(5,15);for(let i=0;i<7;i++)s.push(i%2===0?a0*2**(i/2):b0+3*((i-1)/2));d=`Dua barisan selang-seling: suku ganjil dikali 2; suku genap ditambah 3.`}
+  const gap=Math.random()<.5;const idx=gap?ri(2,5):6;const ans=s[idx];
+  const prevD=idx>=2?s[idx-1]-s[idx-2]:3;const dis=new Set([ans]);
+  [s[idx-1]+prevD,ans+1,ans-1,ans+2,ans-2,ans+prevD,s[idx-2]!==undefined?s[idx-1]+(s[idx-1]-s[idx-2]):ans+3].forEach(x=>{if(dis.size<4&&x>0&&x!==ans)dis.add(x)});
+  while(dis.size<4)dis.add(ans+dis.size*3);
+  const opsi=shuffle([...dis]);return{show:gap?s:s.slice(0,6),idx,ans,opsi,kunci:opsi.indexOf(ans),d,gap}}
+function vTren(){const q=G.cur;
+  let h=gHead(`<span class="chip">${G.i+1}/${G.n}</span>`)+`<div class="glass card has-st">${gst()}<div class="cap">${q.gap?'Isi suku yang kosong':'Tentukan suku berikutnya'}</div>
+  <div class="seq">${q.show.map((x,i)=>i===q.idx?'<span class="q">?</span>':`<span>${x}</span>`).join('')}${q.gap?'':'<span class="q">?</span>'}</div>
+  <div class="grid4">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" style="justify-content:center;font-weight:700;font-size:17px" data-act="tAns" data-v="${i}" ${G.ans!=null?'disabled':''}>${o}</button>`}).join('')}</div>`;
+  if(G.ans!=null)h+=`<div class="fb">${esc(q.d)} Jawabannya <b>${q.ans}</b>.</div><button class="btn p w" style="margin-top:10px" data-act="tNext">${G.i<G.n-1?'Berikutnya':'Lihat skor'}</button>`;
+  return h+'</div>'}
 
 /* ================= RESET ================= */
 function resetHariIni(){const t=today();
@@ -982,7 +1192,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'toJem':s.fase=3;JEM=null;save();render();window.scrollTo(0,0);break;
   case'jemOpt':{const p=S.paket[s.paketId],q=p.jembatan[JEM.i],i=+v;JEM.chosen=i;JEM.answered=true;JEM.ok=i===q.kunci;s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
     record('jembatan',q.keterampilan&&SKILLS[q.keterampilan]?q.keterampilan:p.kasus.keterampilan,JEM.ok,(q.jebakan_opsi||[])[i],{teks:q.teks,perintah:q.perintah,opsi:q.opsi,kunci:q.kunci,pembahasan:q.pembahasan});render();break}
-  case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<p.jembatan.length-1){JEM={i:JEM.i+1,answered:false}}else{s.fase=4;JEM=null;save()}render();window.scrollTo(0,0);break}
+  case'bsPick':if(!JEM.answered){JEM.bs[+b.dataset.i]=v==='1';render()}break;
+  case'bsCek':{const p=S.paket[s.paketId],q=p.jembatan[JEM.i];JEM.answered=true;JEM.ok=q.pernyataan.every((_,i)=>JEM.bs[i]===q.kunci[i]);s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
+    record('jembatan',q.keterampilan&&SKILLS[q.keterampilan]?q.keterampilan:p.kasus.keterampilan,JEM.ok,q.jebakan,{jenis:'bs',teks:q.teks,perintah:q.perintah,pernyataan:q.pernyataan,kunci:q.kunci,label_b:q.label_b,label_s:q.label_s,pembahasan:q.pembahasan});render();break}
+  case'ubsPick':if(UB&&!UB.answered){UB.sel[+b.dataset.i]=v==='1';renderUlangBS()}break;
+  case'ubsCek':{const x=S.salah.find(y=>y.id===UB.id);UB.answered=true;UB.ok=x.pernyataan.every((_,i)=>UB.sel[i]===x.kunci[i]);S.log.push({t:today(),src:'ulang',sk:x.sk,ok:UB.ok?1:0,j:null});if(UB.ok)x.tuntas=true;save();renderUlangBS();if(UB.ok&&route==='rekap')render();break}
+  case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<p.jembatan.length-1){JEM={i:JEM.i+1,answered:false,bs:{}}}else{s.fase=4;JEM=null;save()}render();window.scrollTo(0,0);break}
   case'finish':finishSesi(v==='1');break;
   case'ulang':openUlang(v);break;
   case'ulangOpt':answerUlang(b.dataset.id,+v);break;
@@ -1010,6 +1225,18 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'dAns':{G.ans=+v;if(G.ans===G.rounds[G.i].v)G.score++;render();break}
   case'dNext':if(G.i<G.rounds.length-1){G.i++;G.step=0;G.pick=null;G.ans=null;render()}else gDone(G.score,G.rounds.length*2);break;
   case'kAns':answerKasir(+v);break;
+  case'hAns':answerHakim(+v);break;
+  case'hNext':if(G.i<G.n-1){G.i++;newHakim();render()}else gDone(G.score,G.n);break;
+  case'cAns':G.ans=+v;if(G.ans===G.cur.v)G.score++;render();break;
+  case'cNext':if(G.i<G.n-1){G.i++;G.cur=genCukup();G.ans=null;render()}else gDone(G.score,G.n);break;
+  case'kuName':G.selName=+v;render();break;
+  case'kuSeat':{const k=+v;if(G.selName===null){if(G.place[k]!==null){G.selName=G.place[k];G.place[k]=null}}else{const old=G.place.indexOf(G.selName);if(old>=0)G.place[old]=null;G.place[k]=G.selName;G.selName=null}G.msg='';render();break}
+  case'kuClear':G.place=[null,null,null,null,null];G.selName=null;G.msg='';render();break;
+  case'kuCek':{if(G.place.includes(null)){G.msg='<div class="fb small">Isi kelima kursi dulu.</div>'}else{const bad=G.cur.cons.map((c,i)=>kEval(G.place,c)?null:i+1).filter(Boolean);G.msg=`<div class="fb small">${bad.length?`<b style="color:var(--bad)">Syarat ${bad.join(', ')} belum terpenuhi.</b>`:'<b style="color:var(--ok)">Susunanmu memenuhi semua syarat.</b> Tapi ingat, mungkin ada susunan lain.'}</div>`}render();break}
+  case'kuAns':G.ans=+v;if(G.ans===G.cur.kunci)G.score++;render();break;
+  case'kuNext':if(G.i<G.n-1){G.i++;G.cur=genKursi();G.ans=null;G.place=[null,null,null,null,null];G.selName=null;G.msg='';render();window.scrollTo(0,0)}else gDone(G.score,G.n);break;
+  case'tAns':G.ans=+v;if(G.ans===G.cur.kunci)G.score++;render();break;
+  case'tNext':if(G.i<G.n-1){G.i++;G.cur=genTren();G.ans=null;render()}else gDone(G.score,G.n);break;
   case'kNext':if(G.i<G.n-1){G.i++;newKasir();render()}else gDone(G.score,G.n);break;
   }
 });
