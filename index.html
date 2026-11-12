@@ -4,404 +4,268 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nalar Harian</title>
-<meta name="theme-color" content="#dfe6ee">
+<meta name="theme-color" content="#dcecff">
+<meta name="color-scheme" content="light">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --red:#ff5b55;--yellow:#ffc93a;--blue:#3d8bff;--green:#34c46a;--orange:#ff9940;--sky:#47c2f2;--pink:#ff7fb2;--lime:#a5d64b;--gray:#cfd5de;
-  --bg:#ffffff;--text:#16181d;--muted:#6b7281;--faint:#a3a9b5;
-  --plate:rgba(255,255,255,.72);--line:rgba(15,23,42,.08);--line2:rgba(15,23,42,.13);
-  --sh:0 1px 2px rgba(15,23,42,.05),0 10px 28px rgba(15,23,42,.08);
-  --sh-sm:0 1px 2px rgba(15,23,42,.06),0 4px 12px rgba(15,23,42,.07);
-  --hl:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.4);
-  --gloss:linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.12) 45%,rgba(255,255,255,0) 100%);
-  --accent:var(--blue);--accent-soft:rgba(61,139,255,.12);--ok:#1fa556;--ok-soft:rgba(52,196,106,.14);--bad:#e5443e;--bad-soft:rgba(255,91,85,.13);--warn:var(--orange);
-  --edge:rgba(15,23,42,.07);--soft:#f5f7fa;--ink:rgba(15,23,42,.13);
+  --red:#ef5f5a;--yellow:#ffd24f;--blue:#4b8ae8;--green:#3fb46e;--orange:#ff9d4d;--sky:#4fc0ec;--pink:#f47eab;--lime:#a2d058;--gray:#d3dcea;
+  --ink:#28324d;--line:#5b6d99;--sh:rgba(52,78,150,.22);--plate:#ffffff;--text:#26304b;--muted:#64708e;--faint:#a3aec6;--edge:#e1e8f4;
+  --accent:var(--blue);--accent-soft:#e2ecfc;--ok:var(--green);--ok-soft:#e2f2e8;--bad:var(--red);--bad-soft:#fbe7e6;--warn:var(--orange);
+  --base:#e6eefa;--stud-hi:#f5f8fe;--stud-lo:#d3e0f3;
 }
-@media (prefers-color-scheme:dark){:root{
-  --bg:#0e1015;--text:#f2f4f8;--muted:#9ca4b4;--faint:#646c7c;--gray:#4a5160;
-  --plate:rgba(255,255,255,.07);--line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.16);
-  --sh:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35);--sh-sm:0 4px 12px rgba(0,0,0,.3);
-  --hl:inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 0 1px rgba(255,255,255,.04);
-  --gloss:linear-gradient(180deg,rgba(255,255,255,.28) 0%,rgba(255,255,255,.05) 45%,rgba(255,255,255,0) 100%);
-  --edge:rgba(255,255,255,.08);--soft:rgba(255,255,255,.05);--ink:rgba(255,255,255,.16);
+@media (prefers-color-scheme:dark) and (max-width:0px){:root{
+  --ink:#262a33;--line:#58637c;--sh:rgba(0,0,0,.25);--plate:#283146;--text:#e4e7ee;--muted:#a1a9ba;--faint:#6e778b;--edge:#384360;--gray:#4d576c;
+  --red:#c9655f;--yellow:#d7b85f;--blue:#5a82c4;--green:#4f9c70;--orange:#cf9058;--sky:#64a9c7;--pink:#c9829f;--lime:#93b266;
+  --accent-soft:#1f3256;--ok-soft:#173a28;--bad-soft:#45201f;
+  --base:#1c2332;--stud-hi:#222b3c;--stud-lo:#171e2b;
 }}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font:14.5px/1.5 "Rubik",-apple-system,"SF Pro Text","Segoe UI",Roboto,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;background:var(--bg);
+body{font:14.5px/1.5 "Rubik",-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-color:var(--base);
+  background-image:radial-gradient(circle at 11px 10px,var(--stud-hi) 0 4.5px,transparent 5px),radial-gradient(circle at 12px 12px,var(--stud-lo) 0 6px,transparent 6.5px);
+  background-size:24px 24px;background-attachment:fixed;
   padding:calc(env(safe-area-inset-top) + 8px) 0 calc(env(safe-area-inset-bottom) + 104px)}
+.bg{display:none}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none;-webkit-tap-highlight-color:transparent}
+.disp{font-family:"Lilita One","Rubik",sans-serif;font-weight:400;letter-spacing:.2px}
 .wrap{max-width:560px;margin:0 auto;padding:0 14px}
 
-/* kaca dasar */
-.glass{position:relative;background:var(--plate);-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%);
-  border:1px solid var(--line);border-radius:18px;box-shadow:var(--hl),var(--sh)}
-.card{padding:15px 16px;margin-bottom:16px}
-.st{position:absolute;top:-8px;left:18px;display:flex;gap:8px;pointer-events:none}
-.st.r{left:auto;right:18px}
-.st i{display:block;width:18px;height:8px;border-radius:6px 6px 2px 2px;
-  background:var(--gloss),color-mix(in srgb,var(--c,#fff) 80%,transparent);border:1px solid var(--line);border-bottom:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
-.has-st{margin-top:10px}
+/* plate = kartu dasar */
+.glass{position:relative;background:var(--plate);border:2px solid var(--line);border-radius:12px;box-shadow:0 5px 0 var(--sh)}
+.card{padding:14px 15px;margin-bottom:18px}
+.st{position:absolute;top:-11px;left:14px;display:flex;gap:9px;pointer-events:none}
+.st.r{left:auto;right:14px}
+.st i{display:block;width:20px;height:9px;background:var(--c,var(--plate));border:2px solid var(--line);border-bottom:0;border-radius:6px 6px 0 0}
+.has-st{margin-top:12px}
 
 .top{display:flex;align-items:center;justify-content:space-between;padding:8px 2px 16px}
-.logo{display:flex;align-items:center;gap:10px}
-.logo svg{width:32px;height:32px;flex:none;filter:drop-shadow(0 4px 8px rgba(255,91,85,.3))}
-.ttl{font-family:"Lilita One","Rubik",sans-serif;font-size:25px;line-height:1;letter-spacing:.3px}
-.sub{font-size:12px;color:var(--muted);margin-top:3px}
+.logo{display:flex;align-items:center;gap:9px}
+.logo svg{width:34px;height:34px;flex:none}
+.ttl{font-family:"Lilita One","Rubik",sans-serif;font-size:26px;line-height:1;letter-spacing:.3px}
+.sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:3px}
 .top-r{display:flex;gap:8px;align-items:center}
-.ibtn{--c:var(--blue);width:38px;height:38px;display:grid;place-items:center;border-radius:12px;color:#fff;transition:transform .15s;
-  background:var(--gloss),color-mix(in srgb,var(--c) 88%,transparent);border:1px solid color-mix(in srgb,var(--c) 70%,#fff);box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 6px 14px color-mix(in srgb,var(--c) 30%,transparent)}
-.ibtn:active{transform:scale(.94)}
+.ibtn{width:38px;height:38px;display:grid;place-items:center;border-radius:9px;background:var(--blue);color:#fff;border:2px solid var(--line);box-shadow:0 3px 0 var(--sh)}
+.ibtn:active{transform:translateY(3px);box-shadow:0 0 0 var(--sh)}
 .ibtn svg{width:19px;height:19px}
 
-h2{font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:19px;line-height:1.25;margin-bottom:6px;letter-spacing:.2px}
-h3{font-size:15px;font-weight:600;margin:20px 4px 10px}
+h2{font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:20px;line-height:1.2;margin-bottom:6px}
+h3{font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:17px;margin:20px 2px 12px}
 .muted{color:var(--muted)}.small{font-size:13px}.tiny{font-size:11.5px}
 .row{display:flex;align-items:center;gap:8px}.sp{justify-content:space-between}.wrapf{flex-wrap:wrap}
 
-.lbl{--c:var(--lc,var(--yellow));display:inline-block;font-size:12.5px;font-weight:600;line-height:1.2;color:color-mix(in srgb,var(--c) 45%,#000);padding:4px 10px;border-radius:9px;margin-bottom:10px;
-  background:var(--gloss),color-mix(in srgb,var(--c) 26%,transparent);border:1px solid color-mix(in srgb,var(--c) 42%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
-@media (prefers-color-scheme:dark){.lbl{color:color-mix(in srgb,var(--c) 60%,#fff)}}
-.cap{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
-.chip{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:8px;background:var(--soft);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
-.chip.a{background:var(--accent-soft);color:var(--blue);border-color:transparent}
-.chip.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
-.chip.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
-.chip.y{background:color-mix(in srgb,var(--yellow) 22%,transparent);color:#8a5d00;border-color:color-mix(in srgb,var(--yellow) 40%,transparent)}
-@media (prefers-color-scheme:dark){.chip.y{color:var(--yellow)}}
+.lbl{display:inline-block;font-family:"Lilita One","Rubik",sans-serif;font-size:13.5px;line-height:1.2;color:var(--ink);background:var(--lc,var(--yellow));
+  border:2px solid var(--line);border-radius:6px;padding:2px 8px 3px;transform:rotate(-2deg);box-shadow:2px 2px 0 var(--sh);margin-bottom:9px}
+.lbl.w{color:#fff}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--plate);border:2px solid var(--line);color:var(--text);white-space:nowrap}
+.chip.a{background:var(--blue);color:#fff}.chip.ok{background:var(--green);color:#fff}.chip.bad{background:var(--red);color:#fff}.chip.y{background:var(--yellow);color:var(--ink)}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:42px;padding:0 16px;border-radius:13px;font-size:14.5px;font-weight:600;
-  background:var(--plate);border:1px solid var(--line);box-shadow:var(--hl),var(--sh-sm);transition:transform .15s}
-.btn:active:not(:disabled){transform:scale(.97)}
-.btn.p{--c:var(--yellow);color:#3a2a00;font-weight:700;background:var(--gloss),color-mix(in srgb,var(--c) 88%,transparent);border:1px solid color-mix(in srgb,var(--c) 70%,#fff);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 6px 16px color-mix(in srgb,var(--c) 32%,transparent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 15px;border-radius:9px;font-size:14.5px;font-weight:600;
+  background:var(--plate);border:2px solid var(--line);box-shadow:0 3px 0 var(--sh);transition:transform .05s,box-shadow .05s}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 0 0 var(--sh)}
+.btn.p{background:var(--yellow);color:#2f333d;font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:16px;letter-spacing:.3px}
 .btn.w{width:100%}
 .btn:disabled{opacity:.45}
-.btn.sm{height:32px;padding:0 11px;font-size:12.5px;border-radius:10px}
+.btn.sm{height:32px;padding:0 10px;font-size:12.5px;border-radius:7px;border-width:2px;box-shadow:0 2px 0 var(--sh)}
 
-.opts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.opt{text-align:left;padding:11px 12px;border-radius:14px;background:var(--plate);border:1px solid var(--line);box-shadow:var(--hl),var(--sh-sm);font-size:14.5px;line-height:1.4;display:flex;gap:10px;align-items:flex-start;transition:transform .15s,background .2s}
-.opt:active:not(:disabled){transform:scale(.985)}
-.opt .k{flex:none;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;margin-top:-1px;
-  background:var(--gloss),color-mix(in srgb,var(--c,var(--blue)) 85%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
-.opt.ok{--c:var(--green);background:var(--gloss),color-mix(in srgb,var(--green) 20%,transparent);border-color:color-mix(in srgb,var(--green) 50%,transparent);animation:snap .35s cubic-bezier(.3,1.6,.5,1)}
-.opt.bad{--c:var(--red);background:var(--gloss),color-mix(in srgb,var(--red) 16%,transparent);border-color:color-mix(in srgb,var(--red) 45%,transparent);animation:shake .3s}
+.opts{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.opt{text-align:left;padding:10px 12px;border-radius:10px;background:var(--plate);border:2px solid var(--line);box-shadow:0 3px 0 var(--sh);font-size:14.5px;line-height:1.4;display:flex;gap:10px;align-items:flex-start;transition:transform .05s,box-shadow .05s}
+.opt:active:not(:disabled){transform:translateY(3px);box-shadow:0 0 0 var(--sh)}
+.opt .k{flex:none;width:22px;height:22px;border-radius:5px;display:grid;place-items:center;font-family:"Lilita One","Rubik",sans-serif;font-size:13px;background:var(--c,var(--blue));color:#fff;border:2px solid var(--line);margin-top:-1px}
+.opt.ok{background:var(--green);color:#fff}.opt.ok .k{background:#fff;color:var(--green)}
+.opt.bad{background:var(--red);color:#fff;animation:shake .3s}.opt.bad .k{background:#fff;color:var(--red)}
+.opt.ok{animation:snap .3s cubic-bezier(.3,1.7,.5,1)}
 .opt.dim{opacity:.45}
 .opt.sel{background:var(--accent-soft)}
-@keyframes snap{0%{transform:scale(.97)}60%{transform:scale(1.015)}100%{transform:none}}
+@keyframes snap{0%{transform:translateY(-4px)}60%{transform:translateY(2px)}100%{transform:none}}
 @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 
 .stim{font-size:15px;line-height:1.55;white-space:pre-line}
-.fb{margin-top:12px;padding:11px 13px;border-radius:14px;font-size:13.5px;line-height:1.45;background:var(--soft);border:1px solid var(--line)}
+.fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:13.5px;line-height:1.45;background:var(--base);border:2px dashed var(--line)}
 .fb b{font-weight:700}
-.bar{height:8px;border-radius:8px;background:var(--soft);border:1px solid var(--line);overflow:hidden}
-.bar>i{display:block;height:100%;border-radius:8px;background:var(--gloss),var(--yellow);transition:width .4s linear}
+.bar{height:12px;border-radius:6px;background:var(--plate);border:2px solid var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--yellow);transition:width .4s linear}
 .steps{display:flex;gap:6px;margin:4px 0 10px}
-.steps i{flex:1;height:8px;border-radius:6px;background:var(--soft);border:1px solid var(--line)}
-.steps i.on{background:var(--gloss),var(--yellow);border-color:transparent}.steps i.done{background:var(--gloss),var(--green);border-color:transparent}
-.list .it{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--edge)}
+.steps i{flex:1;height:12px;border-radius:3px;background:var(--plate);border:2px solid var(--line)}
+.steps i.on{background:var(--yellow)}.steps i.done{background:var(--green)}
+.list .it{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:2px dashed var(--edge)}
 .list .it:first-child{border-top:0}
-.sent{padding:9px 11px;border-radius:12px;background:var(--soft);border:1px solid var(--line);margin-top:8px}
-.sent .n{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:6px;background:var(--text);color:var(--bg);font-size:11px;font-weight:700;margin-right:6px;vertical-align:1px;opacity:.7}
+.sent{padding:8px 10px;border-radius:9px;background:var(--base);border:2px solid var(--line);margin-top:8px}
+.sent .n{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:4px;background:var(--line);color:#fff;font-size:11px;font-weight:700;margin-right:6px;vertical-align:1px}
 .roles{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.role{font-size:12px;font-weight:600;padding:4px 10px;border-radius:9px;border:1px solid var(--line);background:var(--plate);box-shadow:var(--hl);transition:transform .12s}
-.role:active:not(:disabled){transform:scale(.95)}
-.role.sel{background:var(--gloss),color-mix(in srgb,var(--blue) 85%,transparent);color:#fff;border-color:transparent}
-.role.ok{background:var(--gloss),color-mix(in srgb,var(--green) 85%,transparent);color:#fff;border-color:transparent}
-.role.bad{background:var(--gloss),color-mix(in srgb,var(--red) 85%,transparent);color:#fff;border-color:transparent}
-textarea,input[type=date],select{width:100%;border-radius:12px;border:1px solid var(--line2);background:var(--soft);padding:10px 12px;font-size:14px;outline:none}
+.role{font-size:12px;font-weight:600;padding:3px 9px;border-radius:6px;border:2px solid var(--line);background:var(--plate);box-shadow:0 2px 0 var(--sh)}
+.role:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+.role.sel{background:var(--blue);color:#fff}.role.ok{background:var(--green);color:#fff}.role.bad{background:var(--red);color:#fff}
+textarea,input[type=date],select{width:100%;border-radius:9px;border:2px solid var(--line);background:var(--plate);padding:9px 11px;font-size:14px;outline:none}
 textarea{min-height:90px;resize:vertical;line-height:1.45}
-textarea:focus,input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--accent-soft)}
+textarea:focus,input:focus,select:focus{box-shadow:0 0 0 3px var(--yellow)}
 table.t{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
-table.t th,table.t td{padding:6px 7px;border-bottom:1px solid var(--edge);text-align:left}
-table.t th{font-weight:600;color:var(--muted)}
+table.t th,table.t td{padding:5px 7px;border-bottom:2px dashed var(--edge);text-align:left}
+table.t th{font-weight:700}
 
-/* tab bar kaca */
-.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 12px);display:flex;gap:5px;padding:12px 7px 7px;border-radius:24px;z-index:20;width:min(430px,calc(100% - 20px));
-  background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--line);box-shadow:var(--hl),0 12px 32px rgba(15,23,42,.12)}
-@media (prefers-color-scheme:dark){.tabs{background:rgba(30,33,42,.62)}}
-.tabs button{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 0 5px;border-radius:15px;font-size:11px;font-weight:600;color:var(--muted);transition:transform .2s cubic-bezier(.3,1.5,.5,1),background .2s}
-.tabs button svg{width:20px;height:20px}
-.tabs button::before,.tabs button::after{content:'';position:absolute;top:-6px;width:12px;height:6px;border-radius:5px 5px 1px 1px;background:var(--gloss),color-mix(in srgb,var(--c) 85%,transparent);opacity:0;transition:opacity .2s}
-.tabs button::before{left:22%}.tabs button::after{right:22%}
-.tabs button.on{color:#fff;transform:translateY(-3px);background:var(--gloss),color-mix(in srgb,var(--c) 86%,transparent);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 6px 14px color-mix(in srgb,var(--c) 35%,transparent)}
-.tabs button.on.yk{color:#3a2a00}
+/* tab bar: deretan balok */
+.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 12px);display:flex;gap:6px;padding:14px 8px 8px;border-radius:14px;z-index:20;width:min(430px,calc(100% - 20px));
+  background:#3a4f86;border:2px solid #2e3f6e;box-shadow:0 5px 0 var(--sh)}
+.tabs button{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 0 5px;border-radius:7px;font-family:"Lilita One","Rubik",sans-serif;font-size:11.5px;letter-spacing:.3px;
+  color:#fff;background:var(--c);border:2px solid var(--line);box-shadow:0 2px 0 var(--sh);transform:translateY(3px);transition:transform .15s,box-shadow .15s;filter:saturate(.92);opacity:.9}
+.tabs button svg{width:19px;height:19px}
+.tabs button::before,.tabs button::after{content:'';position:absolute;top:-8px;width:14px;height:6px;background:var(--c);border:2px solid var(--line);border-bottom:0;border-radius:4px 4px 0 0;opacity:0;transition:opacity .15s}
+.tabs button::before{left:18%}.tabs button::after{right:18%}
+.tabs button.on{transform:translateY(-3px);box-shadow:0 5px 0 rgba(0,0,0,.22);filter:none;opacity:1}
 .tabs button.on::before,.tabs button.on::after{opacity:1}
+.tabs button.yk{color:var(--ink)}
 
-/* balok & menara */
-.tower{display:flex;flex-wrap:wrap-reverse;gap:8px 3px;padding:14px 12px 10px;min-height:64px;border-radius:14px;align-content:flex-start;
-  background-color:color-mix(in srgb,var(--green) 10%,transparent);border:1px solid color-mix(in srgb,var(--green) 22%,transparent);
-  background-image:radial-gradient(circle at 7px 7px,color-mix(in srgb,var(--green) 20%,transparent) 0 3px,transparent 3.5px);background-size:14px 14px}
-.b{position:relative;width:30px;height:14px;border-radius:4px;flex:none;
-  background:var(--gloss),color-mix(in srgb,var(--c) 82%,transparent);border:1px solid color-mix(in srgb,var(--c) 65%,#fff);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 3px 6px color-mix(in srgb,var(--c) 25%,transparent)}
-.b::before,.b::after{content:'';position:absolute;top:-5px;width:8px;height:5px;border-radius:3px 3px 1px 1px;background:var(--gloss),color-mix(in srgb,var(--c) 82%,transparent);border:1px solid color-mix(in srgb,var(--c) 65%,#fff);border-bottom:0}
+/* balok kecil & menara */
+.tower{display:flex;flex-wrap:wrap-reverse;gap:7px 3px;padding:12px 10px 8px;min-height:64px;border-radius:9px;border:2px solid var(--line);align-content:flex-start;
+  background-color:color-mix(in srgb,var(--green) 55%,var(--plate));background-image:radial-gradient(circle at 7px 7px,rgba(255,255,255,.32) 0 3.5px,transparent 4px);background-size:14px 14px}
+.b{position:relative;width:30px;height:14px;background:var(--c);border:2px solid var(--line);border-radius:3px;flex:none}
+.b::before,.b::after{content:'';position:absolute;top:-6px;width:7px;height:4px;background:var(--c);border:2px solid var(--line);border-bottom:0;border-radius:3px 3px 0 0}
 .b::before{left:4px}.b::after{right:4px}
 .b.x{--c:var(--gray)}
-.b.new{animation:drop .5s cubic-bezier(.3,1.5,.55,1)}
-@keyframes drop{0%{transform:translateY(-36px);opacity:0}100%{transform:none;opacity:1}}
-.mtower{display:flex;flex-wrap:wrap;gap:7px 3px;padding:8px 2px 0;min-height:24px}
-.mtower .b{width:20px;height:10px}.mtower .b::before,.mtower .b::after{width:5px;height:4px;top:-4px}
+.b.new{animation:drop .45s cubic-bezier(.3,1.6,.55,1)}
+@keyframes drop{0%{transform:translateY(-40px);opacity:0}100%{transform:none;opacity:1}}
+.mtower{display:flex;flex-wrap:wrap;gap:6px 3px;padding-top:6px;min-height:22px}
+.mtower .b{width:20px;height:10px}.mtower .b::before,.mtower .b::after{width:5px;height:3px;top:-5px}
 .mtower .b::before{left:2px}.mtower .b::after{right:2px}
 
-.part{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--edge)}
+.part{display:flex;gap:11px;align-items:center;padding:9px 0;border-top:2px dashed var(--edge)}
 .part:first-child{border-top:0}
-.part .pn{flex:none;width:36px;height:32px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px;
-  background:var(--gloss),color-mix(in srgb,var(--c) 85%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 4px 10px color-mix(in srgb,var(--c) 30%,transparent)}
-.part .pn.yk{color:#3a2a00}
-.part.done .pn{opacity:.5}
-.part.cur .pn{animation:bob 1.6s ease-in-out infinite}
+.part .pn{flex:none;width:36px;height:30px;border-radius:6px;background:var(--c);border:2px solid var(--line);display:grid;place-items:center;color:#fff;font-family:"Lilita One","Rubik",sans-serif;font-size:16px;box-shadow:0 2px 0 var(--sh);position:relative}
+.part .pn.yk{color:var(--ink)}
+.part.done .pn{opacity:.55}
+.part.cur .pn{animation:bob 1.4s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-3px)}}
 
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px 12px;margin-top:14px}
-.tile{position:relative;text-align:left;padding:14px;display:flex;flex-direction:column;gap:6px;min-height:142px;color:#fff;border-radius:20px;transition:transform .2s cubic-bezier(.3,1.5,.5,1);
-  background:var(--gloss),color-mix(in srgb,var(--c) 86%,transparent);border:1px solid color-mix(in srgb,var(--c) 65%,#fff);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.65),inset 0 -2px 0 rgba(0,0,0,.05),0 10px 24px color-mix(in srgb,var(--c) 30%,transparent)}
-.tile{background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,0) 55%),color-mix(in srgb,var(--c) 94%,transparent);text-shadow:0 1px 1px rgba(0,0,0,.12)}
-.tile.yk{text-shadow:none}
-.tile:active{transform:scale(.97)}
-.tile.yk{color:#3a2a00}
-.tile .st i{border-color:color-mix(in srgb,var(--c) 65%,#fff)}
-.tile .ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.5);color:inherit}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px 12px;margin-top:14px}
+.tile{position:relative;text-align:left;padding:13px;display:flex;flex-direction:column;gap:6px;min-height:142px;background:var(--c);color:#fff;border:2px solid var(--line);border-radius:12px;box-shadow:0 5px 0 var(--sh);transition:transform .06s,box-shadow .06s}
+.tile:active{transform:translateY(5px);box-shadow:0 0 0 var(--sh)}
+.tile.yk{color:var(--ink)}
+.tile .ic{width:32px;height:32px;border-radius:7px;display:grid;place-items:center;background:var(--plate);color:var(--text);border:2px solid var(--line)}
 .tile .ic svg{width:18px;height:18px}
-.tile b{font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:17px;line-height:1.15;letter-spacing:.2px}
-.tile .tiny{opacity:.9}
-.tile .best{margin-top:auto;font-size:11.5px;font-weight:600;background:rgba(255,255,255,.28);padding:3px 8px;border-radius:7px;align-self:flex-start}
-.grid2 .tile:last-child:nth-child(odd){grid-column:span 2;min-height:110px}
+.tile b{font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:17px;line-height:1.1}
+.tile .tiny{opacity:.92}
+.tile .best{margin-top:auto;font-size:11.5px;font-weight:700;background:rgba(0,0,0,.10);padding:2px 7px;border-radius:5px;align-self:flex-start}
 
-.pips{display:flex;gap:5px;margin-top:9px}
-.pip{width:18px;height:18px;border-radius:50%;background:var(--soft);border:1px solid var(--line)}
-.pip.on{background:var(--gloss),color-mix(in srgb,var(--c) 85%,transparent);border-color:color-mix(in srgb,var(--c) 60%,#fff);box-shadow:0 2px 5px color-mix(in srgb,var(--c) 30%,transparent)}
-.pip.off{background:var(--gloss),var(--gray);border-color:transparent}
-.pip.none{border:1px dashed var(--faint);background:transparent}
+.pips{display:flex;gap:4px;margin-top:8px}
+.pip{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);background:var(--plate)}
+.pip.on{background:var(--c)}.pip.off{background:var(--gray)}.pip.none{border:2px dashed var(--faint);background:transparent}
 .tahap{display:flex;flex-direction:column-reverse;gap:2px}
-.tahap i{width:24px;height:7px;border-radius:3px;background:var(--soft);border:1px solid var(--line)}
-.tahap i.on{background:var(--gloss),color-mix(in srgb,var(--c) 85%,transparent);border-color:transparent}
-.skb{flex:none;width:38px;height:34px;border-radius:11px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:13.5px;
-  background:var(--gloss),color-mix(in srgb,var(--c) 85%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 4px 10px color-mix(in srgb,var(--c) 30%,transparent)}
-.skb.yk{color:#3a2a00}
+.tahap i{width:26px;height:8px;border-radius:2px;border:2px solid var(--line);background:var(--plate)}
+.tahap i.on{background:var(--c)}
+.skb{flex:none;width:38px;height:34px;border-radius:6px;background:var(--c);border:2px solid var(--line);display:grid;place-items:center;color:#fff;font-family:"Lilita One","Rubik",sans-serif;font-size:15px;box-shadow:0 2px 0 var(--sh)}
+.skb.yk{color:var(--ink)}
 
-.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 12px);transform:translate(-50%,-40px);opacity:0;transition:.3s cubic-bezier(.3,1.4,.5,1);z-index:50;padding:9px 16px;font-size:14px;font-weight:600;
-  border-radius:16px;pointer-events:none;background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--line);box-shadow:var(--hl),var(--sh)}
-@media (prefers-color-scheme:dark){.toast{background:rgba(40,44,54,.8)}}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 12px);transform:translate(-50%,-40px);opacity:0;transition:.25s cubic-bezier(.3,1.5,.5,1);z-index:50;padding:8px 14px;font-family:"Lilita One","Rubik",sans-serif;font-size:15px;
+  border-radius:9px;pointer-events:none;background:var(--yellow);color:#2f333d;border:2px solid var(--line);box-shadow:0 4px 0 var(--sh)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
-.sheet{position:fixed;inset:0;z-index:40;background:rgba(15,20,30,.22);display:flex;align-items:flex-end;justify-content:center}
+.sheet{position:fixed;inset:0;z-index:40;background:rgba(10,12,20,.45);display:flex;align-items:flex-end;justify-content:center}
 .sheet.hidden{display:none}
-.sheet .pane{width:min(560px,100%);max-height:86vh;overflow:auto;border-radius:24px 24px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 18px);background:rgba(255,255,255,.9)}
-@media (prefers-color-scheme:dark){.sheet .pane{background:rgba(28,31,40,.92)}}
+.sheet .pane{width:min(560px,100%);max-height:86vh;overflow:auto;border-radius:16px 16px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 18px);box-shadow:none;border-bottom:0}
 .swipe{position:relative;height:220px;margin:14px 0 18px;touch-action:pan-y}
 .scard{position:absolute;inset:0;padding:18px;display:flex;flex-direction:column;justify-content:center;font-size:16.5px;line-height:1.45;transition:transform .25s,opacity .25s;user-select:none;-webkit-user-select:none}
 .scard .base{font-size:12.5px;color:var(--muted);margin-bottom:8px}
 .wcards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
-.wc{aspect-ratio:3/4;border-radius:14px;display:grid;place-items:center;text-align:center;padding:6px;font-size:13px;font-weight:600;background:var(--plate);border:1px solid var(--line);box-shadow:var(--hl),var(--sh-sm);transition:transform .2s cubic-bezier(.3,1.5,.5,1)}
-.wc.sel{--c:var(--blue);color:#fff;transform:translateY(-4px) rotate(-2deg);background:var(--gloss),color-mix(in srgb,var(--c) 85%,transparent);border-color:transparent}
-.wc.ok{--c:var(--green);color:#fff;background:var(--gloss),color-mix(in srgb,var(--c) 85%,transparent)}
-.wc.bad{--c:var(--red);color:#fff;background:var(--gloss),color-mix(in srgb,var(--c) 85%,transparent)}
-.wc.miss{border:1.5px dashed var(--orange);color:var(--orange)}
-.chat{display:flex;flex-direction:column;gap:7px;margin-top:10px}
-.msg{max-width:86%;padding:8px 12px;border-radius:18px 18px 18px 6px;font-size:14px;line-height:1.4;background:var(--soft);border:1px solid var(--line);text-align:left;transition:transform .15s}
-.msg:active:not(:disabled){transform:scale(.98)}
-.msg .who{font-size:11px;font-weight:600;color:var(--blue);display:block}
-.msg.r{align-self:flex-end;border-radius:18px 18px 6px 18px;background:color-mix(in srgb,var(--blue) 10%,transparent)}
-.msg.ok{background:var(--gloss),color-mix(in srgb,var(--green) 85%,transparent);color:#fff;border-color:transparent}
-.msg.bad{background:var(--gloss),color-mix(in srgb,var(--red) 85%,transparent);color:#fff;border-color:transparent}
-.msg.ok .who,.msg.bad .who{color:#fff}
-.promos{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.promo{display:flex;justify-content:space-between;align-items:center;padding:13px;border-radius:14px;background:var(--plate);border:1px solid var(--line);box-shadow:var(--hl),var(--sh-sm);font-weight:600;font-size:14.5px;text-align:left;transition:transform .15s}
-.promo:active:not(:disabled){transform:scale(.98)}
-.promo.ok{background:var(--gloss),color-mix(in srgb,var(--green) 20%,transparent);border-color:color-mix(in srgb,var(--green) 50%,transparent)}
-.promo.bad{background:var(--gloss),color-mix(in srgb,var(--red) 16%,transparent);border-color:color-mix(in srgb,var(--red) 45%,transparent)}
+.wc{aspect-ratio:3/4;border-radius:10px;display:grid;place-items:center;text-align:center;padding:6px;font-size:13px;font-weight:700;background:var(--plate);border:2px solid var(--line);box-shadow:0 4px 0 var(--sh);transition:transform .08s,box-shadow .08s}
+.wc.sel{background:var(--blue);color:#fff;transform:translateY(4px) rotate(-3deg);box-shadow:0 0 0 var(--sh)}
+.wc.ok{background:var(--green);color:#fff}.wc.bad{background:var(--red);color:#fff}.wc.miss{background:var(--orange);color:#fff;border-style:dashed}
+.chat{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.msg{max-width:86%;padding:7px 11px;border-radius:12px 12px 12px 3px;font-size:14px;line-height:1.4;background:var(--plate);border:2px solid var(--line);box-shadow:0 2px 0 var(--sh);text-align:left}
+.msg .who{font-size:11px;font-weight:700;color:var(--blue);display:block}
+.msg.r{align-self:flex-end;border-radius:12px 12px 3px 12px;background:#fdf3d4;color:#2f333d}
+.msg.ok{background:var(--green);color:#fff}.msg.bad{background:var(--red);color:#fff}.msg.ok .who,.msg.bad .who{color:#fff}
+.promos{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.promo{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:var(--plate);border:2px solid var(--line);box-shadow:0 3px 0 var(--sh);font-weight:700;font-size:14.5px;text-align:left}
+.promo:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+.promo.ok{background:var(--green);color:#fff}.promo.bad{background:var(--red);color:#fff}
 .venn{width:100%;max-width:300px;display:block;margin:6px auto 0}
 .kv{display:flex;justify-content:space-between;font-size:13.5px;padding:4px 0}
 .empty{text-align:center;padding:22px 10px;color:var(--muted);font-size:14px}
+.cap{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.intro{background:var(--plate);border:2px solid var(--line);border-radius:9px;padding:8px 11px;font-size:12.5px;color:var(--muted);margin:0 0 6px}
+.grid2 .tile:last-child:nth-child(odd){grid-column:span 2;min-height:110px}
 .big{font-family:"Lilita One","Rubik",sans-serif;font-size:46px;line-height:1}
-.intro{font-size:12.5px;color:var(--muted);margin:0 4px 6px}
 a{color:var(--blue)}
-details summary{cursor:pointer;font-size:13px;font-weight:600;margin-top:10px;color:var(--muted)}
-.days{display:flex;gap:6px;margin-top:8px}
+details summary{cursor:pointer;font-size:13px;font-weight:600;margin-top:10px}
+pre.pv{white-space:pre-wrap;font-size:11.5px;line-height:1.4;max-height:220px;overflow:auto;margin-top:6px;padding:8px;border-radius:9px;background:var(--base);border:2px solid var(--line)}
+.days{display:flex;gap:6px;margin-top:6px}
 .days>div{flex:1;text-align:center}
 .days .b{width:100%;height:18px;margin-top:6px}
 .days .b::before{left:20%}.days .b::after{right:20%}
 
-/* ===== PLASTIK BALOK: latar putih, balok padat mengilap ===== */
-:root{--red:#e8352f;--yellow:#ffc51f;--blue:#1f6fe5;--green:#1fa84c;--orange:#ff8a1a;--sky:#2db3ea;--pink:#f25f9b;--lime:#8cc63a;--gray:#d3d8e0;
-  --shine:linear-gradient(180deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.10) 42%,rgba(255,255,255,0) 60%,rgba(0,0,0,.04) 100%);
-  --wedge:#e3e7ee}
-@media (prefers-color-scheme:dark){:root{--wedge:#05070b}}
-.solid,.tile,.part .pn,.skb,.b,.btn.p,.ibtn,.tabs button.on,.opt.ok,.opt.bad,.role.sel,.role.ok,.role.bad,.wc.sel,.wc.ok,.wc.bad,.msg.ok,.msg.bad,.promo.ok,.promo.bad,.steps i.on,.steps i.done,.bar>i{
-  background:var(--shine),var(--c)!important;border:0!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.08),0 4px 0 color-mix(in srgb,var(--c) 72%,#000),0 9px 18px color-mix(in srgb,var(--c) 28%,transparent)!important}
-.opt.ok,.promo.ok,.wc.ok,.role.ok,.msg.ok{--c:var(--green);color:#fff}
-.opt.bad,.promo.bad,.wc.bad,.role.bad,.msg.bad{--c:var(--red);color:#fff}
-.opt.ok .k,.opt.bad .k{background:#fff!important;color:var(--c)}
-.role.sel,.wc.sel{--c:var(--blue);color:#fff}
-.steps i.on{--c:var(--yellow)}.steps i.done{--c:var(--green)}.bar>i{--c:var(--yellow);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)!important}
-.btn.p{--c:var(--yellow);color:#3b2800;font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:17px;letter-spacing:.3px}
-.btn.p:active:not(:disabled),.ibtn:active,.tile:active{transform:translateY(4px)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 0 color-mix(in srgb,var(--c) 72%,#000)!important}
+/* tepi berwarna: balok memakai bayangan dari warnanya sendiri */
+.b,.b::before,.b::after,.tile,.part .pn,.skb,.tabs button,.tabs button::before,.tabs button::after,.st i,.ibtn,.pip.on{border-color:color-mix(in srgb,var(--c,var(--line)) 62%,#1f2a4d)}
+.tile{box-shadow:0 5px 0 color-mix(in srgb,var(--c) 70%,#1f2a4d)}
+.part .pn,.skb{box-shadow:0 2px 0 color-mix(in srgb,var(--c) 70%,#1f2a4d)}
+.tabs button.on{box-shadow:0 5px 0 color-mix(in srgb,var(--c) 60%,#141c36)}
+.ibtn{--c:var(--blue);box-shadow:0 3px 0 color-mix(in srgb,var(--blue) 70%,#1f2a4d)}
+.btn.p{border-color:color-mix(in srgb,var(--yellow) 55%,#6b4a00);box-shadow:0 3px 0 color-mix(in srgb,var(--yellow) 60%,#7a5200)}
+.lbl{border-color:color-mix(in srgb,var(--lc,var(--yellow)) 55%,#1f2a4d);box-shadow:2px 2px 0 color-mix(in srgb,var(--lc,var(--yellow)) 55%,#1f2a4d)}
+.chip.y{border-color:color-mix(in srgb,var(--yellow) 55%,#6b4a00)}.chip.a{border-color:color-mix(in srgb,var(--blue) 60%,#1f2a4d)}
+.chip.ok{border-color:color-mix(in srgb,var(--green) 60%,#1f2a4d)}.chip.bad{border-color:color-mix(in srgb,var(--red) 60%,#1f2a4d)}
+.opt.ok{border-color:color-mix(in srgb,var(--green) 60%,#1f2a4d);box-shadow:0 3px 0 color-mix(in srgb,var(--green) 65%,#1f2a4d)}
+.opt.bad{border-color:color-mix(in srgb,var(--red) 60%,#1f2a4d);box-shadow:0 3px 0 color-mix(in srgb,var(--red) 65%,#1f2a4d)}
+.tower{border-color:color-mix(in srgb,var(--green) 70%,#1f2a4d);background-color:color-mix(in srgb,var(--green) 62%,#fff)}
+.toast{border-color:color-mix(in srgb,var(--yellow) 55%,#6b4a00);box-shadow:0 4px 0 color-mix(in srgb,var(--yellow) 60%,#7a5200)}
 
-/* kartu = balok putih */
-.glass{background:var(--plate);-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid var(--line);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 4px 0 var(--wedge),0 12px 26px rgba(15,23,42,.07)}
-:root{--plate:#ffffff}
-@media (prefers-color-scheme:dark){:root{--plate:#1b1f28}}
-.btn,.opt,.promo,.wc,.role{border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 3px 0 var(--wedge)}
-.btn:active:not(:disabled),.opt:active:not(:disabled),.promo:active:not(:disabled),.wc:active:not(:disabled),.role:active:not(:disabled){transform:translateY(3px);box-shadow:0 0 0 var(--wedge)}
+/* kotak jawaban: satu warna garis, sederhana */
+.opt,.promo{border:1.5px solid #cdd7ea;box-shadow:0 2px 0 #dbe3f1}
+.opt .k{background:#eef2f9;color:var(--muted);border:1.5px solid #cdd7ea}
+.opt.ok,.promo.ok{background:var(--ok-soft);color:var(--text);border-color:var(--green);box-shadow:0 2px 0 #dbe3f1}
+.opt.bad,.promo.bad{background:var(--bad-soft);color:var(--text);border-color:var(--red);box-shadow:0 2px 0 #dbe3f1}
+.opt.ok .k{background:var(--green);color:#fff;border-color:var(--green)}
+.opt.bad .k{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.sel{border-color:var(--blue)}
+.fb{border:1.5px dashed #b9c6de;background:#f3f6fc}
+@media (prefers-color-scheme:dark) and (max-width:0px){.fb{border-color:#3d4a66;background:var(--base)}.opt,.promo,.opt .k{border-color:#3d4a66}.opt,.promo{box-shadow:0 2px 0 rgba(0,0,0,.25)}.opt .k{background:#313c55}}
 
-/* stud silinder */
-.st{top:-10px;gap:9px}
-.st i{width:22px;height:10px;border-radius:7px 7px 2px 2px;border:0;
-  background:radial-gradient(ellipse 60% 70% at 50% 25%,rgba(255,255,255,.75),rgba(255,255,255,0) 70%),var(--c,var(--plate));
-  box-shadow:inset 0 -2px 0 rgba(0,0,0,.07),0 0 0 1px var(--line)}
-.tile .st i,.st[style] i{box-shadow:inset 0 -2px 0 color-mix(in srgb,var(--c) 75%,#000)}
-.has-st{margin-top:14px}
-.b::before,.b::after,.tabs button::before,.tabs button::after{background:radial-gradient(ellipse 60% 70% at 50% 25%,rgba(255,255,255,.7),rgba(255,255,255,0) 70%),var(--c);border:0;
-  box-shadow:inset 0 -1px 0 color-mix(in srgb,var(--c) 70%,#000)}
-.b{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 3px 0 color-mix(in srgb,var(--c) 70%,#000)!important}
-.b::before,.b::after{top:-5px;height:5px}
+/* ===== MODE TERANG + LATAR BERGAMBAR ===== */
+:root{color-scheme:light}
+body{background:linear-gradient(180deg,#dcecff 0%,#eaf4ff 45%,#f4f9ff 100%) fixed!important;background-image:none}
+body{background:linear-gradient(180deg,#dcecff 0%,#eaf4ff 45%,#f4f9ff 100%) fixed}
+.scene{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.scene .cloud{position:absolute;opacity:.9}
+.scene .fbrick{position:absolute;width:38px;opacity:.55;transform:rotate(var(--r));animation:float 7s ease-in-out infinite}
+@keyframes float{50%{transform:rotate(var(--r)) translateY(-10px)}}
+.scene .hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:150px}
+.hero{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:6px;min-height:168px;margin:-6px 0 10px}
+.hero .masc{width:178px;height:178px;flex:none;margin-right:-10px;animation:hop 3.2s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes hop{0%,100%{transform:none}45%{transform:translateY(-6px) rotate(-1.5deg)}55%{transform:translateY(-6px) rotate(1.5deg)}}
+.hero .bubble{position:relative;align-self:center;margin-bottom:38px;background:#fff;border:2px solid #b9c9e6;border-radius:16px;padding:10px 13px;font-size:13.5px;font-weight:600;line-height:1.4;color:var(--text);box-shadow:0 3px 0 #d3e0f3;max-width:62%}
+.hero .bubble::after{content:'';position:absolute;right:-9px;bottom:16px;width:14px;height:14px;background:#fff;border-right:2px solid #b9c9e6;border-bottom:2px solid #b9c9e6;transform:rotate(-45deg);border-radius:0 0 4px 0}
+.intro{background:rgba(255,255,255,.85)}
 
-/* label = stiker */
-.lbl{--c:var(--lc,var(--yellow));font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:14px;letter-spacing:.3px;transform:rotate(-1.5deg);
-  background:var(--shine),var(--c);border:0;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 3px 0 color-mix(in srgb,var(--c) 72%,#000)}
-.lbl:not([style]){color:#3b2800}
-@media (prefers-color-scheme:dark){.lbl{color:#fff}.lbl:not([style]){color:#3b2800}}
-.chip.y{background:var(--shine),var(--yellow);color:#3b2800;border:0;box-shadow:0 2px 0 color-mix(in srgb,var(--yellow) 72%,#000)}
+/* header sebagai balok */
+.top{padding:11px 12px 11px 13px;margin:14px 0 6px;border-radius:14px}
+.top .logo svg{width:36px;height:36px}
+.ttl{font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:23px;line-height:1;letter-spacing:.3px;color:var(--text)}
+.sub{display:inline-block;margin-top:5px;font-size:11.5px;font-weight:600;color:var(--muted);background:#eef3fb;border:1.5px solid #cdd7ea;border-radius:6px;padding:1px 7px}
+.top .ibtn{width:36px;height:36px}
 
-/* baseplate menara */
-.tower{background-color:var(--green);border:0;border-radius:12px;padding:16px 12px 10px;
-  background-image:radial-gradient(circle at 6px 5px,rgba(255,255,255,.55) 0 1.5px,transparent 2px),radial-gradient(circle at 7px 7px,rgba(255,255,255,.18) 0 4px,rgba(0,0,0,.10) 4.5px 5px,transparent 5.5px);background-size:14px 14px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 4px 0 color-mix(in srgb,var(--green) 70%,#000)}
-.b.x{--c:#c7cdd6}
+/* header balok merah */
+.top{--c:var(--red);background:var(--red);border-color:color-mix(in srgb,var(--red) 62%,#1f2a4d);box-shadow:0 5px 0 color-mix(in srgb,var(--red) 68%,#1f2a4d)}
+.top .st i{background:var(--red);border-color:color-mix(in srgb,var(--red) 62%,#1f2a4d)}
+.top .st i::after{content:'';display:block;margin:2px 0 0 4px;width:7px;height:3px;border-radius:2px;background:#fff;opacity:.45}
+.top .ttl{color:#fff;text-shadow:0 2px 0 color-mix(in srgb,var(--red) 65%,#1f2a4d)}
+.top .sub{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.45);color:#fff}
+.top .logo svg rect:nth-child(-n+3){fill:var(--yellow);stroke:#9a6f00}
+.top .logo svg rect:nth-child(4){fill:var(--blue);stroke:#2b4f99}
+.top .ibtn{background:var(--blue);border-color:#2b4f99;box-shadow:0 3px 0 #2b4f99}
 
-/* tab bar putih + balok berwarna */
-.tabs{background:rgba(255,255,255,.88);border:1px solid var(--line);box-shadow:0 4px 0 var(--wedge),0 14px 32px rgba(15,23,42,.12)}
-@media (prefers-color-scheme:dark){.tabs{background:rgba(27,31,40,.92)}}
-.tabs button{background:color-mix(in srgb,var(--c) 14%,transparent);color:color-mix(in srgb,var(--c) 70%,#000);border-radius:11px;font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:12px;letter-spacing:.3px}
-@media (prefers-color-scheme:dark){.tabs button{color:color-mix(in srgb,var(--c) 70%,#fff)}}
-.tabs button.on{color:#fff;transform:translateY(-4px)}
-.tabs button.on.yk{color:#3b2800}
-
-/* bulatan peta = stud */
-.pip{width:20px;height:20px;background:var(--soft);border:1px dashed var(--faint)}
-.pip.on,.pip.off{border:0;background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.65),rgba(255,255,255,0) 55%),var(--c);box-shadow:inset 0 -2px 0 color-mix(in srgb,var(--c) 70%,#000),0 2px 4px rgba(0,0,0,.12)}
-.pip.off{--c:#c7cdd6}
-.pip.none{border:1px dashed var(--faint);background:transparent}
-.tahap i.on{background:var(--shine),var(--c);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 70%,#000)}
-.part .pn,.skb{font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:17px}
-.skb{font-size:15px}
-.tile{color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.15);border-radius:16px}
-.tile.yk{color:#3b2800;text-shadow:none}
-.tile .ic{background:rgba(255,255,255,.92);color:var(--c);border:0;box-shadow:0 2px 0 rgba(0,0,0,.12)}
-.tile .best{background:rgba(0,0,0,.14)}
-.tile.yk .best{background:rgba(0,0,0,.08)}
-.opt .k{background:var(--shine),var(--c,var(--blue));box-shadow:0 2px 0 color-mix(in srgb,var(--c,var(--blue)) 70%,#000);font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:13px}
-.ibtn{--c:var(--blue)}
-.cap{color:var(--muted)}
-.toast{background:var(--shine),var(--yellow);color:#3b2800;border:0;font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:15px;box-shadow:0 4px 0 color-mix(in srgb,var(--yellow) 72%,#000),0 12px 24px rgba(0,0,0,.12)}
-@media (prefers-color-scheme:dark){.toast{background:var(--shine),var(--yellow)}}
-
-
-/* ===== KONSISTENSI ===== */
-/* radius: besar 18 (kartu, tile) · sedang 12 (tombol, opsi, kotak) · kecil 8 (chip, kunci, peran) */
-.glass,.tile{border-radius:18px}
-.btn,.opt,.promo,.wc,.ibtn,.fb,.sent,textarea,input[type=date],select,.tower,.part .pn,.skb,.msg{border-radius:12px}
-.msg{border-radius:14px 14px 14px 4px}.msg.r{border-radius:14px 14px 4px 14px}
-.btn.sm,.chip,.opt .k,.role,.lbl,.tile .best,.tile .ic{border-radius:8px}
-/* chip netral = balok putih kecil, chip berwarna = plastik */
-.chip{background:var(--plate);border:1px solid var(--line);color:var(--text);box-shadow:0 2px 0 var(--wedge);padding:3px 8px}
-.chip.a,.chip.ok,.chip.bad,.chip.y{border:0;background:var(--shine),var(--c)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 0 color-mix(in srgb,var(--c) 72%,#000)!important;color:#fff}
-.chip.a{--c:var(--blue)}.chip.ok{--c:var(--green)}.chip.bad{--c:var(--red)}.chip.y{--c:var(--yellow);color:#3b2800}
-/* kotak isi di dalam kartu: abu lembut, tanpa garis */
-.fb,.sent{background:var(--soft);border:0;box-shadow:inset 0 1px 2px rgba(15,23,42,.05)}
-.sent .n{background:var(--shine),var(--blue);color:#fff;opacity:1;border-radius:6px;box-shadow:0 2px 0 color-mix(in srgb,var(--blue) 72%,#000)}
-.msg{background:var(--plate);border:1px solid var(--line);box-shadow:0 2px 0 var(--wedge)}
-.msg.r{background:color-mix(in srgb,var(--blue) 9%,var(--plate))}
-textarea,input[type=date],select{background:var(--soft);border:1px solid var(--line);box-shadow:inset 0 1px 2px rgba(15,23,42,.05)}
-h3{font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:18px;letter-spacing:.3px;margin:22px 4px 12px}
-.intro{font-size:13px}
-.ibtn{border-radius:12px}
-.btn{font-weight:600}
-.btn.sm{box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 0 var(--wedge)}
-.st.auto i{--c:var(--plate)}
-
-/* ===== LAYAR LEBAR (iPad) ===== */
-@media (min-width:700px){
-  body{padding-bottom:calc(env(safe-area-inset-bottom) + 112px)}
-  .wrap{max-width:900px;padding:0 24px}
-  .top{padding:14px 2px 20px}
-  #view{display:grid;grid-template-columns:1fr 1fr;column-gap:20px;align-items:start}
-  #view>*{grid-column:1/-1}
-  #view>.half{grid-column:auto}
-  #view{grid-auto-flow:row dense}
-  #view>.tall{grid-row:span 3}
-  .grid2{grid-template-columns:repeat(3,1fr)}
-  .tabs{width:min(520px,calc(100% - 40px))}
-  .tabs button{padding:8px 0 6px;font-size:13px}
-  .tabs button svg{width:22px;height:22px}
-  .swipe{height:240px}
-  .stim{font-size:16px}
-}
-@media (min-width:1100px){body{zoom:1.05}.wrap{max-width:1000px}}
-
-
-/* mini game di beranda */
-.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:20px 10px;margin-top:22px}
-.gt{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border-radius:18px;text-align:left;color:#fff;min-height:112px;
-  background:var(--shine),var(--c);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 0 color-mix(in srgb,var(--c) 72%,#000),0 9px 18px color-mix(in srgb,var(--c) 28%,transparent);transition:transform .1s,box-shadow .1s}
-.gt:active{transform:translateY(4px);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 0 color-mix(in srgb,var(--c) 72%,#000)}
-.gt.yk{color:#3b2800}
-.gt .st{left:12px}
-.gt .gi{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:#fff;color:color-mix(in srgb,var(--c) 85%,#000);box-shadow:0 2px 0 rgba(0,0,0,.14)}
-.gt .gi svg{width:26px;height:26px}
-.gt .gn{font-family:"Lilita One","Rubik",sans-serif;font-size:16px;line-height:1.15;letter-spacing:.2px;margin-top:6px;text-shadow:0 1px 0 rgba(0,0,0,.12)}
-.gt.yk .gn{text-shadow:none}
-.gt .gs{font-size:11px;font-weight:600;opacity:.88}
-.ggrid .gt:last-child:nth-child(odd){grid-column:span 2;flex-direction:row;align-items:center;min-height:auto;gap:12px}
-.ggrid .gt:last-child:nth-child(odd) .gn{margin-top:0}
-.ggrid .gt:last-child:nth-child(odd) .gs{margin-left:auto}
-
-/* ===== LAYAR SESI: semua jadi balok ===== */
-/* judul kecil = tulisan balok, bukan kapital kantor */
-.cap{font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:14px;letter-spacing:.3px;text-transform:none;color:var(--muted);margin-bottom:6px}
-/* kalimat kasus = balok putih */
-.sent{background:var(--plate);border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 3px 0 var(--wedge);padding:10px 12px;margin-top:10px}
-.sent .n{position:relative;width:22px;height:20px;border-radius:5px;margin-right:8px;vertical-align:0;font-family:"Lilita One","Rubik",sans-serif;font-weight:400;font-size:12px;
-  background:var(--shine),var(--c,var(--blue));box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 0 color-mix(in srgb,var(--c,var(--blue)) 70%,#000)}
-.sent .n::before,.sent .n::after{content:'';position:absolute;top:-4px;width:6px;height:4px;border-radius:3px 3px 1px 1px;background:var(--c,var(--blue));box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
-.sent .n::before{left:3px}.sent .n::after{right:3px}
-/* pilihan peran: tiap peran punya warna balok */
-.roles{gap:8px;margin-top:10px}
-.role{position:relative;font-weight:700;padding:5px 11px;border-radius:8px;border:1px solid color-mix(in srgb,var(--c) 35%,transparent)!important;
-  background:color-mix(in srgb,var(--c) 12%,var(--plate))!important;color:color-mix(in srgb,var(--c) 72%,#000);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 30%,transparent)!important}
-@media (prefers-color-scheme:dark){.role{color:color-mix(in srgb,var(--c) 60%,#fff)}}
-.role.sel,.role.ok,.role.bad{border:0!important;color:#fff;background:var(--shine),var(--c)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 3px 0 color-mix(in srgb,var(--c) 70%,#000)!important;transform:translateY(-2px)}
-.role.sel::before,.role.sel::after,.role.ok::before,.role.ok::after{content:'';position:absolute;top:-5px;width:9px;height:5px;border-radius:3px 3px 1px 1px;background:var(--c);box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
-.role.sel::before,.role.ok::before{left:7px}.role.sel::after,.role.ok::after{right:7px}
-.role.ok{--c:var(--green)!important}.role.bad{--c:var(--red)!important}
-/* langkah = deretan balok */
-.steps{gap:8px;margin:8px 0 14px}
-.steps i{position:relative;height:16px;border-radius:5px;background:var(--soft)!important;border:1.5px dashed var(--line2)!important;box-shadow:none!important}
-.steps i.on,.steps i.done{border:0!important;background:var(--shine),var(--c)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 3px 0 color-mix(in srgb,var(--c) 70%,#000)!important}
-.steps i.on::before,.steps i.on::after,.steps i.done::before,.steps i.done::after{content:'';position:absolute;top:-5px;width:12px;height:5px;border-radius:3px 3px 1px 1px;background:var(--c);box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
-.steps i::before{left:18%}.steps i::after{right:18%}
-/* timer = plate berstud yang terisi balok */
-.bar{height:16px;border-radius:6px;border:0;background-color:var(--soft);
-  background-image:radial-gradient(circle at 7px 8px,rgba(15,23,42,.10) 0 3px,transparent 3.5px);background-size:14px 16px;box-shadow:inset 0 1px 2px rgba(15,23,42,.06)}
-.bar>i{border-radius:6px;background-image:radial-gradient(circle at 7px 8px,rgba(255,255,255,.55) 0 3px,transparent 3.5px),var(--shine)!important;background-size:14px 16px,auto!important;background-color:var(--yellow)!important;
-  box-shadow:inset 0 -2px 0 color-mix(in srgb,var(--yellow) 70%,#000)!important}
-/* kotak penjelasan = lembar instruksi balok */
-.fb{background:color-mix(in srgb,var(--yellow) 10%,var(--plate));border:1px solid color-mix(in srgb,var(--yellow) 38%,transparent);box-shadow:0 3px 0 color-mix(in srgb,var(--yellow) 22%,transparent)}
-/* tombol nonaktif = balok abu, bukan kuning pudar */
-.btn.p:disabled{--c:#cfd5de;color:#7b8291;opacity:1}
-.ggrid .gt .gi,.tile .ic{border-radius:10px}
+/* gelembung lebih ringkas, beri jarak dari maskot */
+.hero{gap:22px}
+.hero .bubble{max-width:52%;font-size:12.5px;padding:8px 11px;border-radius:13px;margin-left:0;margin-bottom:44px}
+.hero .bubble::after{right:-8px;width:12px;height:12px}
+.hero .masc{margin-right:-4px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div class="scene" id="scene"></div>
 <div class="wrap">
-  <header class="top">
-    <div class="logo"><svg viewBox="0 0 34 34"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".6"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><rect x="7" y="2" width="8" height="6" rx="2.5" fill="#ff5b55"/><rect x="19" y="2" width="8" height="6" rx="2.5" fill="#ff5b55"/><rect x="2" y="6" width="30" height="16" rx="5" fill="#ff5b55"/><rect x="2" y="20" width="30" height="11" rx="5" fill="#ffc93a"/><rect x="2" y="6" width="30" height="25" rx="5" fill="url(#lg)"/></svg><div><div class="ttl" id="ttl">Nalar Harian</div><div class="sub" id="sub"></div></div></div>
+  <header class="top glass has-st"><span class="st"><i></i><i></i><i></i><i></i></span><span class="st r"><i></i><i></i></span>
+    <div class="logo"><svg viewBox="0 0 34 34"><rect x="7" y="2" width="8" height="5" rx="2" fill="#ef5f5a" stroke="#5b6d99" stroke-width="2"/><rect x="19" y="2" width="8" height="5" rx="2" fill="#ef5f5a" stroke="#5b6d99" stroke-width="2"/><rect x="2" y="6" width="30" height="16" rx="3" fill="#ef5f5a" stroke="#5b6d99" stroke-width="2.5"/><rect x="2" y="21" width="30" height="10" rx="3" fill="#ffd24f" stroke="#5b6d99" stroke-width="2.5"/></svg><div><div class="ttl" id="ttl">Nalar Harian</div><div class="sub" id="sub"></div></div></div>
     <div class="top-r"><span class="chip" id="streak"></span>
       <button class="ibtn glass" data-act="nav" data-v="paket" aria-label="Paket"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></button>
     </div>
@@ -424,7 +288,6 @@ const KONTEKS=['chat grup','promo dan iklan toko','pengumuman dan syarat','klaim
 const LANGKAH=['Bongkar','Nilai','Putuskan'];
 const JENIS_LBL={tandai:'Tandai peran kalimat',bentuk:'Pilih bentuk logika',sah:'Sah atau tidak',kalibrasi:'Kalibrasi kepastian',celah:'Cari celah',perlu_dicek:'Yang perlu dicek',penjelasan:'Penjelasan lain',baca_angka:'Baca angka',keputusan:'Putuskan'};
 const PERAN=['klaim','alasan','contoh','pengalih'];
-const ROLECOL={klaim:'var(--red)',alasan:'var(--blue)',contoh:'var(--green)',pengalih:'var(--orange)'};
 
 /* ================= UTIL ================= */
 const $=s=>document.querySelector(s);
@@ -448,7 +311,7 @@ const yk=c=>DARKTXT.includes(c)?'yk':'';
 const studs=(n,c,right)=>`<span class="st${right?' r':''}"${c?` style="--c:${c}"`:''}>${'<i></i>'.repeat(n)}</span>`;
 function seqPush(s,code){(s.seq||(s.seq=[])).push(code)}
 let LT=-1;
-function tower(s,mini){const sq=s.seq||[];let q=[];[['p','pem'],['k','kas'],['j','jem']].forEach(([c,k])=>{const inS=sq.filter(x=>x[0]===c),okS=inS.filter(x=>x[1]==='1').length;const miss=Math.max(0,s[k].n-inS.length),missOk=Math.max(0,Math.min(miss,s[k].b-okS));for(let i=0;i<miss;i++)q.push(c+(i<missOk?1:0))});q=q.concat(sq);
+function tower(s,mini){let q=s.seq;if(!q){q=[];[['p','pem'],['k','kas'],['j','jem']].forEach(([c,k])=>{for(let i=0;i<s[k].n;i++)q.push(c+(i<s[k].b?1:0))})}
   const C={p:COL.pem,k:COL.kas,j:COL.jem};const isNew=LT>=0&&q.length>LT;LT=q.length;
   return`<div class="${mini?'mtower':'tower'}">${q.map((x,i)=>`<span class="b${x[1]==='0'?' x':''}${isNew&&i===q.length-1?' new':''}" style="--c:${C[x[0]]}"></span>`).join('')}</div>`}
 /* opsi teracak dengan kunci dan label jebakan ikut */
@@ -659,25 +522,71 @@ function buildPrompt(n,start){
    jembatan:[{keterampilan:plan[0].sk,bentuk:plan[0].bentuk,teks:'…',perintah:'…',opsi:['…','…','…','…','…'],kunci:3,jebakan_opsi:['J1','J6','J5',null,'J11'],pembahasan:'…'}]}]},null,1)+'\n```');
   return L.join('\n')}
 
+/* ================= MASKOT "BLOKI" & LATAR ================= */
+function mascot(pose){
+  const c='#ffd24f',d='#c9971a',ink='#26304b',arm=(x1,y1,x2,y2)=>`<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${d}" stroke-width="13" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="${c}" stroke-width="8" stroke-linecap="round"/><circle cx="${x2}" cy="${y2}" r="7.5" fill="${c}" stroke="${d}" stroke-width="2.5"/>`;
+  let L='',R='',prop='',mouth=`<path d="M70 109 Q80 121 90 109" stroke="${ink}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`,extra='';
+  const open=`<path d="M69 107 Q80 124 91 107 Z" fill="#a8434f" stroke="${ink}" stroke-width="2.5" stroke-linejoin="round"/><path d="M74 114 Q80 119 86 114" fill="#ff8fa3"/>`;
+  switch(pose){
+    case'wave':L=arm(34,104,16,118);R=arm(126,98,150,64);mouth=open;extra=`<path d="M158 48 q6 6 2 14 M164 40 q9 9 3 22" stroke="${d}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;break;
+    case'jump':L=arm(34,98,12,66);R=arm(126,98,148,66);mouth=open;extra=`<path d="M22 40 l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="#ff9d4d"/><path d="M146 30 l2.5 5.5 6 .8-4.4 4.2 1 6-5.1-2.8-5.1 2.8 1-6-4.4-4.2 6-.8z" fill="#4b8ae8"/>`;break;
+    case'map':L=arm(34,104,18,122);R=arm(126,104,144,96);prop=`<g transform="rotate(-8 150 92)"><rect x="132" y="70" width="34" height="42" rx="3" fill="#fff" stroke="${ink}" stroke-width="2.5"/><path d="M143 70v42M155 70v42" stroke="#9fb3d9" stroke-width="2"/><path d="M137 100 q8-10 14-4 t11-12" stroke="#ef5f5a" stroke-width="2.5" fill="none" stroke-dasharray="3 3"/><circle cx="160" cy="82" r="3" fill="#ef5f5a"/></g>`;break;
+    case'trophy':L=arm(34,104,18,122);R=arm(126,100,146,84);prop=`<g><path d="M136 56 h28 v10 q0 16 -14 18 q-14 -2 -14 -18z" fill="#ffd24f" stroke="${d}" stroke-width="2.5"/><path d="M136 60 q-8 0 -6 8 q2 6 8 6 M164 60 q8 0 6 8 q-2 6 -8 6" stroke="${d}" stroke-width="2.5" fill="none"/><rect x="145" y="84" width="10" height="6" fill="${d}"/><rect x="139" y="89" width="22" height="6" rx="2" fill="#4b8ae8" stroke="${ink}" stroke-width="2"/></g>`;mouth=open;break;
+    case'pencil':L=arm(34,104,18,122);R=arm(126,104,140,92);prop=`<g transform="rotate(35 150 80)"><rect x="144" y="50" width="12" height="44" rx="2" fill="#ff9d4d" stroke="${ink}" stroke-width="2.3"/><rect x="144" y="50" width="12" height="7" fill="#f47eab" stroke="${ink}" stroke-width="2.3"/><path d="M144 94 l6 12 6-12z" fill="#f6e2c0" stroke="${ink}" stroke-width="2.3" stroke-linejoin="round"/><path d="M148.5 103 l1.5 3 1.5-3z" fill="${ink}"/></g>`;break;
+    case'box':L=arm(34,104,24,124);R=arm(126,104,138,124);prop=`<g><rect x="118" y="112" width="44" height="34" rx="4" fill="#4b8ae8" stroke="${ink}" stroke-width="2.5"/><rect x="124" y="104" width="12" height="9" rx="3" fill="#4b8ae8" stroke="${ink}" stroke-width="2.3"/><rect x="144" y="104" width="12" height="9" rx="3" fill="#4b8ae8" stroke="${ink}" stroke-width="2.3"/><rect x="123" y="117" width="5" height="18" rx="2.5" fill="#fff" opacity=".35"/></g>`;break;
+    case'think':L=arm(34,104,18,122);R=arm(126,104,112,116);prop=`<g><circle cx="150" cy="58" r="13" fill="#fff" stroke="${ink}" stroke-width="2.5"/><text x="150" y="64" text-anchor="middle" font-family="Lilita One,Rubik,sans-serif" font-size="17" fill="#4b8ae8">?</text><circle cx="138" cy="78" r="4" fill="#fff" stroke="${ink}" stroke-width="2"/><circle cx="131" cy="88" r="2.5" fill="#fff" stroke="${ink}" stroke-width="1.8"/></g>`;break;
+    default:L=arm(34,104,18,122);R=arm(126,104,142,122);
+  }
+  return`<svg class="masc" viewBox="0 0 175 175" aria-hidden="true">
+  <ellipse cx="80" cy="166" rx="46" ry="6" fill="#26304b" opacity=".12"/>
+  ${extra}${L}${R}
+  <rect x="50" y="134" width="22" height="20" rx="5" fill="#4b8ae8" stroke="${ink}" stroke-width="2.5"/><rect x="88" y="134" width="22" height="20" rx="5" fill="#4b8ae8" stroke="${ink}" stroke-width="2.5"/>
+  <rect x="45" y="150" width="30" height="11" rx="5" fill="${ink}"/><rect x="85" y="150" width="30" height="11" rx="5" fill="${ink}"/>
+  <rect x="46" y="44" width="26" height="20" rx="7" fill="${c}" stroke="${d}" stroke-width="3"/><rect x="88" y="44" width="26" height="20" rx="7" fill="${c}" stroke="${d}" stroke-width="3"/>
+  <rect x="51" y="48" width="9" height="4" rx="2" fill="#fff" opacity=".55"/><rect x="93" y="48" width="9" height="4" rx="2" fill="#fff" opacity=".55"/>
+  <rect x="30" y="58" width="100" height="82" rx="17" fill="${c}" stroke="${d}" stroke-width="3.2"/>
+  <rect x="40" y="67" width="9" height="36" rx="4.5" fill="#fff" opacity=".4"/>
+  <ellipse cx="64" cy="89" rx="11" ry="13" fill="#fff" stroke="${ink}" stroke-width="2.5"/><ellipse cx="96" cy="89" rx="11" ry="13" fill="#fff" stroke="${ink}" stroke-width="2.5"/>
+  <circle class="pupil" cx="66" cy="92" r="6" fill="${ink}"/><circle class="pupil" cx="98" cy="92" r="6" fill="${ink}"/>
+  <circle cx="68.5" cy="89" r="2.2" fill="#fff"/><circle cx="100.5" cy="89" r="2.2" fill="#fff"/>
+  <ellipse cx="50" cy="107" rx="7" ry="4.2" fill="#ff8fa3" opacity=".6"/><ellipse cx="110" cy="107" rx="7" ry="4.2" fill="#ff8fa3" opacity=".6"/>
+  ${mouth}${prop}</svg>`}
+const HERO={
+  'hari-ini':s=>s.selesai?['trophy','Menaramu sudah berdiri hari ini. Sampai besok, ya!']:s.fase>0?['wave','Lanjutkan sesimu. Tinggal sedikit lagi!']:['wave','Hai, aku Bloki! Yuk bangun menara nalar hari ini.'],
+  main:()=>['jump','Main sebentar, otak tetap jalan. Pilih satu!'],
+  peta:()=>['map','Ini peta delapan keterampilanmu. Isi bulatannya satu per satu.'],
+  rekap:()=>['trophy','Lihat jebakan yang paling sering menjeratmu minggu ini.'],
+  jurnal:()=>['pencil','Klaim apa yang kamu dengar hari ini? Tulis di sini.'],
+  paket:()=>['box','Aku simpan stok kasus untuk hari-hari berikutnya.']};
+function hero(){if(route==='main'&&G)return'';const s=sesi(today());if(route==='hari-ini'&&s.fase>=1&&s.fase<=4)return'';
+  const f=HERO[route]||HERO['hari-ini'];const[p,t]=f(s);
+  return`<div class="hero"><div class="bubble">${esc(t)}</div>${mascot(p)}</div>`}
+function sceneHTML(){
+  const B=[['#ef5f5a',6,14,-14],['#4b8ae8',84,10,12],['#3fb46e',90,38,-8],['#ff9d4d',4,46,10],['#f47eab',80,64,-18],['#ffd24f',10,76,16],['#4fc0ec',58,4,6],['#a2d058',30,30,-6]];
+  const brick=(c,x,y,r,i)=>`<svg class="fbrick" style="left:${x}%;top:${y}%;--r:${r}deg;animation-delay:${-i*1.3}s" viewBox="0 0 44 30"><rect x="6" y="2" width="11" height="7" rx="3" fill="${c}" stroke="#26304b" stroke-opacity=".25" stroke-width="1.5"/><rect x="27" y="2" width="11" height="7" rx="3" fill="${c}" stroke="#26304b" stroke-opacity=".25" stroke-width="1.5"/><rect x="2" y="8" width="40" height="20" rx="5" fill="${c}" stroke="#26304b" stroke-opacity=".25" stroke-width="1.5"/><rect x="6" y="11" width="4" height="12" rx="2" fill="#fff" opacity=".45"/></svg>`;
+  const cloud=(x,y,s)=>`<svg class="cloud" style="left:${x}%;top:${y}%;width:${s}px" viewBox="0 0 120 50"><path d="M20 44 h80 a16 16 0 0 0 -4 -31 a24 24 0 0 0 -44 -6 a18 18 0 0 0 -30 14 a12 12 0 0 0 -2 23z" fill="#fff"/></svg>`;
+  return cloud(-4,8,130)+cloud(62,20,110)+cloud(28,52,90)+B.map((b,i)=>brick(...b,i)).join('')+
+  `<svg class="hills" viewBox="0 0 400 140" preserveAspectRatio="none"><path d="M0 70 Q60 20 130 58 T260 50 T400 40 V140 H0z" fill="#c6ebd1"/><path d="M0 100 Q90 60 190 92 T400 78 V140 H0z" fill="#a6dcb6"/></svg>`}
+
 /* ================= NAVIGASI ================= */
 const TABC={'hari-ini':'var(--yellow)',main:'var(--red)',peta:'var(--blue)',rekap:'var(--green)',jurnal:'var(--orange)'};
 const TABS=[['hari-ini','Hari ini','<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'],
+ ['main','Main','<rect x="2" y="7" width="20" height="11" rx="4"/><path d="M7 11v3M5.5 12.5h3"/><circle cx="16" cy="11.5" r=".8"/><circle cx="17.8" cy="14" r=".8"/>'],
  ['peta','Peta','<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>'],
  ['rekap','Rekap','<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'],
  ['jurnal','Jurnal','<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/>']];
 const svg=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 let route='hari-ini';
 function nav(r){clearInterval(gTimer);route=r;try{history.replaceState(null,'','#'+r)}catch(e){location.hash=r}G=null;render();window.scrollTo(0,0)}
-function renderTabs(){$('#tabs').innerHTML=TABS.map(([k,l,p])=>`<button class="${route===k||(route==='main'&&k==='hari-ini')?'on':''} ${yk(TABC[k])}" style="--c:${TABC[k]}" data-act="nav" data-v="${k}">${svg(p)}<span>${l}</span></button>`).join('')}
-/* rute main = game dari beranda */
+function renderTabs(){$('#tabs').innerHTML=TABS.map(([k,l,p])=>`<button class="${route===k?'on':''} ${yk(TABC[k])}" style="--c:${TABC[k]}" data-act="nav" data-v="${k}">${svg(p)}<span>${l}</span></button>`).join('')}
 function render(){
   $('#sub').textContent=tglPanjang(today());
   const st=streak();$('#streak').className='chip y';$('#streak').innerHTML=`Beruntun ${st}`;
   renderTabs();
   const V={'hari-ini':vHari,main:vMain,peta:vPeta,rekap:vRekap,jurnal:vJurnal,paket:vPaket}[route]||vHari;
-  $('#view').innerHTML=V();afterRender();
+  $('#view').innerHTML=hero()+V();afterRender();
 }
-let afterFns=[];function after(f){afterFns.push(f)}function afterRender(){document.querySelectorAll('#view .glass.card').forEach(el=>{if(!el.querySelector(':scope>.st')){el.insertAdjacentHTML('afterbegin','<span class="st auto"><i></i><i></i><i></i></span>');el.classList.add('has-st')}});const f=afterFns;afterFns=[];f.forEach(x=>x())}
+let afterFns=[];function after(f){afterFns.push(f)}function afterRender(){const f=afterFns;afterFns=[];f.forEach(x=>x())}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2200)}
 async function copyText(txt,msg){try{await navigator.clipboard.writeText(txt);toast(msg||'Tersalin')}catch(e){openSheet(`<h2>Salin manual</h2><p class="small muted">Penyalinan otomatis ditolak. Tekan lama teks di bawah, pilih semua, lalu salin.</p><textarea id="mcopy" style="min-height:260px;margin-top:8px">${esc(txt)}</textarea><button class="btn w" style="margin-top:10px" data-act="closeSheet">Tutup</button>`);setTimeout(()=>{const a=$('#mcopy');a&&a.select()},50)}}
 function openSheet(h){const s=$('#sheet');s.innerHTML=`<div class="pane glass">${h}</div>`;s.classList.remove('hidden')}
@@ -701,30 +610,29 @@ function vHari(){
   const kasInfo=pk?`${pk.kasus.keterampilan} · ${esc(pk.kasus.judul||'')}`:'paket belum ada';
   const stok=Object.keys(S.paket).filter(k=>/^\d/.test(k)&&!S.paket[k].dipakai).length;
   const b=s.pem.b+s.kas.b+s.jem.b,n=s.pem.n+s.kas.n+s.jem.n;
-  let h=`<div class="glass card has-st half tall">${studs(4,'var(--plate)')}`;
+  let h=`<div class="glass card has-st">${studs(4,'var(--plate)')}${studs(2,'var(--plate)',1)}
+    <div class="row sp"><span class="lbl">Menara hari ini</span><span class="tiny muted" style="font-weight:600">${n?`${b} dari ${n} balok berwarna`:'1 jawaban benar = 1 balok'}</span></div>
+    ${n?tower(s):`<div class="tower" style="align-items:center;justify-content:center"><span class="tiny" style="color:color-mix(in srgb,var(--green) 55%,#1c2a22);font-weight:700">Belum ada balok. Mulai sesi untuk membangun.</span></div>`}
+    <div class="row tiny muted" style="gap:12px;margin-top:8px;font-weight:600"><span class="row" style="gap:4px"><span class="b" style="--c:var(--yellow);width:16px;height:9px"></span>pemanasan</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--red);width:16px;height:9px"></span>kasus</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--blue);width:16px;height:9px"></span>jembatan</span><span class="row" style="gap:4px"><span class="b x" style="width:16px;height:9px"></span>salah</span></div></div>`;
   if(s.selesai){
-    h+=`<div class="row sp"><span class="lbl" style="--lc:var(--green)">Sesi selesai</span><span class="chip ok">${n?Math.round(b/n*100):0}%</span></div>
-    <h2>Menara hari ini berdiri.</h2>${tower(s)}
-    <div style="margin-top:12px">
+    h+=`<div class="glass card has-st">${studs(3,'var(--green)')}<span class="lbl w" style="--lc:var(--green)">Sesi selesai</span><h2>Menara hari ini berdiri.</h2>
     <div class="kv"><span class="muted">Pemanasan</span><b>${s.pem.b}/${s.pem.n}</b></div>
     <div class="kv"><span class="muted">Kasus hari ini</span><b>${s.kas.n?s.kas.b+'/'+s.kas.n:'dilewati'}</b></div>
-    <div class="kv"><span class="muted">Jembatan UTBK</span><b>${s.jem.n?s.jem.b+'/'+s.jem.n:'dilewati'}</b></div></div>
-    <button class="btn w" style="margin-top:12px" data-act="nav" data-v="rekap">Lihat rekap</button>`}
+    <div class="kv"><span class="muted">Jembatan UTBK</span><b>${s.jem.n?s.jem.b+'/'+s.jem.n:'dilewati'}</b></div>
+    <div class="kv"><span class="muted">Akurasi</span><b>${n?Math.round(b/n*100):0}%</b></div>
+    <div class="row" style="margin-top:12px"><button class="btn sm" data-act="nav" data-v="rekap">Lihat rekap</button><button class="btn sm" data-act="nav" data-v="main">Mini game</button></div></div>`}
   else{
-    h+=`<div class="row sp"><span class="lbl">Sesi hari ini · ±15 menit</span>${stok?`<span class="chip">${stok} paket</span>`:''}</div>
-    ${n?`${tower(s)}<div class="tiny muted" style="margin:6px 2px 4px;font-weight:600">${b} dari ${n} balok berwarna</div>`:''}
+    h+=`<div class="glass card has-st">${studs(3,'var(--plate)')}<div class="row sp"><span class="lbl">Sesi ±15 menit</span>${stok?`<span class="chip">${stok} paket di stok</span>`:''}</div>
     <div>
       ${partRow(0,'Pemanasan kilat','3 menit · 8 kartu · N2–N4',s,COL.pem)}
       ${partRow(1,'Kasus hari ini','7 menit · '+kasInfo,s,COL.kas)}
       ${partRow(2,'Jembatan UTBK','4 menit · 3 soal',s,COL.jem)}
       ${partRow(3,'Satu kalimat nalar','1 menit · boleh dilewati',s,COL.kal)}
     </div>
-    ${pk?'':`<div class="fb small" style="margin-top:8px"><b>Paket kasus belum ada.</b> <span class="muted">Pemanasan tetap bisa jalan. Salin prompt ke proyek Claude “Nalar Harian”, lalu tempel JSON-nya di Paket.</span>
-      <div class="row wrapf" style="margin-top:8px"><button class="btn sm" data-act="copyPrompt" data-v="1">Salin prompt</button><button class="btn sm" data-act="nav" data-v="paket">Buka Paket</button></div></div>`}
-    <button class="btn p w" style="margin-top:12px" data-act="mulai">${s.fase===0?(n?'Lanjutkan':'Mulai sesi'):'Lanjutkan'}</button>`}
-  h+='</div>';
-  h+=`<div class="half"><div class="row sp" style="margin:2px 4px 0"><h3 style="margin:0">Mini game</h3><span class="tiny muted">pendamping · tidak mengubah tahap</span></div>
-    <div class="ggrid">${GAMES.map(g=>`<button class="gt ${yk(g.c)}" style="--c:${g.c}" data-act="gStart" data-v="${g.id}">${studs(2,g.c)}<span class="gi">${svg(g.ic)}</span><span class="gn">${g.nama}</span><span class="gs">${g.sk} · terbaik ${S.games[g.id]?S.games[g.id].best:0}</span></button>`).join('')}</div></div>`;
+    <button class="btn p w" style="margin-top:12px" data-act="mulai">${s.fase===0?'Mulai bangun':'Lanjutkan'}</button></div>`;
+    if(!pk)h+=`<div class="glass card small"><b>Belum ada paket kasus.</b> <span class="muted">Pemanasan tetap bisa jalan. Buat paket dengan menyalin prompt ke proyek Claude “Nalar Harian”, lalu tempel JSON-nya di halaman Paket.</span>
+      <div class="row wrapf" style="margin-top:10px"><button class="btn sm" data-act="copyPrompt" data-v="1">Salin prompt 1 hari</button><button class="btn sm" data-act="nav" data-v="paket">Buka Paket</button></div></div>`}
+  h+=`<button class="glass card row sp" style="width:100%;text-align:left" data-act="nav" data-v="main"><span class="row"><span class="pn" style="width:30px;height:26px;border-radius:6px;background:var(--red);border:2px solid var(--line);display:grid;place-items:center;color:#fff">${svg(TABS[1][2]).replace('<svg','<svg width="16" height="16"')}</span><span><span style="font-weight:600;display:block">Mini game pendamping</span><span class="tiny muted">Untuk waktu luang. Tidak menggantikan sesi.</span></span></span><span style="font-weight:700">›</span></button>`;
   return h}
 
 /* --- pemanasan --- */
@@ -754,20 +662,20 @@ function vKas(s){
     ${S.contohDipakai?'':'<button class="btn" data-act="pakaiContoh">Coba paket contoh</button>'}
     <button class="btn" data-act="skipKasus">Lewati kasus hari ini</button></div></div>`}
   if(s.paketId!==pid){s.paketId=pid;save()}
-  const p=S.paket[pid],k=p.kasus;if(!s.kasState||s.kasState.pid!==pid)s.kasState={pid,step:0,roles:{},answered:false,done:false};KAS=s.kasState;
+  const p=S.paket[pid],k=p.kasus;if(!KAS||KAS.pid!==pid)KAS={pid,step:0,roles:{},answered:false,done:false};
   const L=k.langkah,l=L[KAS.step];
   let h=`<div class="row sp wrapf" style="margin:2px 2px 0"><span class="lbl w" style="--lc:var(--red)">Kasus hari ini</span><div class="row"><span class="chip a">${k.keterampilan}</span><span class="chip">T${k.tahap||1}</span><span class="chip">${esc(k.konteks||'')}</span></div></div>${tower(s,1)}`;
   h+=`<div class="glass card has-st" style="margin-top:16px">${studs(4,COL.kas)}<h2>${esc(k.judul||'Kasus')}</h2><div id="ksent">`;
   const tandai=!KAS.done&&l&&l.jenis==='tandai';
-  k.kalimat.forEach((x,i)=>{h+=`<div class="sent"><span class="n" style="--c:var(--red)">${i+1}</span>${esc(x)}`;
-    if(tandai){const r=KAS.roles[i];const res=KAS.answered;h+=`<div class="roles">${PERAN.map(pr=>{let c='';if(res){if(pr===l.peran[i])c='ok';else if(pr===r)c='bad'}else if(pr===r)c='sel';return`<button class="role ${c}" style="--c:${ROLECOL[pr]}" data-act="role" data-i="${i}" data-v="${pr}" ${res?'disabled':''}>${pr}</button>`}).join('')}</div>`}
+  k.kalimat.forEach((x,i)=>{h+=`<div class="sent"><span class="n">${i+1}</span>${esc(x)}`;
+    if(tandai){const r=KAS.roles[i];const res=KAS.answered;h+=`<div class="roles">${PERAN.map(pr=>{let c='';if(res){if(pr===l.peran[i])c='ok';else if(pr===r)c='bad'}else if(pr===r)c='sel';return`<button class="role ${c}" data-act="role" data-i="${i}" data-v="${pr}" ${res?'disabled':''}>${pr}</button>`}).join('')}</div>`}
     h+='</div>'});
   h+='</div>';
   if(k.tabel&&Array.isArray(k.tabel.kolom))h+=`<table class="t"><tr>${k.tabel.kolom.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${(k.tabel.baris||[]).map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>`;
   h+='</div>';
   if(KAS.done){h+=`<div class="glass card"><div class="cap">Pembahasan kasus</div><div class="small">${esc(k.pembahasan||'')}</div>${k.jebakan&&TRAPS[k.jebakan]?`<div style="margin-top:8px"><span class="chip bad">${k.jebakan} · ${TRAPS[k.jebakan]}</span></div>`:''}
     <button class="btn p w" style="margin-top:12px" data-act="toJem">Lanjut ke Jembatan UTBK</button></div>`;return h}
-  h+=`<div class="glass card"><div class="steps" style="--c:var(--red)">${L.map((_,i)=>`<i class="${i<KAS.step?'done':i===KAS.step?'on':''}" style="--c:${i<KAS.step?'var(--green)':'var(--red)'}"></i>`).join('')}</div>
+  h+=`<div class="glass card"><div class="steps">${L.map((_,i)=>`<i class="${i<KAS.step?'done':i===KAS.step?'on':''}"></i>`).join('')}</div>
     <div class="cap">Langkah ${KAS.step+1} · ${LANGKAH[KAS.step]||''} · ${JENIS_LBL[l.jenis]||l.jenis}</div><div style="font-weight:600">${esc(l.perintah||'')}</div>`;
   if(l.jenis==='tandai'){h+=`<p class="tiny muted" style="margin-top:4px">Pilih peran di bawah setiap kalimat di atas.</p>`;
     if(!KAS.answered)h+=`<button class="btn p w" style="margin-top:10px" data-act="cekTandai" ${Object.keys(KAS.roles).length<k.kalimat.length?'disabled':''}>Cek</button>`}
@@ -778,7 +686,7 @@ function kasAnswer(ok,q){const s=sesi(today()),k=S.paket[KAS.pid].kasus;s.kas.n+
 
 /* --- jembatan --- */
 function vJem(s){const p=s.paketId&&S.paket[s.paketId];if(!p){s.fase=4;save();return vKalimat(s)}
-  if(!s.jemState)s.jemState={i:0,answered:false};JEM=s.jemState;const Q=p.jembatan,q=Q[JEM.i];
+  if(!JEM)JEM={i:0,answered:false};const Q=p.jembatan,q=Q[JEM.i];
   let h=`<div class="row sp wrapf" style="margin:2px 2px 0"><span class="lbl w" style="--lc:var(--blue)">Jembatan UTBK · ${JEM.i+1}/${Q.length}</span><div class="row"><span class="chip a">${esc(q.keterampilan||p.kasus.keterampilan)}</span>${q.bentuk?`<span class="chip">bentuk ${esc(q.bentuk)}</span>`:''}</div></div>
   ${tower(s,1)}<div class="glass card has-st" style="margin-top:16px">${studs(4,COL.jem)}${q.teks?`<div class="stim">${esc(q.teks)}</div>`:''}<div style="font-weight:600;margin-top:8px">${esc(q.perintah||'')}</div>
   <div class="opts" style="--c:var(--blue)">${q.opsi.map((o,i)=>{let c='';if(JEM.answered){c=i===q.kunci?'ok':i===JEM.chosen?'bad':'dim'}return`<button class="opt ${c}" data-act="jemOpt" data-v="${i}" ${JEM.answered?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
@@ -797,7 +705,7 @@ function finishSesi(simpan){const t=today(),s=sesi(t);if(simpan){const v=($('#ka
 /* ================= PETA ================= */
 function vPeta(){let h=`<p class="intro" style="margin-bottom:22px">Tiap bulatan = satu butir kasus atau jembatan. Keterampilan naik tahap saat 10 butir terakhirnya benar 80% atau lebih.</p>`;
   for(const k in SKILLS){const st=S.skills[k],n=st.r.length,b=st.r.reduce((a,x)=>a+x,0),c=SKCOL[k];
-    h+=`<div class="glass card has-st half" style="--c:${c}">${studs(2,c)}<div class="row" style="gap:11px;align-items:flex-start"><span class="skb ${yk(c)}">${k}</span><div style="flex:1;min-width:0">
+    h+=`<div class="glass card has-st" style="--c:${c}">${studs(2,c)}<div class="row" style="gap:11px;align-items:flex-start"><span class="skb ${yk(c)}">${k}</span><div style="flex:1;min-width:0">
       <div class="row sp"><b style="font-size:15px">${SKILLS[k]}</b><div class="tahap" title="Tahap ${st.tahap}">${[1,2,3].map(i=>`<i class="${i<=st.tahap?'on':''}"></i>`).join('')}</div></div>
       <div class="tiny muted">${SKILL_DESC[k]}</div>
       <div class="pips">${[...Array(10)].map((_,i)=>`<span class="pip ${i<n?(st.r[i]?'on':'off'):'none'}"></span>`).join('')}</div>
@@ -812,13 +720,13 @@ function vRekap(){const w=weekLog(7);const tr=topTraps(w.filter(x=>x.src!=='game
   if(ka.length>=3&&je.length>=3){if(pk-pj>=15)interp='Kasus nyata lebih baik daripada jembatan: masalahnya kemungkinan di membaca bentuk soal UTBK.';else if(pj-pk>=15)interp='Jembatan lebih baik daripada kasus nyata: masalahnya kemungkinan di menerapkan logika di luar soal.';else interp='Kasus nyata dan jembatan seimbang. Bagus, logikamu terbawa ke dua arah.'}
   const days=[...Array(7)].map((_,i)=>addDays(today(),i-6));
   let h=`<div class="glass card has-st">${studs(4)}<span class="lbl w" style="--lc:var(--green)">7 hari terakhir</span><div class="days">${days.map(d=>{const s=S.sesi[d];const on=s&&s.selesai;return`<div><span class="b${on?'':' x'}" style="--c:${on?'var(--green)':s&&s.fase>0?'var(--yellow)':'var(--gray)'}"></span><div class="tiny muted" style="margin-top:4px;font-weight:600">${HARI[new Date(d+'T12:00:00').getDay()].slice(0,3)}</div></div>`}).join('')}</div></div>`;
-  h+=`<div class="glass card half"><div class="cap">Jebakan terbanyak</div>${tr.length?tr.map(([k,c],i)=>`<div class="kv"><span>${i+1}. <b>${k}</b> ${TRAPS[k]}</span><span class="muted">${c}x</span></div>`).join(''):'<div class="small muted">Belum ada jebakan yang menjeratmu minggu ini.</div>'}</div>`;
-  h+=`<div class="glass card half"><div class="cap">Kasus nyata vs jembatan UTBK</div>
+  h+=`<div class="glass card"><div class="cap">Jebakan terbanyak</div>${tr.length?tr.map(([k,c],i)=>`<div class="kv"><span>${i+1}. <b>${k}</b> ${TRAPS[k]}</span><span class="muted">${c}x</span></div>`).join(''):'<div class="small muted">Belum ada jebakan yang menjeratmu minggu ini.</div>'}</div>`;
+  h+=`<div class="glass card"><div class="cap">Kasus nyata vs jembatan UTBK</div>
    <div class="kv"><span class="muted">Pemanasan</span><b>${pc(pe)??'–'}${pe.length?'%':''} <span class="tiny muted">(${pe.length})</span></b></div>
    <div class="kv"><span class="muted">Kasus nyata</span><b>${pk??'–'}${ka.length?'%':''} <span class="tiny muted">(${ka.length})</span></b></div>
    <div class="kv"><span class="muted">Jembatan UTBK</span><b>${pj??'–'}${je.length?'%':''} <span class="tiny muted">(${je.length})</span></b></div>
    <div class="small" style="margin-top:6px">${interp}</div></div>`;
-  h+=`<div class="glass card"><div class="cap">Tahap keterampilan</div><div class="row wrapf" style="gap:6px;margin-top:4px">${Object.keys(SKILLS).map(k=>`<span class="chip" style="background:${SKCOL[k]};color:${yk(SKCOL[k])?'#1a1b21':'#fff'}">${k} · T${S.skills[k].tahap}</span>`).join('')}</div></div>`;
+  h+=`<div class="glass card"><div class="cap">Tahap keterampilan</div><div class="row wrapf" style="gap:6px;margin-top:4px">${Object.keys(SKILLS).map(k=>`<span class="chip" style="background:${SKCOL[k]};color:${yk(SKCOL[k])?'#2f333d':'#fff'}">${k} · T${S.skills[k].tahap}</span>`).join('')}</div></div>`;
   const sal=S.salah.filter(x=>!x.tuntas).slice(-12).reverse();
   h+=`<h3>Butir salah untuk diulang</h3>`;
   h+=sal.length?`<div class="glass card list">${sal.map(x=>`<div class="it"><div style="flex:1;min-width:0"><div class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.perintah||x.teks||'')}</div><div class="tiny muted">${tglPendek(x.t)} · ${x.src} · ${x.sk}</div></div><button class="btn sm" data-act="ulang" data-v="${x.id}">Ulang</button></div>`).join('')}</div>`:'<div class="glass card empty">Belum ada butir salah.</div>';
@@ -845,12 +753,12 @@ function jurnalPrompt(){const from=addDays(today(),-6);const J=S.jurnal.filter(x
 function vPaket(){const ids=Object.keys(S.paket).filter(k=>/^\d/.test(k)).sort();const unused=ids.filter(k=>!S.paket[k].dipakai),used=ids.length-unused.length;
   const start=nextStart();
   let h=`<div class="row" style="margin:0 2px 10px"><button class="btn sm" data-act="nav" data-v="hari-ini">‹ Hari ini</button><b style="margin-left:4px">Paket</b></div>`;
-  h+=`<div class="glass card half"><div class="lbl">1 · Buat prompt</div><p class="small muted">Prompt disusun dari tahap tiap keterampilan, konteks yang belum dipakai 10 hari terakhir, dan jebakan terlemahmu. Jalankan di proyek Claude “Nalar Harian”.</p>
+  h+=`<div class="glass card"><div class="lbl">1 · Buat prompt</div><p class="small muted">Prompt disusun dari tahap tiap keterampilan, konteks yang belum dipakai 10 hari terakhir, dan jebakan terlemahmu. Jalankan di proyek Claude “Nalar Harian”.</p>
    <div class="row" style="margin-top:8px"><select id="pdays" style="flex:1">${[1,3,7,14,30].map(n=>`<option value="${n}" ${n===7?'selected':''}>${n} hari</option>`).join('')}</select><input type="date" id="pstart" value="${start}" style="flex:1.3"></div>
    <button class="btn p w" style="margin-top:8px" data-act="copyPrompt">Salin prompt</button>
    <details><summary>Lihat rencana</summary><div id="pplan"></div></details></div>`;
-  h+=`<div class="glass card half"><div class="lbl">2 · Tempel JSON dari Claude</div><textarea id="pjson" placeholder='{"versi":1,"paket":[ … ]}'></textarea><button class="btn p w" style="margin-top:8px" data-act="savePaket">Cek & simpan</button><div id="pmsg"></div></div>`;
-  h+=`<div class="glass card"><div class="row sp"><div class="lbl">3 · Stok</div><span class="tiny muted">${unused.length} siap · ${used} terpakai</span></div>`;
+  h+=`<div class="glass card"><div class="lbl">2 · Tempel JSON dari Claude</div><textarea id="pjson" placeholder='{"versi":1,"paket":[ … ]}'></textarea><button class="btn p w" style="margin-top:8px" data-act="savePaket">Cek & simpan</button><div id="pmsg"></div></div>`;
+  h+=`<div class="glass card"><div class="row sp"><div class="lbl" style="margin:0">3 · Stok</div><span class="tiny muted">${unused.length} siap · ${used} terpakai</span></div>`;
   h+=unused.length?`<div class="list" style="margin-top:6px">${unused.map(k=>{const p=S.paket[k];return`<div class="it"><span class="chip">${tglPendek(k)}</span><div style="flex:1;min-width:0" class="small"><b>${p.kasus.keterampilan}</b> · ${esc(p.kasus.judul||'')}<div class="tiny muted">T${p.kasus.tahap||'?'} · ${esc(p.kasus.konteks||'')}</div></div><button class="btn sm" data-act="delPaket" data-v="${k}">Hapus</button></div>`}).join('')}</div>`:'<div class="small muted" style="margin-top:6px">Stok kosong. Untuk bulan tanpa langganan, buat paket 30 hari sekaligus.</div>';
   h+='</div>';
   h+=`<h3>Data</h3><div class="glass card small"><p class="muted">Semua data tersimpan di peramban ini. Salin cadangan sesekali dan simpan di tempat aman.</p>
@@ -866,18 +774,18 @@ function savePaket(){const m=$('#pmsg');let o;try{o=parsePaste($('#pjson').value
 /* ================= MINI GAME ================= */
 let G=null,gTimer=null;
 const GAMES=[
- {id:'geser',c:'var(--yellow)',nama:'Geser Setara',sk:'N2',desc:'Setara atau tidak? Geser cepat dalam 60 detik.',ic:'<rect x="6" y="4" width="12" height="16" rx="2.5"/><path d="M2 12h3M3.5 10.5 2 12l1.5 1.5M22 12h-3M20.5 10.5 22 12l-1.5 1.5M9.5 10h5M9.5 14h3"/>'},
- {id:'gerbang',c:'var(--red)',nama:'Penjaga Gerbang',sk:'N2',desc:'Kartu mana yang wajib dibalik untuk menguji aturan?',ic:'<path d="M4 21V10a8 8 0 0 1 16 0v11"/><path d="M2 21h20M8 21v-9M12 21V8M16 21v-9"/>'},
- {id:'venn',c:'var(--blue)',nama:'Venn Kilat',sk:'N3',desc:'Dua premis, satu simpulan: pasti atau belum tentu?',ic:'<circle cx="9" cy="9.5" r="5.5"/><circle cx="15" cy="9.5" r="5.5"/><circle cx="12" cy="15" r="5.5"/>'},
- {id:'detektif',c:'var(--green)',nama:'Detektif Chat',sk:'N1 · N4',desc:'Temukan pesan pengalih, lalu nilai simpulannya.',ic:'<path d="M14 4H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h1v3l3.5-3H11"/><circle cx="16.5" cy="13.5" r="4"/><path d="m19.5 16.5 2.5 2.5"/>'},
- {id:'kasir',c:'var(--orange)',nama:'Kasir Jebakan',sk:'N8',desc:'Promo mana yang paling murah? 15 detik per soal.',ic:'<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.3"/><path d="m9 16 6-6M10 11h.01M14 15h.01"/>'}];
-function vMain(){if(G)return vGame();route='hari-ini';return vHari();
+ {id:'geser',c:'var(--yellow)',nama:'Geser Setara',sk:'N2',desc:'Setara atau tidak? Geser cepat dalam 60 detik.',ic:'<path d="M4 12h16M14 6l6 6-6 6M10 6 4 12l6 6"/>'},
+ {id:'gerbang',c:'var(--red)',nama:'Penjaga Gerbang',sk:'N2',desc:'Kartu mana yang wajib dibalik untuk menguji aturan?',ic:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18"/>'},
+ {id:'venn',c:'var(--blue)',nama:'Venn Kilat',sk:'N3',desc:'Dua premis, satu simpulan: pasti atau belum tentu?',ic:'<circle cx="9" cy="10" r="5"/><circle cx="15" cy="10" r="5"/><circle cx="12" cy="15" r="5"/>'},
+ {id:'detektif',c:'var(--green)',nama:'Detektif Chat',sk:'N1 · N4',desc:'Temukan pesan pengalih, lalu nilai simpulannya.',ic:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>'},
+ {id:'kasir',c:'var(--orange)',nama:'Kasir Jebakan',sk:'N8',desc:'Promo mana yang paling murah? 15 detik per soal.',ic:'<path d="M3 7h18l-2 11H5z"/><path d="M8 7a4 4 0 0 1 8 0"/>'}];
+function vMain(){if(G)return vGame();
   return`<p class="intro">Pendamping untuk waktu luang. Sesi harian tetap jadi latihan utama, dan skor di sini tidak mengubah tahap keterampilan.</p>
   <div class="grid2">${GAMES.map(g=>`<button class="tile ${yk(g.c)}" style="--c:${g.c}" data-act="gStart" data-v="${g.id}">${studs(3,g.c)}<span class="ic">${svg(g.ic)}</span><b>${g.nama}</b><span class="tiny">${g.desc}</span><span class="best">${g.sk} · terbaik ${S.games[g.id]?S.games[g.id].best:0}</span></button>`).join('')}</div>`}
 function gDone(score,max){clearInterval(gTimer);const r=S.games[G.id]||(S.games[G.id]={best:0,main:0});r.main++;const nb=score>r.best;if(nb)r.best=score;save();G.over={score,max,nb};render()}
 const gc=()=>GAMES.find(x=>x.id===G.id).c;
 const gst=()=>studs(4,gc());
-function gHead(extra){const g=GAMES.find(x=>x.id===G.id);return`<div class="row sp" style="margin:0 2px 18px"><button class="btn sm" data-act="gBack">‹ Beranda</button><span class="lbl ${yk(g.c)?'':'w'}" style="--lc:${g.c};margin:0">${g.nama}</span>${extra||'<span style="width:60px"></span>'}</div>`}
+function gHead(extra){const g=GAMES.find(x=>x.id===G.id);return`<div class="row sp" style="margin:0 2px 18px"><button class="btn sm" data-act="gBack">‹ Main</button><span class="lbl ${yk(g.c)?'':'w'}" style="--lc:${g.c};margin:0">${g.nama}</span>${extra||'<span style="width:60px"></span>'}</div>`}
 function vGame(){if(G.over){const o=G.over,sc=o.max?o.score/o.max:Math.min(1,o.score/15),nb=Math.max(1,Math.round(sc*10));
   return gHead()+`<div class="glass card has-st" style="text-align:center;padding:24px 16px">${gst()}<div class="cap">Selesai</div><div class="big">${o.score}${o.max?'<span class="muted" style="font-size:24px">/'+o.max+'</span>':''}</div><div class="small muted" style="margin-top:4px">${o.nb?'<span class="chip y">Rekor baru!</span>':'Terbaik: '+S.games[G.id].best}</div>
   <div class="mtower" style="justify-content:center;margin-top:14px">${[...Array(nb)].map((_,i)=>`<span class="b new" style="--c:${gc()};animation-delay:${i*60}ms"></span>`).join('')}</div>
@@ -1017,15 +925,15 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'copyPrompt':{const n=v?+v:+$('#pdays').value;const st=v?(s.fase>=2&&!s.selesai?today():nextStart()):($('#pstart').value||today());copyText(buildPrompt(n,st),'Prompt tersalin');break}
   case'pakaiContoh':S.paket.contoh=Object.assign(JSON.parse(JSON.stringify(CONTOH)),{dipakai:null});S.contohDipakai=true;s.paketId='contoh';save();render();break;
   case'skipKasus':s.fase=4;save();render();break;
-  case'role':KAS.roles[+b.dataset.i]=v;save();render();break;
+  case'role':KAS.roles[+b.dataset.i]=v;render();break;
   case'cekTandai':{const l=S.paket[KAS.pid].kasus.langkah[KAS.step];const ok=l.peran.every((r,i)=>KAS.roles[i]===r);kasAnswer(ok,null);break}
   case'kasOpt':{const k=S.paket[KAS.pid].kasus,l=k.langkah[KAS.step],i=+v;KAS.chosen=i;const ok=i===l.kunci;
     kasAnswer(ok,{teks:k.kalimat.join(' '),perintah:l.perintah,opsi:l.opsi,kunci:l.kunci,pembahasan:l.pembahasan||k.pembahasan||''});break}
-  case'kasNext':{const L=S.paket[KAS.pid].kasus.langkah;if(KAS.step<L.length-1){KAS.step++;KAS.answered=false;KAS.chosen=null}else{KAS.done=true;S.paket[KAS.pid].dipakai=today()}save();render();window.scrollTo(0,0);break}
-  case'toJem':s.fase=3;JEM=null;s.jemState=null;save();render();window.scrollTo(0,0);break;
+  case'kasNext':{const L=S.paket[KAS.pid].kasus.langkah;if(KAS.step<L.length-1){KAS.step++;KAS.answered=false;KAS.chosen=null}else{KAS.done=true;S.paket[KAS.pid].dipakai=today();save()}render();window.scrollTo(0,0);break}
+  case'toJem':s.fase=3;JEM=null;save();render();window.scrollTo(0,0);break;
   case'jemOpt':{const p=S.paket[s.paketId],q=p.jembatan[JEM.i],i=+v;JEM.chosen=i;JEM.answered=true;JEM.ok=i===q.kunci;s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
     record('jembatan',q.keterampilan&&SKILLS[q.keterampilan]?q.keterampilan:p.kasus.keterampilan,JEM.ok,(q.jebakan_opsi||[])[i],{teks:q.teks,perintah:q.perintah,opsi:q.opsi,kunci:q.kunci,pembahasan:q.pembahasan});render();break}
-  case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<p.jembatan.length-1){JEM=s.jemState={i:JEM.i+1,answered:false}}else{s.fase=4;JEM=null;save()}render();window.scrollTo(0,0);break}
+  case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<p.jembatan.length-1){JEM={i:JEM.i+1,answered:false}}else{s.fase=4;JEM=null;save()}render();window.scrollTo(0,0);break}
   case'finish':finishSesi(v==='1');break;
   case'ulang':openUlang(v);break;
   case'ulangOpt':answerUlang(b.dataset.id,+v);break;
@@ -1036,8 +944,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'backup':copyText(JSON.stringify(S),'Cadangan tersalin');break;
   case'restoreOpen':openSheet(`<h2>Pulihkan dari cadangan</h2><p class="small muted">Tempel teks cadangan. Data sekarang di peramban ini akan diganti.</p><textarea id="rtext" style="min-height:160px;margin-top:8px"></textarea><div class="row" style="margin-top:10px"><button class="btn" style="flex:1" data-act="closeSheet">Batal</button><button class="btn p" style="flex:1" data-act="restore">Pulihkan</button></div>`);break;
   case'restore':try{const o=JSON.parse($('#rtext').value);if(!o.skills)throw 0;localStorage.setItem(KEY,JSON.stringify(o));S=load();closeSheet();toast('Data dipulihkan');render()}catch(err){toast('Cadangan tidak valid')}break;
-  case'gStart':route='main';try{history.replaceState(null,'','#main')}catch(e){};startGame(v);window.scrollTo(0,0);break;
-  case'gBack':clearInterval(gTimer);G=null;nav('hari-ini');break;
+  case'gStart':startGame(v);break;
+  case'gBack':clearInterval(gTimer);G=null;render();break;
   case'geser':answerGeser(v==='1');break;
   case'gCard':{const i=+v;G.sel.has(i)?G.sel.delete(i):G.sel.add(i);render();break}
   case'gCheck':{const ok=G.sel.size===2&&G.sel.has(0)&&G.sel.has(3);G.checked=true;G.lastOk=ok;if(ok)G.score++;render();break}
@@ -1055,7 +963,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
 document.addEventListener('keydown',e=>{if(G&&G.id==='geser'&&!G.over){if(e.key==='ArrowRight')answerGeser(true);if(e.key==='ArrowLeft')answerGeser(false)}});
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==route&&['hari-ini','main','peta','rekap','jurnal','paket'].includes(h)){route=h;G=null;render()}});
-(function init(){const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','jurnal','paket'].includes(h))route=h;
+(function init(){$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','jurnal','paket'].includes(h))route=h;
   const s=S.sesi[today()];if(s&&s.fase===1)s.fase=1; /* pemanasan diulang dari awal bila halaman dimuat ulang */
   render();if(s&&s.selesai)writeRingkasan()})();
 </script>
