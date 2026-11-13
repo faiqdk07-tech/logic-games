@@ -311,6 +311,21 @@ body{overflow-x:hidden}
 .seq span{min-width:44px;padding:9px 6px;text-align:center;border-radius:9px;background:#fff;border:1.5px solid #cdd7ea;font-weight:700;font-size:17px;box-shadow:0 2px 0 #dbe3f1}
 .seq span.q{background:var(--yellow);border-color:color-mix(in srgb,var(--yellow) 55%,#6b4a00)}
 .grid4{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+
+/* Kandang Venn */
+.heart{color:var(--red);font-size:17px;line-height:1}.heart.off{color:#cdd7ea}
+.vline{display:flex;gap:7px;align-items:flex-start;font-size:14.5px;line-height:1.45;margin-top:3px}
+.vm{flex:none;font-size:11px;font-weight:700;padding:1px 6px;border-radius:5px;margin-top:2px}
+.vm.y{background:var(--ok-soft);color:var(--ok)}.vm.n{background:var(--bad-soft);color:var(--bad)}
+.vtask{margin-top:12px;padding:9px 11px;border-radius:10px;background:#f3f6fc;border:1.5px dashed #b9c6de;font-size:13px;line-height:1.45}
+.vboard{position:relative;margin:12px auto 0;max-width:340px;aspect-ratio:300/250;touch-action:none;user-select:none;-webkit-user-select:none}
+.vboard svg{position:absolute;inset:0;width:100%;height:100%}
+.vtok{width:34px;height:34px;display:inline-grid;place-items:center;font-size:20px;border-radius:9px;background:#fff;border:1.5px solid #cdd7ea;box-shadow:0 2px 0 #dbe3f1;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.vtok.on{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;font-size:18px}
+.vtok.sel{border-color:var(--blue);box-shadow:0 0 0 3px var(--accent-soft)}
+.vtok.ghost{position:fixed;z-index:60;transform:translate(-50%,-60%) scale(1.15);pointer-events:none;box-shadow:0 6px 14px rgba(30,45,80,.2)}
+.vtray{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;padding:8px;border-radius:10px;background:#f6f8fc;border:1.5px solid #e1e8f4;min-height:52px}
+.vlegend{font-size:11.5px;color:var(--muted);text-align:center;margin-top:4px}.vlegend span{font-weight:700}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -899,7 +914,7 @@ let G=null,gTimer=null;
 const GAMES=[
  {id:'geser',c:'var(--yellow)',nama:'Geser Setara',sk:'N2',desc:'Setara atau tidak? Geser cepat dalam 60 detik.',ic:'<path d="M4 12h16M14 6l6 6-6 6M10 6 4 12l6 6"/>'},
  {id:'gerbang',c:'var(--red)',nama:'Penjaga Gerbang',sk:'N2',desc:'Kartu mana yang wajib dibalik untuk menguji aturan?',ic:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18"/>'},
- {id:'venn',c:'var(--blue)',nama:'Venn Kilat',sk:'N3',desc:'Dua premis, satu simpulan: pasti atau belum tentu?',ic:'<circle cx="9" cy="10" r="5"/><circle cx="15" cy="10" r="5"/><circle cx="12" cy="15" r="5"/>'},
+ {id:'venn',c:'var(--blue)',nama:'Kandang Venn',sk:'N3 · N4',desc:'Seret hewan ke kandang, bangun dunia tandingan. 3 nyawa.',ic:'<circle cx="9" cy="10" r="5"/><circle cx="15" cy="10" r="5"/><circle cx="12" cy="15" r="5"/>'},
  {id:'detektif',c:'var(--green)',nama:'Detektif Chat',sk:'N1 · N4',desc:'Temukan pesan pengalih, lalu nilai simpulannya.',ic:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>'},
  {id:'kasir',c:'var(--orange)',nama:'Kasir Jebakan',sk:'N8',desc:'Promo mana yang paling murah? 15 detik per soal.',ic:'<path d="M3 7h18l-2 11H5z"/><path d="M8 7a4 4 0 0 1 8 0"/>'},
  {id:'hakim',c:'var(--sky)',nama:'Hakim Simpulan',sk:'N4',desc:'Lima opsi baku kualitas simpulan. 20 detik per ronde.',ic:'<path d="M12 3v18M6 7h12M4 14l2.5-6 2.5 6a2.5 2.5 0 0 1-5 0zM15 14l2.5-6 2.5 6a2.5 2.5 0 0 1-5 0zM8 21h8"/>'},
@@ -920,8 +935,8 @@ function vGame(){if(G.over){const o=G.over,sc=o.max?o.score/o.max:Math.min(1,o.s
   return({geser:vGeser,gerbang:vGerbang,venn:vVenn,detektif:vDetektif,kasir:vKasir,hakim:vHakim,cukup:vCukup,kursi:vKursi,tren:vTren})[G.id]()}
 function startGame(id){clearInterval(gTimer);G={id};
   if(id==='geser'){G.end=Date.now()+60000;G.score=0;G.n=0;G.cur=genGeser();gTimer=setInterval(()=>{const l=Math.max(0,G.end-Date.now());const e=$('#gtime');if(e)e.textContent=Math.ceil(l/1000)+' dtk';if(l<=0)gDone(G.score,0)},250)}
-  if(id==='gerbang'){G.rounds=shuffle(GERBANG).slice(0,5);G.i=0;G.score=0;G.sel=new Set();G.checked=false}
-  if(id==='venn'){G.i=0;G.score=0;G.n=6;G.cur=genVenn();G.ans=null}
+  if(id==='gerbang'){G.rounds=shuffle(GERBANG).slice(0,5);G.i=0;G.score=0;gerbangRound()}
+  if(id==='venn'){G.round=0;G.score=0;G.n=9;G.lives=3;newVennRound()}
   if(id==='detektif'){G.rounds=shuffle(DETEKTIF).slice(0,5);G.i=0;G.score=0;G.step=0;G.pick=null;G.ans=null}
   if(id==='kasir'){G.i=0;G.score=0;G.n=8;newKasir()}
   if(id==='hakim'){G.i=0;G.score=0;G.n=8;newHakim()}
@@ -958,10 +973,11 @@ const GERBANG=[
  {aturan:'Jika pesanan di atas Rp50.000, maka ongkirnya gratis.',ket:'Tiap kartu satu pesanan: satu sisi total belanja, sisi lain ongkir.',kartu:['Rp72.000','Rp38.000','Ongkir gratis','Ongkir Rp9.000']},
  {aturan:'Jika ikut lomba debat, maka sudah mengisi formulir izin.',ket:'Tiap kartu satu siswa: satu sisi lomba, sisi lain formulir.',kartu:['Ikut debat','Ikut futsal','Formulir terisi','Formulir kosong']},
  {aturan:'Jika hari Minggu, maka perpustakaan tutup.',ket:'Tiap kartu satu hari: satu sisi nama hari, sisi lain status perpustakaan.',kartu:['Minggu','Rabu','Tutup','Buka']}];
-function vGerbang(){const r=G.rounds[G.i];if(!r._o)r._o=shuffle([0,1,2,3]);
+function gerbangRound(){G.ord=shuffle([0,1,2,3]);G.key=new Set(G.ord.map((c,p)=>c===0||c===3?p:-1).filter(p=>p>=0));G.sel=new Set();G.checked=false}
+function vGerbang(){const r=G.rounds[G.i];if(!G.ord)gerbangRound();
   let h=gHead(`<span class="chip">${G.i+1}/${G.rounds.length}</span>`)+`<div class="glass card has-st">${gst()}<div class="cap">Aturan</div><div style="font-weight:600">${esc(r.aturan)}</div><div class="tiny muted" style="margin-top:4px">${esc(r.ket)}</div>
   <div class="small" style="margin-top:10px">Kartu mana saja yang <b>wajib dibalik</b> untuk memeriksa apakah aturan dilanggar?</div>
-  <div class="wcards">${r._o.map(i=>{let c='';if(G.checked){const need=i===0||i===3;c=need&&G.sel.has(i)?'ok':need?'miss':G.sel.has(i)?'bad':''}else if(G.sel.has(i))c='sel';return`<button class="wc ${c}" data-act="gCard" data-v="${i}" ${G.checked?'disabled':''}>${esc(r.kartu[i])}</button>`}).join('')}</div>`;
+  <div class="wcards">${G.ord.map((ci,p)=>{let c='';if(G.checked){const need=G.key.has(p);c=need&&G.sel.has(p)?'ok':need?'miss':G.sel.has(p)?'bad':''}else if(G.sel.has(p))c='sel';return`<button class="wc ${c}" data-act="gCard" data-v="${p}" ${G.checked?'disabled':''}>${esc(r.kartu[ci])}</button>`}).join('')}</div>`;
   if(!G.checked)h+=`<button class="btn p w" style="margin-top:12px" data-act="gCheck" ${G.sel.size?'':'disabled'}>Periksa</button>`;
   else h+=`<div class="fb">${G.lastOk?'<b style="color:var(--ok)">Tepat.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}Balik <b>${esc(r.kartu[0])}</b> (cek akibatnya) dan <b>${esc(r.kartu[3])}</b> (cek syaratnya). <b>${esc(r.kartu[2])}</b> tidak perlu: aturan tidak melarangnya terjadi tanpa syarat (J1). <b>${esc(r.kartu[1])}</b> tidak perlu: aturan tidak berlaku untuknya (J2).</div>
     <button class="btn p w" style="margin-top:10px" data-act="gNext">${G.i<G.rounds.length-1?'Berikutnya':'Lihat skor'}</button>`;
@@ -994,14 +1010,76 @@ function vennSVG(q){const id='v'+Math.random().toString(36).slice(2,7);const C={
   const lab=['A','B','C'];BIT.forEach((b,i)=>{body+=`<circle cx="${C[b][0]}" cy="${C[b][1]}" r="${R}" fill="none" stroke="var(--accent)" stroke-width="1.6"/>`;
     const[lx,ly]=[[44,36],[216,36],[130,198]][i];body+=`<text x="${lx}" y="${ly}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent)">${lab[i]}</text>`});
   return`<svg class="venn" viewBox="0 0 260 205"><defs>${d}</defs>${body}</svg>`}
-function vVenn(){const q=G.cur,O=['Pasti benar','Belum tentu','Pasti salah'];
-  let h=gHead(`<span class="chip">${G.i+1}/${G.n}</span>`)+`<div class="glass card has-st">${gst()}<div class="cap">Premis</div><div class="stim">${q.pre.map(s=>esc(vText(s,q.N))).join('\n')}</div>
-  <div class="cap" style="margin-top:10px">Simpulan</div><div style="font-weight:600">${esc(vText(q.con,q.N))}</div>
-  <div class="opts">${O.map((o,i)=>{let c='';if(G.ans!==null)c=i===q.v?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="vAns" data-v="${i}" ${G.ans!==null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
-  if(G.ans!==null)h+=`<div class="fb">${vennSVG(q)}<div class="tiny muted" style="margin-top:4px">A = ${esc(q.N[0])} · B = ${esc(q.N[1])} · C = ${esc(q.N[2])}<br>Daerah abu-abu pasti kosong; tanda × pasti ada isinya.</div>
-   <div class="small" style="margin-top:6px">${q.v===1?'Ada susunan Venn yang membuat simpulan benar dan ada yang membuatnya salah, jadi belum tentu.':q.v===0?'Di semua susunan yang mungkin, simpulan selalu benar.':'Di semua susunan yang mungkin, simpulan selalu salah.'}</div></div>
-   <button class="btn p w" style="margin-top:10px" data-act="vNext">${G.i<G.n-1?'Berikutnya':'Lihat skor'}</button>`;
+/* --- Kandang Venn (id 'venn') --- */
+const VB={W:300,H:250,R:66,C:{4:[112,96],2:[188,96],1:[150,162]}};
+const HEWAN=['🐱','🐶','🐰','🐸','🐼','🐥'];
+const VF_LVL={1:['semua'],2:['semua','sebagian'],3:['semua','tidak','sebagian','sebagianBukan']};
+function genVennL(lv){const F=VF_LVL[lv],CF=['semua','tidak','sebagian','sebagianBukan'];const r=Math.random(),want=r<.38?0:r<.85?1:2;let best=null;
+  for(let t=0;t<400;t++){const N=rnd(VENN_SET);const ord=(a,b)=>Math.random()<.5?[a,b]:[b,a];
+    const[a1,b1]=ord(4,2),[a2,b2]=ord(2,1),[a3,b3]=ord(4,1);
+    const pre=[{f:rnd(F),x:a1,y:b1},{f:rnd(F),x:a2,y:b2}];if(lv>=2&&!pre.some(s=>s.f!==('semua'))&&Math.random()<.7)continue;
+    const con={f:rnd(CF),x:a3,y:b3};const M=vModels(pre);if(!M.length)continue;
+    const tv=M.map(m=>vEval(m,con));const v=tv.every(Boolean)?0:tv.every(x=>!x)?2:1;const q={N,pre,con,M,v};best=q;if(v===want)return q}
+  return best}
+function vRegion(x,y){let r=0;for(const b of BIT){const[cx,cy]=VB.C[b];if((x-cx)**2+(y-cy)**2<VB.R**2)r|=b}return r}
+function worldMask(){let m=0;for(const k in G.tok){const r=vRegion(G.tok[k].x,G.tok[k].y);if(r)m|=1<<(r-1)}return m}
+function setFilled(m,b){for(let r=1;r<=7;r++)if((r&b)&&((m>>(r-1))&1))return true;return false}
+function newVennRound(){G.round++;G.lv=G.round<=3?1:G.round<=6?2:3;G.cur=genVennL(G.lv);G.tok={};G.phase=1;G.sel=null;G.msg='';G.ans=null;G.p1=null}
+function vVenn(){const q=G.cur,N=q.N,m=worldMask();const lab=['A','B','C'];
+  const hearts=[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('');
+  let h=gHead(`<span class="row" style="gap:2px">${hearts}</span>`)+`<div class="glass card has-st">${gst()}
+  <div class="row sp"><div class="cap" style="margin:0">Ronde ${G.round}/${G.n} · Level ${G.lv}</div><span class="tiny muted">Skor ${G.score}</span></div>`;
+  const ok=s=>vEval(m,s);const empty=BIT.filter(b=>!setFilled(m,b));
+  const mark=(good,live)=>live?`<span class="vm ${good?'y':'n'}">${good?'✓':'✗'}</span>`:'';
+  const live=G.phase===1&&Object.keys(G.tok).length>0;
+  h+=`<div class="cap" style="margin-top:8px">Premis</div>${q.pre.map((s,i)=>`<div class="vline">${mark(ok(s),live)}<span>${esc(vText(s,N))}</span></div>`).join('')}
+  <div class="cap" style="margin-top:8px">Simpulan</div><div class="vline" style="font-weight:600">${live?`<span class="vm ${ok(q.con)?'n':'y'}">${ok(q.con)?'benar':'salah'}</span>`:''}<span>${esc(vText(q.con,N))}</span></div>`;
+  if(G.phase===1){
+    h+=`<div class="vtask">Bangun <b>dunia tandingan</b>: seret hewan ke kandang sampai semua premis benar (✓) tetapi simpulan <b>salah</b>. Setiap kelompok minimal berisi satu hewan. Kalau mustahil, simpulannya pasti benar.</div>`;
+    h+=`<div class="vboard" id="vboard"><svg viewBox="0 0 ${VB.W} ${VB.H}">${BIT.map((b,i)=>{const[cx,cy]=VB.C[b];return`<circle cx="${cx}" cy="${cy}" r="${VB.R}" fill="${['#ef5f5a','#4b8ae8','#3fb46e'][i]}" fill-opacity=".09" stroke="${['#ef5f5a','#4b8ae8','#3fb46e'][i]}" stroke-width="2"/>`}).join('')}
+      ${[[30,26],[270,26],[150,246]].map((p,i)=>`<text x="${p[0]}" y="${p[1]}" text-anchor="middle" font-size="15" font-weight="700" fill="${['#ef5f5a','#4b8ae8','#3fb46e'][i]}">${lab[i]}</text>`).join('')}</svg>
+      ${Object.keys(G.tok).map(k=>`<span class="vtok on" data-id="${k}" style="left:${G.tok[k].x/VB.W*100}%;top:${G.tok[k].y/VB.H*100}%">${HEWAN[k]}</span>`).join('')}</div>
+      <div class="vlegend"><span style="color:#ef5f5a">A</span> = ${esc(N[0])} · <span style="color:#4b8ae8">B</span> = ${esc(N[1])} · <span style="color:#3fb46e">C</span> = ${esc(N[2])}</div>
+      <div class="vtray">${HEWAN.map((e,k)=>G.tok[k]?'':`<span class="vtok ${G.sel===k?'sel':''}" data-id="${k}">${e}</span>`).join('')}<span class="tiny muted" style="align-self:center">${Object.keys(G.tok).length===6?'Semua hewan sudah di kandang':'Seret ke kandang, atau ketuk lalu ketuk kandang'}</span></div>
+      ${empty.length&&live?`<div class="tiny" style="color:var(--warn);font-weight:600;margin-top:6px">Kelompok ${empty.map(b=>lab[BIT.indexOf(b)]).join(', ')} masih kosong.</div>`:''}
+      <div id="vmsg">${G.msg||''}</div>
+      <div class="row" style="margin-top:10px"><button class="btn" style="flex:1" data-act="vMustahil">Mustahil dibuat</button><button class="btn p" style="flex:1" data-act="vUji">Uji duniaku</button></div>
+      <div style="text-align:center;margin-top:6px"><button class="btn sm" data-act="vReset">Kosongkan kandang</button></div>`;
+    after(bindVenn)}
+  else{
+    h+=`<div class="fb small" style="margin-top:10px">${G.p1}</div>
+    <div style="font-weight:600;margin-top:12px">Jadi, simpulan tersebut …</div>
+    <div class="opts">${KS_OPSI.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.v?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="vAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
+    if(G.ans!=null)h+=`<div class="fb">${vennSVG(q)}<div class="tiny muted" style="margin-top:4px">A = ${esc(N[0])} · B = ${esc(N[1])} · C = ${esc(N[2])}<br>Daerah abu-abu pasti kosong; tanda × pasti ada isinya.</div>
+     <div class="small" style="margin-top:6px">${q.v===0?'Tidak ada dunia tandingan, jadi simpulan pasti benar.':q.v===1?'Ada dunia yang membuat simpulan salah dan ada yang membuatnya benar: mungkin benar.':'Di semua dunia yang memenuhi premis, simpulan selalu salah: pasti salah.'}</div></div>
+     <button class="btn p w" style="margin-top:10px" data-act="vNext">${G.lives>0&&G.round<G.n?'Ronde berikutnya':'Lihat skor'}</button>`}
   return h+'</div>'}
+function vPlaceAt(id,cx,cy){const b=$('#vboard');if(!b)return;const r=b.getBoundingClientRect();
+  const x=(cx-r.left)/r.width*VB.W,y=(cy-r.top)/r.height*VB.H;
+  if(x>=0&&x<=VB.W&&y>=0&&y<=VB.H&&vRegion(x,y))G.tok[id]={x,y};else delete G.tok[id];G.sel=null;G.msg='';render()}
+function bindVenn(){const board=$('#vboard');if(!board)return;
+  board.onclick=e=>{if(G.sel!==null&&!e.target.closest('.vtok'))vPlaceAt(G.sel,e.clientX,e.clientY)};
+  document.querySelectorAll('.vtok').forEach(el=>{let sx=0,sy=0,moved=false,ghost=null;
+    el.onpointerdown=e=>{e.preventDefault();sx=e.clientX;sy=e.clientY;moved=false;el.setPointerCapture(e.pointerId)};
+    el.onpointermove=e=>{if(!el.hasPointerCapture(e.pointerId))return;if(!moved&&Math.hypot(e.clientX-sx,e.clientY-sy)<6)return;
+      if(!moved){moved=true;ghost=document.createElement('span');ghost.className='vtok ghost';ghost.textContent=el.textContent;document.body.appendChild(ghost);el.style.opacity='.25'}
+      ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px'};
+    el.onpointerup=e=>{const id=+el.dataset.id;if(ghost){ghost.remove();ghost=null}
+      if(moved)vPlaceAt(id,e.clientX,e.clientY);else if(el.classList.contains('on')){delete G.tok[id];G.msg='';render()}else{G.sel=G.sel===id?null:id;render()}};
+    el.onpointercancel=()=>{if(ghost){ghost.remove();ghost=null}el.style.opacity=''}})}
+function vLog(ok,j){S.log.push({t:today(),src:'game',sk:'N3',ok:ok?1:0,j:ok?null:j});save()}
+function vUji(){const q=G.cur,m=worldMask(),lab=['A','B','C'];
+  const empty=BIT.filter(b=>!setFilled(m,b));
+  if(empty.length){G.msg=`<div class="fb small"><b style="color:var(--bad)">Belum bisa diuji.</b> Kelompok ${empty.map(b=>lab[BIT.indexOf(b)]).join(', ')} masih kosong.</div>`;return render()}
+  const bad=q.pre.map((s,i)=>vEval(m,s)?null:i+1).filter(Boolean);
+  if(bad.length){G.msg=`<div class="fb small"><b style="color:var(--bad)">Premis ${bad.join(' dan ')} belum benar</b> di duniamu. Pindahkan hewan lalu uji lagi.</div>`;return render()}
+  if(vEval(m,q.con)){G.msg=`<div class="fb small"><b style="color:var(--bad)">Simpulan masih benar</b> di duniamu. Coba susunan lain, atau nyatakan mustahil.</div>`;return render()}
+  G.score++;G.phase=2;G.p1='<b style="color:var(--ok)">Dunia tandingan berhasil!</b> Semua premis benar, tetapi simpulan salah. Berarti simpulan itu tidak pasti benar.';render()}
+function vMustahil(){const q=G.cur;
+  if(q.v===0){G.score++;G.phase=2;G.p1='<b style="color:var(--ok)">Tepat, memang mustahil.</b> Di setiap dunia yang memenuhi premis, simpulannya ikut benar.'}
+  else{G.lives--;vLog(false,'J6');const m=q.M.find(x=>!vEval(x,q.con));G.phase=2;
+    G.p1=`<b style="color:var(--bad)">−1 nyawa.</b> Dunia tandingan sebenarnya ada, misalnya hewan di daerah: ${[1,2,3,4,5,6,7].filter(r=>(m>>(r-1))&1).map(r=>['A','B','C'].filter((_,i)=>r&BIT[i]).join('∩')+' saja').join(', ')}.`}
+  render()}
 
 /* --- Detektif Chat --- */
 const DETEKTIF=[
@@ -1216,10 +1294,13 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'gBack':clearInterval(gTimer);G=null;render();break;
   case'geser':answerGeser(v==='1');break;
   case'gCard':{const i=+v;G.sel.has(i)?G.sel.delete(i):G.sel.add(i);render();break}
-  case'gCheck':{const ok=G.sel.size===2&&G.sel.has(0)&&G.sel.has(3);G.checked=true;G.lastOk=ok;if(ok)G.score++;render();break}
-  case'gNext':if(G.i<G.rounds.length-1){G.i++;G.sel=new Set();G.checked=false;render()}else gDone(G.score,G.rounds.length);break;
-  case'vAns':{G.ans=+v;if(G.ans===G.cur.v)G.score++;render();break}
-  case'vNext':if(G.i<G.n-1){G.i++;G.cur=genVenn();G.ans=null;render()}else gDone(G.score,G.n);break;
+  case'gCheck':{const ok=G.sel.size===G.key.size&&[...G.key].every(p=>G.sel.has(p));G.checked=true;G.lastOk=ok;if(ok)G.score++;render();break}
+  case'gNext':if(G.i<G.rounds.length-1){G.i++;gerbangRound();render()}else gDone(G.score,G.rounds.length);break;
+  case'vAns':{G.ans=+v;const ok=G.ans===G.cur.v;if(ok)G.score++;else G.lives--;vLog(ok,G.ans>=3?'J13':G.ans===0?'J6':G.ans===2?'J6':null);render();break}
+  case'vNext':if(G.lives>0&&G.round<G.n){newVennRound();render();window.scrollTo(0,0)}else{const r=S.games.venn||(S.games.venn={best:0,main:0});r.lvl=Math.max(r.lvl||0,G.lv);gDone(G.score,G.n*2)}break;
+  case'vUji':vUji();break;
+  case'vMustahil':vMustahil();break;
+  case'vReset':G.tok={};G.sel=null;G.msg='';render();break;
   case'dMsg':{G.pick=+v;if(G.pick===G.rounds[G.i].pengalih)G.score++;render();break}
   case'dStep':G.step=1;render();break;
   case'dAns':{G.ans=+v;if(G.ans===G.rounds[G.i].v)G.score++;render();break}
