@@ -48,6 +48,7 @@ button{cursor:pointer;border:0;background:none;-webkit-tap-highlight-color:trans
 .sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:3px}
 .top-r{display:flex;gap:8px;align-items:center}
 .ibtn{width:38px;height:38px;display:grid;place-items:center;border-radius:9px;background:var(--blue);color:#fff;border:2px solid var(--line);box-shadow:0 3px 0 var(--sh)}
+.ibtn{text-decoration:none}
 .ibtn:active{transform:translateY(3px);box-shadow:0 0 0 var(--sh)}
 .ibtn svg{width:19px;height:19px}
 
@@ -326,7 +327,196 @@ body{overflow-x:hidden}
 .vtok.ghost{position:fixed;z-index:60;transform:translate(-50%,-60%) scale(1.15);pointer-events:none;box-shadow:0 6px 14px rgba(30,45,80,.2)}
 .vtray{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;padding:8px;border-radius:10px;background:#f6f8fc;border:1.5px solid #e1e8f4;min-height:52px}
 .vlegend{font-size:11.5px;color:var(--muted);text-align:center;margin-top:4px}.vlegend span{font-weight:700}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Beli Petunjuk */
+.coin{position:relative;display:inline-flex;align-items:center;gap:3px;font-weight:700;font-size:13px;padding:3px 9px;border-radius:7px;background:#fff6d6;border:1.5px solid color-mix(in srgb,var(--yellow) 60%,#7a5200);color:#7a5200}
+.coin i{position:absolute;right:-6px;top:-14px;font-style:normal;font-size:11px;font-weight:700;padding:0 5px;border-radius:5px;animation:pop .9s ease-out forwards}
+.coin i.up{background:var(--green);color:#fff}.coin i.dn{background:var(--red);color:#fff}
+@keyframes pop{0%{opacity:0;transform:translateY(6px)}20%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0;transform:translateY(-6px)}}
+.clues{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.clue{display:flex;gap:8px;align-items:center;padding:11px 12px;border-radius:10px;font-size:14px;line-height:1.4;text-align:left;width:100%}
+.clue .cn{flex:none;font-weight:700;color:var(--muted)}
+.clue.shut{background:repeating-linear-gradient(135deg,#eef2fa 0 8px,#f6f8fd 8px 16px);border:1.5px dashed #b9c6de;color:var(--muted);font-weight:600}
+.clue.shut .price{margin-left:auto;font-size:12px;font-weight:700;color:#7a5200;background:#fff6d6;border:1.5px solid color-mix(in srgb,var(--yellow) 60%,#7a5200);padding:2px 8px;border-radius:6px}
+.clue.open{background:#fff;border:1.5px solid #cdd7ea;box-shadow:0 2px 0 #dbe3f1;animation:flip .35s ease-out}
+@keyframes flip{0%{transform:rotateX(80deg);opacity:.3}100%{transform:none;opacity:1}}
+.ansrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}.ansrow .btn{flex:1;min-width:70px}
+
+/* Inspektur Bandara */
+.rule{font-weight:700;font-size:15px;line-height:1.4;padding:9px 11px;border-radius:10px;background:#fff6d6;border:1.5px solid color-mix(in srgb,var(--yellow) 60%,#7a5200)}
+.jatah{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:700;color:var(--muted)}
+.jatah i{width:10px;height:13px;border-radius:2px;background:var(--blue);display:inline-block}.jatah b{color:var(--red)}
+.belt{position:relative;height:170px;margin-top:8px;border-radius:12px;overflow:hidden;background:#eef2f8;border:1.5px solid #cdd7ea;display:flex;align-items:flex-end;justify-content:center;padding-bottom:22px}
+.belt::after{content:'';position:absolute;left:0;right:0;bottom:0;height:20px;background:repeating-linear-gradient(90deg,#5b6d99 0 14px,#7c8db5 14px 28px);animation:beltmv .9s linear infinite}
+@keyframes beltmv{to{background-position:-28px 0}}
+.kop{position:relative;z-index:1;width:150px;display:flex;flex-direction:column;align-items:center}
+.kop.slide{animation:kin .45s cubic-bezier(.2,.9,.3,1.1)}
+@keyframes kin{from{transform:translateX(230px)}to{transform:none}}
+.kop.next{position:absolute;right:-60px;bottom:22px;width:110px;opacity:.5}
+.khandle{width:44px;height:16px;border:4px solid #8a6a3a;border-bottom:0;border-radius:10px 10px 0 0}
+.kbody{width:100%;min-height:104px;border-radius:12px;background:linear-gradient(180deg,#d9a35b,#c38a43);border:2px solid #8a6a3a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.08)}
+.kop.next .kbody{min-height:78px}
+.ktag{background:#fff;border:1.5px solid #8a6a3a;border-radius:6px;padding:3px 8px;font-size:12.5px;font-weight:700;color:#4a3410;text-align:center}
+.kq{font-family:"Lilita One","Rubik",sans-serif;font-size:22px;color:#fff;opacity:.8}
+.khid{background:#26304b;color:#fff;border-radius:6px;padding:3px 8px;font-size:12px;font-weight:700;text-align:center}
+.kop.okk .kbody{box-shadow:0 0 0 4px var(--ok-soft),inset 0 -6px 0 rgba(0,0,0,.08)}
+.kop.badk .kbody{box-shadow:0 0 0 4px var(--bad-soft),inset 0 -6px 0 rgba(0,0,0,.08);animation:shake .3s}
+
+/* Rantai Kunci */
+.rkn{flex:none;width:20px;height:20px;border-radius:5px;display:grid;place-items:center;background:#eef2f9;border:1.5px solid #cdd7ea;font-size:11px;font-weight:700;color:var(--muted);margin-top:1px}
+.rkgoal{display:flex;gap:8px;margin-top:12px}
+.rkgoal>div{flex:1;display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:10px;background:#f6f8fc;border:1.5px solid #cdd7ea;font-size:13px;line-height:1.35}
+.rkgoal .door{flex-direction:row;gap:8px;align-items:center;background:#fff6d6;border-color:color-mix(in srgb,var(--yellow) 60%,#7a5200)}
+.rkgoal .door>span:last-child{display:flex;flex-direction:column;gap:2px}
+.rkgoal .door.open{background:var(--ok-soft);border-color:var(--green)}
+.lock{font-size:20px}.door.open .lock{animation:snap .4s}
+.chainv{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:6px}
+.node{padding:5px 9px;border-radius:8px;background:#fff;border:1.5px solid #cdd7ea;font-size:12.5px;font-weight:600;line-height:1.3;animation:snap .3s}
+.node.f{background:#eef4ff;border-color:var(--blue)}.node.q{border-style:dashed;color:var(--faint)}
+.arr{color:var(--muted);font-weight:700}
+.tiles{display:flex;flex-direction:column;gap:7px;margin-top:6px}
+.tile2{text-align:left;padding:9px 11px;border-radius:10px;background:#fff;border:1.5px solid #cdd7ea;box-shadow:0 2px 0 #dbe3f1;font-size:13.5px;line-height:1.4;font-weight:500}
+.tile2:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+.tile2.in{background:var(--ok-soft);border-color:var(--green);opacity:.75}
+.tile2.dead{background:var(--bad-soft);border-color:var(--red);text-decoration:line-through;opacity:.6}
+
+/* Belanja Hemat */
+.cart{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;min-height:24px}
+.ci{font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--ok-soft);border:1.5px solid color-mix(in srgb,var(--green) 50%,#fff);animation:snap .3s}
+.shelf{margin-top:12px;padding:12px;border-radius:12px;background:#fff6d6;border:1.5px solid color-mix(in srgb,var(--yellow) 60%,#7a5200);text-align:center}
+.pname{font-family:"Lilita One","Rubik",sans-serif;font-size:20px}
+.pprice{font-size:13px;font-weight:600;color:#7a5200}
+.ptag{border-style:dashed}
+
+/* Kursi Rapat seret-lepas */
+.nm,.seat.f{touch-action:none;user-select:none;-webkit-user-select:none}
+.ghostnm{position:fixed;z-index:60;transform:translate(-50%,-60%) scale(1.08);pointer-events:none;box-shadow:0 6px 14px rgba(30,45,80,.2);background:var(--blue);color:#fff;border-color:var(--blue)}
+
+.combo{animation:snap .35s}
+
+/* menara bersusun */
+.tower.wall{display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;gap:7px;padding:16px 10px 10px;min-height:76px}
+.trow{display:flex;gap:2px}.trow.off{transform:translateX(16px)}
+.tower.wall .b{width:32px;height:15px}
+
+/* layar pengenalan */
+.steps2{margin:4px 0 0 18px;padding:0;display:flex;flex-direction:column;gap:7px;font-size:14px;line-height:1.45}
+.steps2 li::marker{font-weight:700;color:var(--muted)}
+
+/* kasus bergaya kejadian nyata */
+.sc{border-radius:12px;overflow:hidden;border:1.5px solid #cdd7ea;font-size:14px;line-height:1.5}
+.sch{display:flex;gap:8px;align-items:center;padding:8px 12px;font-size:12px;font-weight:700;letter-spacing:.4px}
+.sch span{font-weight:600;letter-spacing:0;font-size:13px}
+.sn{display:inline-grid;place-items:center;min-width:17px;height:17px;border-radius:5px;background:rgba(38,48,75,.08);color:var(--muted);font-size:10.5px;font-weight:700;margin-right:6px;vertical-align:1px}
+.sc .roles{margin-top:6px}
+.sc-chat{background:#eaf2ee;border-color:#c9dccf}.sc-chat .sch{background:#3fb46e;color:#fff;font-size:13.5px;letter-spacing:0}
+.sc-chat .scb{padding:10px;display:flex;flex-direction:column;gap:7px;background-image:radial-gradient(rgba(63,180,110,.08) 1px,transparent 1.5px);background-size:12px 12px}
+.sbub{max-width:92%;align-self:flex-start;background:#fff;border-radius:4px 12px 12px 12px;padding:7px 10px;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.sc-post{background:#fff}.scph{display:flex;gap:9px;align-items:center;padding:10px 12px 4px;font-size:13px}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--pink);color:#fff;font-weight:700}
+.spost{padding:6px 12px 10px;font-size:14.5px}
+.scm{background:#f6f8fc;border-top:1.5px solid #e1e8f4;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.scmt{background:#fff;border-radius:10px;padding:6px 9px;font-size:13.5px;border:1px solid #e1e8f4}
+.scb{padding:8px 12px 10px}
+.sline{padding:6px 0;border-bottom:1px dashed #e1e8f4}.sline:last-child{border-bottom:0}
+.sc-board{background:#fffdf3;border-color:#ead9a0}.sc-board .sch{background:#f6d266;color:#5a4300}
+.sc-flyer{background:#fff5f4;border:2px dashed #ef8f8b}.sc-flyer .sch{background:#ef5f5a;color:#fff}
+.sc-report{background:#f5f8ff;border-color:#c6d5f3}.sc-report .sch{background:#4b8ae8;color:#fff}
+.sc-note{background:#fffef8;border-color:#e5e1cf;background-image:repeating-linear-gradient(transparent 0 27px,#eef0f4 27px 28px)}.sc-note .sch{background:#f2efe3;color:#6b6450}
+
+.verdict{margin-top:12px;font-size:13.5px;padding:7px 11px;border-radius:9px;background:#f6f8fc;border:1.5px solid #e1e8f4;display:inline-block}
+/* Belanja: label harga */
+.shelf{position:relative}.pemo{font-size:40px;line-height:1}
+.tags{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}
+.ptag2{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:16px 4px 10px;border-radius:6px 6px 14px 14px;background:#ffe14d;border:2px solid #e0b400;box-shadow:0 3px 0 #d4a800;color:#b3261e;transform:rotate(-2deg)}
+.ptag2:nth-child(2){transform:rotate(1.5deg);background:#ffd1e1;border-color:#e88bb0;box-shadow:0 3px 0 #d97aa0}
+.ptag2:nth-child(3){transform:rotate(-1deg);background:#d6f0ff;border-color:#7cc0e6;box-shadow:0 3px 0 #6aaed6;color:#1d4f9a}
+.ptag2:active:not(:disabled){transform:translateY(3px)}
+.ptag2 .hole{position:absolute;top:5px;width:8px;height:8px;border-radius:50%;background:#fff;border:1.5px solid rgba(0,0,0,.2)}
+.tk{font-size:9.5px;font-weight:800;letter-spacing:.8px;opacity:.8}
+.tb{font-family:"Lilita One","Rubik",sans-serif;font-size:24px;line-height:1.05}
+.ts{font-size:11px;font-weight:700}
+.tf{margin-top:4px;font-size:11.5px;font-weight:700;background:#fff;color:var(--text);border-radius:5px;padding:1px 6px}
+.ptag2.ok{outline:3px solid var(--green);outline-offset:2px}.ptag2.bad{outline:3px solid var(--red);outline-offset:2px}.ptag2.dim{opacity:.6}
+/* Detektif: obrolan */
+.wa{margin-top:4px;border-radius:12px;overflow:hidden;border:1.5px solid #c9dccf}
+.wah{display:flex;gap:9px;align-items:center;padding:8px 11px;background:#3fb46e;color:#fff;font-size:13.5px;line-height:1.25}
+.wag{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font-size:16px}
+.wab{padding:10px 8px;display:flex;flex-direction:column;gap:5px;background:#eaf2ee;background-image:radial-gradient(rgba(63,180,110,.08) 1px,transparent 1.5px);background-size:12px 12px}
+.wam{display:flex;gap:6px;align-items:flex-start}.wam.cont{margin-top:-2px}
+.wav{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:12.5px}.wav.sp{visibility:hidden}
+.wbub{position:relative;text-align:left;max-width:84%;background:#fff;border-radius:4px 12px 12px 12px;padding:6px 10px 14px;font-size:14px;line-height:1.4;box-shadow:0 1px 1px rgba(0,0,0,.08);border:1.5px solid transparent;min-width:90px}
+.wbub .who{display:block;font-size:11.5px;font-weight:700}
+.wt{position:absolute;right:8px;bottom:2px;font-size:9.5px;color:var(--faint)}
+.wbub.ok{border-color:var(--green);background:var(--ok-soft)}.wbub.bad{border-color:var(--red);background:var(--bad-soft)}
+.sc .roles{gap:5px}.sc .role{font-size:11px;padding:2px 8px;box-shadow:none}
+
+/* Kursi Rapat: denah meja */
+.kav{width:34px;height:34px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-weight:700;font-size:14px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.18);flex:none}
+.kav.sm{width:24px;height:24px;font-size:11px;border-width:1.5px}
+.kcards{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.kcard{padding:7px 8px;border-radius:10px;background:#f6f8fc;border:1.5px solid #e1e8f4;transition:.2s}
+.kcard.on{background:var(--ok-soft);border-color:var(--green)}.kcard.off{background:var(--bad-soft);border-color:var(--red)}
+.kci{display:flex;align-items:center;gap:3px;min-height:26px}.kct{font-size:11.5px;line-height:1.3;color:var(--muted);margin-top:3px}
+.kic{font-size:13px;font-weight:700;color:var(--muted);padding:0 2px}.kic.no{text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px}
+.meja{margin:16px auto 0;max-width:360px}
+.tbl{height:48px;border-radius:12px;background:linear-gradient(#cf9c63,#b9844b);border:2px solid #8a6a3a;display:grid;place-items:center;color:#fff3dc;font-size:11px;font-weight:800;letter-spacing:2px}
+.chairs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.chair{position:relative;min-height:76px;border-radius:10px;border:1.5px dashed #b9c6de;background:#f6f8fc;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 2px 4px}
+.chair .back{position:absolute;top:-1px;left:18%;right:18%;height:7px;border-radius:0 0 6px 6px;background:#cdd7ea}
+.chair.f{border-style:solid;border-color:#cdd7ea;background:#fff}
+.cnum{font-family:"Lilita One","Rubik",sans-serif;font-size:18px;color:#b9c6de}.cn2{font-size:10.5px;font-weight:700}
+.lobby{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;padding:10px;border-radius:12px;background:#f6f8fc;border:1.5px solid #e1e8f4;min-height:60px}
+.tok{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:4px 6px;border:0;background:none;box-shadow:none;font-size:11px;font-weight:700}
+.tok.sel .kav{outline:3px solid var(--blue);outline-offset:1px}
+.ghostnm{display:inline-flex;flex-direction:column;align-items:center;gap:2px;background:transparent!important;border:0!important;box-shadow:none!important;color:var(--text)!important;font-size:11px;font-weight:700}
+/* Lompat Batu */
+.river{position:relative;height:150px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#8fd0f3,#5fb3e6);border:1.5px solid #6aaed6}
+.river::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(170deg,rgba(255,255,255,.18) 0 2px,transparent 2px 22px);animation:flow 3s linear infinite}
+@keyframes flow{to{background-position:60px 0}}
+.bank{position:absolute;top:0;bottom:0;width:30px;background:#7ccf8f;border-right:3px solid #5fb878}.bank.l{left:0}.bank.r{right:0;border-right:0;border-left:3px solid #5fb878}
+.stones{position:absolute;left:34px;right:34px;top:72px;display:flex;justify-content:space-between;gap:3px}
+.stone{display:inline-grid;place-items:center;min-width:40px;height:34px;padding:0 4px;border-radius:50% 50% 45% 45%/60% 60% 40% 40%;background:#d6dbe3;border:2px solid #9aa4b4;box-shadow:inset 0 -4px 0 rgba(0,0,0,.08);font-weight:800;font-size:15px;color:#26304b}
+.stone.slot{background:transparent;border:2px dashed #fff;color:#fff;box-shadow:none}
+.stone.slot.filled{background:#ffe27a;border:2px solid #d4a800;color:#26304b;animation:snap .4s}
+.stone.slot.miss{border-color:var(--red);color:#fff}
+.hopper{position:absolute;left:2px;top:30px;width:34px;height:34px;z-index:2}
+.river.cross .hopper{animation:stonehop 1.6s ease-in-out forwards}
+@keyframes stonehop{0%{left:2px;top:30px}15%{top:14px}30%{top:34px}45%{top:14px}60%{top:34px}75%{top:14px}100%{left:calc(100% - 36px);top:30px}}
+.floaties{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:8px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#d9effb,#c2e5f7)}
+.stone.fl{min-width:54px;height:42px;font-size:17px;background:#e4e8ee;cursor:grab;touch-action:none;animation:bobstone 2.4s ease-in-out infinite}
+.stone.fl.key{background:#ffe27a;border-color:#d4a800}.stone.fl.sunk{opacity:.35;transform:translateY(8px);animation:none}.stone.fl.gone{opacity:.35;animation:none}
+@keyframes bobstone{50%{transform:translateY(-4px)}}
+.ghoststone{position:fixed;z-index:60;transform:translate(-50%,-60%) scale(1.1);pointer-events:none;min-width:54px;height:42px;font-size:17px}
+.stones .stone{min-width:0;flex:1;font-size:14px;height:32px}
+@media (prefers-reduced-motion:reduce){html:not([data-anim="on"]) *{animation:none!important;transition:none!important}}
+
+/* ===== PENGATURAN: saklar, baris, mode gelap, jeda gerakan ===== */
+.sw{position:relative;width:48px;height:28px;flex:none;border-radius:14px;background:#d3dcea;border:2px solid var(--line);cursor:pointer;padding:0;transition:background .2s}
+.sw i{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid var(--line);transition:left .2s}
+.sw.on{background:var(--green);border-color:color-mix(in srgb,var(--green) 60%,#1f2a4d)}
+.sw.on i{left:22px;border-color:color-mix(in srgb,var(--green) 60%,#1f2a4d)}
+.srow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:2px dashed var(--edge,var(--line2,#e1e8f4))}
+.srow:first-of-type{border-top:0}
+.srow .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.srow .grow b{font-weight:600}
+.sbtn{flex:none;min-height:36px;padding:0 14px;border-radius:9px;background:var(--plate,var(--surface,#fff));border:2px solid var(--line,var(--pl));box-shadow:0 3px 0 var(--sh);font-weight:700;color:var(--text,var(--ink))}
+.sbtn.danger{color:var(--red)}
+html.nomo *,html.nomo *::before,html.nomo *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+
+html[data-theme="dark"]{color-scheme:dark;--ink:#262a33;--line:#6a77a0;--sh:rgba(0,0,0,.4);--plate:#283146;--text:#e4e7ee;--muted:#a1a9ba;--faint:#6e778b;--edge:#3a4664;--gray:#4d576c;
+  --red:#e0706a;--yellow:#e8c250;--blue:#5a8fe0;--green:#4aa872;--orange:#e29a5c;--sky:#5db3d3;--pink:#d98aa8;--lime:#9dbb6a;
+  --accent-soft:#1f3256;--ok-soft:#173a28;--bad-soft:#45201f;--base:#1c2332;--stud-hi:#222b3c;--stud-lo:#171e2b}
+html[data-theme="dark"] body{background:linear-gradient(180deg,#131a29 0%,#18202f 50%,#1c2535 100%) fixed!important;color:var(--text)}
+html[data-theme="dark"] .scene{opacity:.22}
+html[data-theme="dark"] .fb{border-color:#3d4a66;background:#202a3f}
+html[data-theme="dark"] .opt,html[data-theme="dark"] .promo,html[data-theme="dark"] .opt .k{border-color:#3d4a66}
+html[data-theme="dark"] .opt .k{background:#313c55}
+html[data-theme="dark"] .hero .bubble,html[data-theme="dark"] .hero .bubble::after{background:#283146;border-color:#4a5880;box-shadow:none}
+html[data-theme="dark"] .hero .bubble{box-shadow:0 3px 0 rgba(0,0,0,.3)}
+html[data-theme="dark"] .intro{background:rgba(40,49,70,.9)}
+html[data-theme="dark"] .sw{background:#3b4660}
+html[data-theme="dark"] .sw i{background:#e4e7ee}
 </style>
 </head>
 <body>
@@ -334,9 +524,7 @@ body{overflow-x:hidden}
 <div class="wrap">
   <header class="top glass has-st"><span class="st"><i></i><i></i><i></i><i></i></span><span class="st r"><i></i><i></i></span>
     <div class="logo"><svg viewBox="0 0 34 34"><rect x="7" y="2" width="8" height="5" rx="2" fill="#ef5f5a" stroke="#5b6d99" stroke-width="2"/><rect x="19" y="2" width="8" height="5" rx="2" fill="#ef5f5a" stroke="#5b6d99" stroke-width="2"/><rect x="2" y="6" width="30" height="16" rx="3" fill="#ef5f5a" stroke="#5b6d99" stroke-width="2.5"/><rect x="2" y="21" width="30" height="10" rx="3" fill="#ffd24f" stroke="#5b6d99" stroke-width="2.5"/></svg><div><div class="ttl" id="ttl">Nalar Harian</div><div class="sub" id="sub"></div></div></div>
-    <div class="top-r"><span class="chip" id="streak"></span>
-      <button class="ibtn glass" data-act="nav" data-v="paket" aria-label="Paket"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></button>
-    </div>
+    <div class="top-r"><button type="button" class="ibtn glass" data-act="openCfg" aria-label="Pengaturan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h8M18 6h2M4 12h2M12 12h8M4 18h10M20 18h0"/><circle cx="15" cy="6" r="2.2"/><circle cx="9" cy="12" r="2.2"/><circle cx="17" cy="18" r="2.2"/></svg></button><a class="ibtn glass" href="https://faiqdk07-tech.github.io/progres-harian/#hari-ini" aria-label="Kembali ke Progres Harian"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/></svg></a></div>
   </header>
   <main id="view"></main>
 </div>
@@ -381,7 +569,10 @@ function seqPush(s,code){(s.seq||(s.seq=[])).push(code)}
 let LT=-1;
 function tower(s,mini){let q=s.seq;if(!q){q=[];[['p','pem'],['k','kas'],['j','jem']].forEach(([c,k])=>{for(let i=0;i<s[k].n;i++)q.push(c+(i<s[k].b?1:0))})}
   const C={p:COL.pem,k:COL.kas,j:COL.jem};const isNew=LT>=0&&q.length>LT;LT=q.length;
-  return`<div class="${mini?'mtower':'tower'}">${q.map((x,i)=>`<span class="b${x[1]==='0'?' x':''}${isNew&&i===q.length-1?' new':''}" style="--c:${C[x[0]]}"></span>`).join('')}</div>`}
+  const B=q.map((x,i)=>`<span class="b${x[1]==='0'?' x':''}${isNew&&i===q.length-1?' new':''}" style="--c:${C[x[0]]}"></span>`);
+  if(mini)return`<div class="mtower">${B.join('')}</div>`;
+  const rows=[];for(let i=0;i<B.length;i+=6)rows.push(B.slice(i,i+6));
+  return`<div class="tower wall">${rows.map((r,ri)=>`<div class="trow${ri%2?' off':''}">${r.join('')}</div>`).join('')}</div>`}
 /* opsi teracak dengan kunci dan label jebakan ikut */
 function mkOpts(items){const s=shuffle(items);return{opsi:s.map(x=>x.t),kunci:s.findIndex(x=>x.ok),j:s.map(x=>x.ok?null:(x.j||null))}}
 
@@ -706,7 +897,6 @@ function nav(r){clearInterval(gTimer);route=r;try{history.replaceState(null,'','
 function renderTabs(){$('#tabs').innerHTML=TABS.map(([k,l,p])=>`<button class="${route===k?'on':''} ${yk(TABC[k])}" style="--c:${TABC[k]}" data-act="nav" data-v="${k}">${svg(p)}<span>${l}</span></button>`).join('')}
 function render(){
   $('#sub').textContent=tglPanjang(today());
-  const st=streak();$('#streak').className='chip y';$('#streak').innerHTML=`Beruntun ${st}`;
   renderTabs();
   const V={'hari-ini':vHari,main:vMain,peta:vPeta,rekap:vRekap,jurnal:vJurnal,paket:vPaket}[route]||vHari;
   const hr=hero();$('#view').innerHTML=(hr||'<div class="gap-top"></div>')+V();afterRender();
@@ -716,6 +906,22 @@ function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clea
 async function copyText(txt,msg){try{await navigator.clipboard.writeText(txt);toast(msg||'Tersalin')}catch(e){openSheet(`<h2>Salin manual</h2><p class="small muted">Penyalinan otomatis ditolak. Tekan lama teks di bawah, pilih semua, lalu salin.</p><textarea id="mcopy" style="min-height:260px;margin-top:8px">${esc(txt)}</textarea><button class="btn w" style="margin-top:10px" data-act="closeSheet">Tutup</button>`);setTimeout(()=>{const a=$('#mcopy');a&&a.select()},50)}}
 function openSheet(h){const s=$('#sheet');s.innerHTML=`<div class="pane glass">${h}</div>`;s.classList.remove('hidden')}
 function closeSheet(){$('#sheet').classList.add('hidden');$('#sheet').innerHTML=''}
+/* ================= PENGATURAN ================= */
+function OSGERAK(){try{return !matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return true}}
+function cfg(){const c=S.set||{};return{terang:c.terang!==false,gerak:c.gerak==null?OSGERAK():!!c.gerak}}
+function applyCfg(){const c=cfg(),h=document.documentElement;
+  h.dataset.theme=c.terang?'light':'dark';h.style.colorScheme=c.terang?'light':'dark';
+  h.classList.toggle('nomo',!c.gerak);if(c.gerak)h.setAttribute('data-anim','on');else h.removeAttribute('data-anim');
+  try{const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',c.terang?'#dcecff':'#1c2332')}catch(e){}}
+function setCfg(k,v){S.set=Object.assign({},S.set||{});S.set[k]=v;save();applyCfg()}
+function openCfg(){const c=cfg();
+  const sw=(on,act,label,sub)=>`<div class="srow"><div class="grow"><b>${label}</b>${sub?`<span class="small muted">${sub}</span>`:''}</div><button type="button" class="sw${on?' on':''}" role="switch" aria-checked="${on}" aria-label="${label}" data-act="${act}"><i></i></button></div>`;
+  openSheet(`<h2>Pengaturan</h2>
+  ${sw(c.terang,'cfgTerang','Mode terang','Matikan untuk tampilan gelap')}
+  ${sw(c.gerak,'cfgGerak','Animasi dan gerakan','Awan, balok melayang, dan transisi')}
+  <div class="srow"><div class="grow"><b>Hapus progres hari ini</b><span class="small muted">Sesi hari ini kembali ke awal</span></div><button type="button" class="sbtn danger" data-act="resetTodayAsk">Hapus</button></div>
+  <div class="srow"><div class="grow"><b>Hapus semua progres</b><span class="small muted">Semua tahap dan riwayat</span></div><button type="button" class="sbtn danger" data-act="resetAllAsk">Hapus</button></div>
+  <div class="row" style="margin-top:14px"><button type="button" class="btn" style="flex:1" data-act="closeSheet">Tutup</button></div>`)}
 
 /* ================= HARI INI ================= */
 let PEM=null,KAS=null,JEM=null,pemTimer=null;
@@ -736,7 +942,7 @@ function vHari(){
   const stok=Object.keys(S.paket).filter(k=>/^\d/.test(k)&&!S.paket[k].dipakai).length;
   const b=s.pem.b+s.kas.b+s.jem.b,n=s.pem.n+s.kas.n+s.jem.n;
   let h=`<div class="glass card has-st">${studs(4,'var(--plate)')}${studs(2,'var(--plate)',1)}
-    <div class="row sp"><span class="lbl">Menara hari ini</span><span class="tiny muted" style="font-weight:600">${n?`${b} dari ${n} balok berwarna`:'1 jawaban benar = 1 balok'}</span></div>
+    <div class="row sp"><span class="lbl">Menara hari ini</span></div>
     ${n?tower(s):`<div class="tower" style="align-items:center;justify-content:center"><span class="tiny" style="color:color-mix(in srgb,var(--green) 55%,#1c2a22);font-weight:700">Belum ada balok. Mulai sesi untuk membangun.</span></div>`}
     <div class="row tiny muted" style="gap:12px;margin-top:8px;font-weight:600"><span class="row" style="gap:4px"><span class="b" style="--c:var(--yellow);width:16px;height:9px"></span>pemanasan</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--red);width:16px;height:9px"></span>kasus</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--blue);width:16px;height:9px"></span>jembatan</span><span class="row" style="gap:4px"><span class="b x" style="width:16px;height:9px"></span>salah</span></div></div>`;
   if(s.selesai){
@@ -747,7 +953,7 @@ function vHari(){
     <div class="kv"><span class="muted">Akurasi</span><b>${n?Math.round(b/n*100):0}%</b></div>
     <div class="row" style="margin-top:12px"><button class="btn sm" data-act="nav" data-v="rekap">Lihat rekap</button><button class="btn sm" data-act="nav" data-v="main">Mini game</button></div></div>`}
   else{
-    h+=`<div class="glass card has-st">${studs(3,'var(--plate)')}<div class="row sp"><span class="lbl">Sesi ±15 menit</span>${stok?`<span class="chip">${stok} paket di stok</span>`:''}</div>
+    h+=`<div class="glass card has-st">${studs(3,'var(--plate)')}<div class="row sp"><span class="lbl">Sesi ±15 menit</span><button class="btn sm" data-act="nav" data-v="paket">Paket · ${stok}</button></div>
     <div>
       ${partRow(0,'Pemanasan kilat','3 menit · 8 kartu · N2–N4',s,COL.pem)}
       ${partRow(1,'Kasus hari ini','7 menit · '+kasInfo,s,COL.kas)}
@@ -761,14 +967,35 @@ function vHari(){
   const sx=S.sesi[today()];if(sx&&(sx.fase>0||sx.selesai||sx.pem.n||sx.kas.n||sx.jem.n))h+=`<div style="text-align:center;margin:4px 0 8px"><button class="btn sm" data-act="askResetToday">↺ Reset progres hari ini</button></div>`;
   return h}
 
+/* ================= PENGENALAN MODE ================= */
+const SESI_INTRO={
+ 1:{judul:'Pemanasan kilat',c:'var(--yellow)',langkah:['8 kartu, waktu 3 menit.','Ketuk satu jawaban. Kalau benar, kartu berikutnya langsung muncul.','Kalau salah, baca alasannya lalu ketuk Lanjut.'],tombol:'Mulai pemanasan'},
+ 2:{judul:'Kasus hari ini',c:'var(--red)',langkah:['Baca kejadiannya dulu sampai habis.','Bongkar: ketuk peran tiap kalimat (klaim, alasan, contoh, atau pengalih), lalu Cek.','Nilai dan Putuskan: pilih satu jawaban di tiap langkah.','Pembahasan muncul setelah kamu menjawab.'],tombol:'Mulai kasus'},
+ 3:{judul:'Jembatan UTBK',c:'var(--blue)',langkah:['3 soal bergaya UTBK dengan keterampilan yang sama.','Pilihan ganda: ketuk satu jawaban.','Benar/salah: pilih label di setiap baris, lalu Periksa. Semua baris harus tepat.'],tombol:'Mulai soal'}};
+const GAME_INTRO={
+ geser:['Di atas ada aturan, satu fakta, dan pintu terkunci.','Ketuk ubin “jika–maka” untuk menyambung rantai dari fakta sampai isi pintu.','Ubin palsu (aturan yang dibalik atau disangkal) mengurangi 1 nyawa. Salah sambung tidak apa-apa.','Pintu terbuka, lalu jawab satu soal UTBK.'],
+ gerbang:['Ada satu aturan “jika…, maka…”.','Koper lewat satu per satu; kamu hanya melihat satu sisinya.','Ketuk Buka untuk koper yang wajib diperiksa, Loloskan untuk yang tidak.','Jatah buka terbatas. Pelanggar yang lolos mengurangi 1 nyawa.'],
+ venn:['Seret hewan ke lingkaran A, B, dan C. Tiap kelompok minimal satu hewan.','Susun “dunia tandingan”: semua premis benar, tetapi simpulannya salah.','Ketuk Uji duniaku. Kalau menurutmu mustahil, ketuk Mustahil dibuat.','Lalu jawab soal kualitas simpulan. 3 nyawa.'],
+ detektif:['Baca obrolan grup.','Ketuk satu pesan pengalih: pesan yang tidak berkaitan dengan simpulan.','Nilai simpulannya: pasti benar, belum tentu, atau pasti salah.','3 nyawa; 3 benar beruntun memberi bonus.'],
+ kasir:['Dana Rp500.000 untuk 6 barang.','Ketuk label promo untuk membeli dengan promo itu, atau lewati barangnya.','Pilih promo yang paling murah. Waktu 20 detik per barang.','Skor = barang × 10 + sisa dana per Rp10.000, lalu 2 soal penutup.'],
+ hakim:['Baca informasi dan satu simpulan.','Pilih kualitas simpulan dari 5 opsi baku UTBK.','20 detik per ronde. 3 nyawa; 3 benar beruntun memberi bonus.'],
+ cukup:['Kamu punya 10 koin. Petunjuk (i) dan (ii) tertutup; harganya 1 koin.','Beli petunjuk seperlunya. Jawab begitu informasinya sudah cukup.','Benar +4, menjawab sebelum cukup −3, salah −2.','Lalu jawab soal kecukupan data versi UTBK.'],
+ kursi:['Lima orang harus duduk di kursi 1–5 (kiri ke kanan) mengikuti kartu syarat.','Seret orang dari lobi ke kursi. Kartu syarat menyala hijau kalau terpenuhi, merah kalau dilanggar.','Saat semua kartu hijau, susunanmu sah.','Lalu pilih pernyataan yang PASTI BENAR.'],
+ tren:['Bloki mau menyeberang sungai lewat batu berangka.','Satu batu hilang. Cari polanya, lalu seret batu yang tepat ke celah (atau ketuk batunya).','Batu yang salah tenggelam: −1 nyawa. 3 benar beruntun memberi bonus.']};
+function introCard(judul,c,langkah,act,v,tombol){return`<div class="glass card has-st intro2">${studs(4,c)}<span class="lbl ${yk(c)?'':'w'}" style="--lc:${c}">${judul}</span>
+  <div class="cap" style="margin-top:6px">Cara main</div><ol class="steps2">${langkah.map(x=>`<li>${x}</li>`).join('')}</ol>
+  <button class="btn p w" style="margin-top:14px" data-act="${act}"${v!=null?` data-v="${v}"`:''}>${tombol}</button></div>`}
+function sesiIntro(s,f){if(s.intro&&s.intro[f])return'';const x=SESI_INTRO[f];return introCard(x.judul,x.c,x.langkah,'sesiGo',f,x.tombol)}
+
+const verdict=s=>{const m=String(s||'').match(/<b[^>]*>.*?<\/b>/);return m?`<div class="verdict">${m[0]}</div>`:''};
 /* --- pemanasan --- */
 function startPem(){PEM={cards:genWarmup(8),i:0,locked:false,end:Date.now()+180000};clearInterval(pemTimer);pemTimer=setInterval(tickPem,500)}
 function tickPem(){if(!PEM||route!=='hari-ini'){return}const left=Math.max(0,PEM.end-Date.now());const el=$('#ptime');if(el){el.textContent=Math.floor(left/60000)+':'+String(Math.floor(left/1000)%60).padStart(2,'0');$('#pbar').style.width=(left/1800)+'%'}
   if(left<=0&&!PEM.locked)endPem()}
 function endPem(){clearInterval(pemTimer);PEM=null;const s=sesi(today());s.fase=2;save();render()}
-function vPem(s){if(!PEM)startPem();const c=PEM.cards[PEM.i];
+function vPem(s){{const it=sesiIntro(s,1);if(it)return it}if(!PEM)startPem();const c=PEM.cards[PEM.i];
   return`<div class="row sp" style="margin:2px 2px 0"><span class="lbl">Pemanasan kilat · ${PEM.i+1}/${PEM.cards.length}</span><span class="chip y" id="ptime">3:00</span></div>
-  ${tower(s,1)}<div class="bar" style="margin:8px 0 22px"><i id="pbar" style="width:100%"></i></div>
+  <div class="bar" style="margin:10px 0 22px"><i id="pbar" style="width:100%"></i></div>
   <div class="glass card has-st" style="--c:var(--yellow)">${studs(3,COL.pem)}<div class="cap">${c.label}</div><div class="stim" style="font-weight:600">${esc(c.teks)}</div>
   <div class="opts" id="popts" style="--c:var(--orange)">${c.opsi.map((o,i)=>`<button class="opt" data-act="pem" data-v="${i}"><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`).join('')}</div><div id="pfb"></div></div>
   <div class="row sp tiny muted" style="padding:0 4px"><span>Benar ${s.pem.b} dari ${s.pem.n}</span><button class="btn sm" data-act="endPem">Akhiri pemanasan</button></div>`}
@@ -779,6 +1006,19 @@ function answerPem(i){if(!PEM||PEM.locked)return;PEM.locked=true;const c=PEM.car
 function nextPem(){if(!PEM)return;PEM.i++;PEM.locked=false;if(PEM.i>=PEM.cards.length||Date.now()>=PEM.end)endPem();else render()}
 function markOpts(sel,chosen,kunci){document.querySelectorAll(sel+' .opt').forEach((b,j)=>{b.disabled=true;if(j===kunci)b.classList.add('ok');else if(j===chosen)b.classList.add('bad');else b.classList.add('dim')})}
 
+/* --- tampilan kasus seperti kejadian nyata --- */
+function sceneKind(k){const t=(k.konteks||'').toLowerCase();
+  if(/chat|grup/.test(t))return'chat';if(/promo|iklan|toko|belanja/.test(t))return'flyer';
+  if(/kesehatan|media sosial|komentar|debat|unggahan/.test(t))return'post';if(/survei|grafik|data|laporan/.test(t))return'report';
+  if(/pengumuman|syarat|aturan|jadwal|lomba|pendaftaran|beasiswa/.test(t))return'board';return'note'}
+function kasusScene(k,extra){const kind=sceneKind(k),S2=k.kalimat;const ex=i=>extra?extra(i):'';
+  const tbl=k.tabel&&Array.isArray(k.tabel.kolom)?`<table class="t">${'<tr>'+k.tabel.kolom.map(c=>`<th>${esc(c)}</th>`).join('')+'</tr>'}${(k.tabel.baris||[]).map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>`:'';
+  if(kind==='chat')return`<div class="sc sc-chat"><div class="sch">💬 ${esc(k.judul||'Grup')}</div><div class="scb">${S2.map((x,i)=>`<div class="sbub"><span class="sn">${i+1}</span>${esc(x)}${ex(i)}</div>`).join('')}${tbl}</div></div>`;
+  if(kind==='post')return`<div class="sc sc-post"><div class="scph"><span class="av">A</span><span><b>akun.fiktif</b><br><span class="tiny muted">2 jam lalu</span></span></div>
+    <div class="spost"><span class="sn">1</span>${esc(S2[0])}${ex(0)}</div>${tbl}<div class="scm">${S2.slice(1).map((x,j)=>`<div class="scmt"><span class="sn">${j+2}</span>${esc(x)}${ex(j+1)}</div>`).join('')}</div></div>`;
+  const head={flyer:'🏷️ PROMO',report:'📊 LAPORAN',board:'📌 PENGUMUMAN',note:'📝 CATATAN'}[kind];
+  return`<div class="sc sc-${kind}"><div class="sch">${head}<span>${esc(k.judul||'')}</span></div><div class="scb">${S2.map((x,i)=>`<div class="sline"><span class="sn">${i+1}</span>${esc(x)}${ex(i)}</div>`).join('')}${tbl}</div></div>`}
+
 /* --- kasus --- */
 function vKas(s){
   const pid=getPaketId(s);
@@ -788,22 +1028,18 @@ function vKas(s){
     ${S.contohDipakai?'':'<button class="btn" data-act="pakaiContoh">Coba paket contoh</button>'}
     <button class="btn" data-act="skipKasus">Lewati kasus hari ini</button></div></div>`}
   if(s.paketId!==pid){s.paketId=pid;save()}
+  {const it=sesiIntro(s,2);if(it)return it}
   const p=S.paket[pid],k=p.kasus;if(!KAS||KAS.pid!==pid)KAS={pid,step:0,roles:{},answered:false,done:false};
   const L=k.langkah,l=L[KAS.step];
-  let h=`<div class="row sp wrapf" style="margin:2px 2px 0"><span class="lbl w" style="--lc:var(--red)">Kasus hari ini</span><div class="row"><span class="chip a">${k.keterampilan}</span><span class="chip">T${k.tahap||1}</span><span class="chip">${esc(k.konteks||'')}</span></div></div>${tower(s,1)}`;
-  h+=`<div class="glass card has-st" style="margin-top:16px">${studs(4,COL.kas)}<h2>${esc(k.judul||'Kasus')}</h2><div id="ksent">`;
+  let h=`<div class="row sp wrapf" style="margin:2px 2px 0"><span class="lbl w" style="--lc:var(--red)">Kasus hari ini</span><div class="row"><span class="chip a">${k.keterampilan}</span><span class="chip">T${k.tahap||1}</span><span class="chip">${esc(k.konteks||'')}</span></div></div>`;
   const tandai=!KAS.done&&l&&l.jenis==='tandai';
-  k.kalimat.forEach((x,i)=>{h+=`<div class="sent"><span class="n">${i+1}</span>${esc(x)}`;
-    if(tandai){const r=KAS.roles[i];const res=KAS.answered;h+=`<div class="roles">${PERAN.map(pr=>{let c='';if(res){if(pr===l.peran[i])c='ok';else if(pr===r)c='bad'}else if(pr===r)c='sel';return`<button class="role ${c}" data-act="role" data-i="${i}" data-v="${pr}" ${res?'disabled':''}>${pr}</button>`}).join('')}</div>`}
-    h+='</div>'});
-  h+='</div>';
-  if(k.tabel&&Array.isArray(k.tabel.kolom))h+=`<table class="t"><tr>${k.tabel.kolom.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${(k.tabel.baris||[]).map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>`;
-  h+='</div>';
+  const rolesOf=i=>{if(!tandai)return'';const r=KAS.roles[i];const res=KAS.answered;return`<div class="roles">${PERAN.map(pr=>{let c='';if(res){if(pr===l.peran[i])c='ok';else if(pr===r)c='bad'}else if(pr===r)c='sel';return`<button class="role ${c}" data-act="role" data-i="${i}" data-v="${pr}" ${res?'disabled':''}>${pr}</button>`}).join('')}</div>`};
+  h+=`<div class="glass card has-st" style="margin-top:16px">${studs(4,COL.kas)}${kasusScene(k,rolesOf)}</div>`;
   if(KAS.done){h+=`<div class="glass card"><div class="cap">Pembahasan kasus</div><div class="small">${esc(k.pembahasan||'')}</div>${k.jebakan&&TRAPS[k.jebakan]?`<div style="margin-top:8px"><span class="chip bad">${k.jebakan} · ${TRAPS[k.jebakan]}</span></div>`:''}
     <button class="btn p w" style="margin-top:12px" data-act="toJem">Lanjut ke Jembatan UTBK</button></div>`;return h}
   h+=`<div class="glass card"><div class="steps">${L.map((_,i)=>`<i class="${i<KAS.step?'done':i===KAS.step?'on':''}"></i>`).join('')}</div>
     <div class="cap">Langkah ${KAS.step+1} · ${LANGKAH[KAS.step]||''} · ${JENIS_LBL[l.jenis]||l.jenis}</div><div style="font-weight:600">${esc(l.perintah||'')}</div>`;
-  if(l.jenis==='tandai'){h+=`<p class="tiny muted" style="margin-top:4px">Pilih peran di bawah setiap kalimat di atas.</p>`;
+  if(l.jenis==='tandai'){
     if(!KAS.answered)h+=`<button class="btn p w" style="margin-top:10px" data-act="cekTandai" ${Object.keys(KAS.roles).length<k.kalimat.length?'disabled':''}>Cek</button>`}
   else h+=`<div class="opts" id="kopts" style="--c:var(--red)">${l.opsi.map((o,i)=>{let c='';if(KAS.answered){c=i===l.kunci?'ok':i===KAS.chosen?'bad':'dim'}return`<button class="opt ${c}" data-act="kasOpt" data-v="${i}" ${KAS.answered?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
   if(KAS.answered)h+=`<div class="fb">${KAS.ok?'<b style="color:var(--ok)">Tepat.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}${esc(l.pembahasan||'')}</div><button class="btn p w" style="margin-top:10px" data-act="kasNext">${KAS.step<L.length-1?'Langkah berikutnya':'Lihat pembahasan'}</button>`;
@@ -816,9 +1052,10 @@ function bsRows(q,sel,answered,act){const lb=q.label_b||'BENAR',ls=q.label_s||'S
     const bt=(val,lab)=>{let c=v===val?'on':'';if(answered){c=q.kunci[i]===val?'key':(v===val?'wrong':'')}return`<button class="bsb ${c}" data-act="${act}" data-i="${i}" data-v="${val?1:0}" ${answered?'disabled':''}>${esc(lab)}</button>`};
     return`<div class="bsrow ${rc}"><div class="bst"><span class="bsn">${i+1}</span>${esc(t)}</div><div class="bsbtns">${bt(true,lb)}${bt(false,ls)}</div></div>`}).join('')}</div>`}
 function vJem(s){const p=s.paketId&&S.paket[s.paketId];if(!p){s.fase=4;save();return vKalimat(s)}
+  {const it=sesiIntro(s,3);if(it)return it}
   if(!JEM)JEM={i:0,answered:false,bs:{}};const Q=p.jembatan,q=Q[JEM.i],bs=(q.jenis||'pg')==='bs';
   let h=`<div class="row sp wrapf" style="margin:2px 2px 0"><span class="lbl w" style="--lc:var(--blue)">Jembatan UTBK · ${JEM.i+1}/${Q.length}</span><div class="row"><span class="chip a">${esc(q.keterampilan||p.kasus.keterampilan)}</span>${q.bentuk?`<span class="chip">bentuk ${esc(q.bentuk)}</span>`:''}</div></div>
-  ${tower(s,1)}<div class="glass card has-st" style="margin-top:16px">${studs(4,COL.jem)}${q.teks?`<div class="stim">${esc(q.teks)}</div>`:''}<div style="font-weight:600;margin-top:8px">${esc(q.perintah||'')}</div>`;
+  <div class="glass card has-st" style="margin-top:16px">${studs(4,COL.jem)}${q.teks?`<div class="stim">${esc(q.teks)}</div>`:''}<div style="font-weight:600;margin-top:8px">${esc(q.perintah||'')}</div>`;
   if(bs){h+=bsRows(q,JEM.bs,JEM.answered,'bsPick');
     if(!JEM.answered)h+=`<button class="btn p w" style="margin-top:12px" data-act="bsCek" ${Object.keys(JEM.bs).length<q.pernyataan.length?'disabled':''}>Periksa</button>`}
   else h+=`<div class="opts" style="--c:var(--blue)">${q.opsi.map((o,i)=>{let c='';if(JEM.answered){c=i===q.kunci?'ok':i===JEM.chosen?'bad':'dim'}return`<button class="opt ${c}" data-act="jemOpt" data-v="${i}" ${JEM.answered?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
@@ -827,12 +1064,12 @@ function vJem(s){const p=s.paketId&&S.paket[s.paketId];if(!p){s.fase=4;save();re
   return h+'</div>'}
 
 /* --- satu kalimat --- */
-function vKalimat(s){return`<span class="lbl w" style="--lc:var(--green);margin-left:2px">Satu kalimat nalar</span>${tower(s,1)}<div class="glass card has-st" style="margin-top:16px">${studs(3,COL.kal)}<div class="cap">Boleh dilewati</div><h2>Klaim apa yang kamu dengar hari ini?</h2>
+function vKalimat(s){return`<span class="lbl w" style="--lc:var(--green);margin-left:2px">Satu kalimat nalar</span><div class="glass card has-st" style="margin-top:16px">${studs(3,COL.kal)}<div class="cap">Boleh dilewati</div><h2>Klaim apa yang kamu dengar hari ini?</h2>
   <p class="small muted">Tulis klaimnya dan apakah alasannya cukup. Contoh: “Kata teman, jalur X paling gampang karena tiga kakak kelas lolos. Alasannya belum cukup, sampelnya kecil.”</p>
   <textarea id="kal" style="margin-top:8px" placeholder="Klaim … alasannya … cukup/tidak karena …"></textarea>
   <div class="row" style="margin-top:10px"><button class="btn" data-act="finish" data-v="0" style="flex:1">Lewati</button><button class="btn p" data-act="finish" data-v="1" style="flex:2">Simpan & selesai</button></div></div>`}
 function finishSesi(simpan){const t=today(),s=sesi(t);if(simpan){const v=($('#kal')||{}).value||'';if(v.trim())S.jurnal.push({t,teks:v.trim()})}
-  s.fase=5;s.selesai=true;s.lengkap=!!(s.kas.n&&s.jem.n);save();writeRingkasan();PEM=KAS=JEM=null;toast('Sesi selesai · beruntun '+streak()+' hari');render()}
+  s.fase=5;s.selesai=true;s.lengkap=!!(s.kas.n&&s.jem.n);save();writeRingkasan();PEM=KAS=JEM=null;toast('Sesi selesai');render()}
 
 /* ================= PETA ================= */
 function vPeta(){let h=`<p class="intro" style="margin-bottom:22px">Tiap bulatan = satu butir kasus atau jembatan. Keterampilan naik tahap saat 10 butir terakhirnya benar 80% atau lebih.</p>`;
@@ -912,40 +1149,92 @@ function savePaket(){const m=$('#pmsg');let o;try{o=parsePaste($('#pjson').value
 /* ================= MINI GAME ================= */
 let G=null,gTimer=null;
 const GAMES=[
- {id:'geser',c:'var(--yellow)',nama:'Geser Setara',sk:'N2',desc:'Setara atau tidak? Geser cepat dalam 60 detik.',ic:'<path d="M4 12h16M14 6l6 6-6 6M10 6 4 12l6 6"/>'},
- {id:'gerbang',c:'var(--red)',nama:'Penjaga Gerbang',sk:'N2',desc:'Kartu mana yang wajib dibalik untuk menguji aturan?',ic:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18"/>'},
+ {id:'geser',c:'var(--yellow)',nama:'Rantai Kunci',sk:'N2',desc:'Sambung ubin jika–maka sampai pintu terbuka. Awas ubin palsu.',ic:'<path d="M4 12h16M14 6l6 6-6 6M10 6 4 12l6 6"/>'},
+ {id:'gerbang',c:'var(--red)',nama:'Inspektur Bandara',sk:'N2',desc:'Koper lewat di ban berjalan. Buka hanya yang wajib diperiksa.',ic:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18"/>'},
  {id:'venn',c:'var(--blue)',nama:'Kandang Venn',sk:'N3 · N4',desc:'Seret hewan ke kandang, bangun dunia tandingan. 3 nyawa.',ic:'<circle cx="9" cy="10" r="5"/><circle cx="15" cy="10" r="5"/><circle cx="12" cy="15" r="5"/>'},
  {id:'detektif',c:'var(--green)',nama:'Detektif Chat',sk:'N1 · N4',desc:'Temukan pesan pengalih, lalu nilai simpulannya.',ic:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>'},
- {id:'kasir',c:'var(--orange)',nama:'Kasir Jebakan',sk:'N8',desc:'Promo mana yang paling murah? 15 detik per soal.',ic:'<path d="M3 7h18l-2 11H5z"/><path d="M8 7a4 4 0 0 1 8 0"/>'},
+ {id:'kasir',c:'var(--orange)',nama:'Belanja Hemat',sk:'N8',desc:'Dana Rp500 ribu. Pilih promo tepat, isi keranjang sebanyak mungkin.',ic:'<path d="M3 7h18l-2 11H5z"/><path d="M8 7a4 4 0 0 1 8 0"/>'},
  {id:'hakim',c:'var(--sky)',nama:'Hakim Simpulan',sk:'N4',desc:'Lima opsi baku kualitas simpulan. 20 detik per ronde.',ic:'<path d="M12 3v18M6 7h12M4 14l2.5-6 2.5 6a2.5 2.5 0 0 1-5 0zM15 14l2.5-6 2.5 6a2.5 2.5 0 0 1-5 0zM8 21h8"/>'},
- {id:'cukup',c:'var(--pink)',nama:'Cukup Nggak?',sk:'N8 · N4',desc:'Pernyataan (i) dan (ii): mana yang cukup untuk menjawab?',ic:'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>'},
- {id:'kursi',c:'var(--lime)',nama:'Kursi Rapat',sk:'N4 · N2',desc:'Atur lima orang ke kursi, lalu pilih yang PASTI BENAR.',ic:'<rect x="2.5" y="9" width="5" height="6" rx="1"/><rect x="9.5" y="9" width="5" height="6" rx="1"/><rect x="16.5" y="9" width="5" height="6" rx="1"/><path d="M3 19h18"/>'},
- {id:'tren',c:'var(--purple)',nama:'Tren Selang-seling',sk:'N8',desc:'Angka naik-turun: isi suku berikutnya atau yang kosong.',ic:'<path d="M3 17l5-6 4 4 4-7 5 5"/>'}];
+ {id:'cukup',c:'var(--pink)',nama:'Beli Petunjuk',sk:'N8 · N4',desc:'Beli petunjuk seperlunya, jawab saat sudah cukup. Hemat koin.',ic:'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>'},
+ {id:'kursi',c:'var(--lime)',nama:'Kursi Rapat',sk:'N4 · N2',desc:'Dudukkan lima orang di meja sampai semua kartu syarat menyala.',ic:'<rect x="2.5" y="9" width="5" height="6" rx="1"/><rect x="9.5" y="9" width="5" height="6" rx="1"/><rect x="16.5" y="9" width="5" height="6" rx="1"/><path d="M3 19h18"/>'},
+ {id:'tren',c:'var(--purple)',nama:'Lompat Batu',sk:'N8',desc:'Seberangi sungai: temukan batu angka yang hilang.',ic:'<path d="M3 17l5-6 4 4 4-7 5 5"/>'}];
 function vMain(){if(G)return vGame();
   return`<p class="intro">Pendamping untuk waktu luang. Sesi harian tetap jadi latihan utama, dan skor di sini tidak mengubah tahap keterampilan.</p>
   <div class="grid2">${GAMES.map(g=>`<button class="tile ${yk(g.c)}" style="--c:${g.c}" data-act="gStart" data-v="${g.id}">${studs(3,g.c)}<span class="ic">${svg(g.ic)}</span><b>${g.nama}</b><span class="tiny">${g.desc}</span><span class="best">${g.sk} · terbaik ${S.games[g.id]?S.games[g.id].best:0}</span></button>`).join('')}</div>`}
-function gDone(score,max){clearInterval(gTimer);const r=S.games[G.id]||(S.games[G.id]={best:0,main:0});r.main++;const nb=score>r.best;if(nb)r.best=score;save();G.over={score,max,nb};render()}
+function gDone(score,max,field){clearInterval(gTimer);const r=S.games[G.id]||(S.games[G.id]={best:0,main:0});r.main++;const f=field||'best';const nb=score>(r[f]||0);if(nb)r[f]=score;save();G.over={score,max,nb,field:f};render()}
 const gc=()=>GAMES.find(x=>x.id===G.id).c;
 const gst=()=>studs(4,gc());
-function gHead(extra){const g=GAMES.find(x=>x.id===G.id);return`<div class="row sp" style="margin:0 2px 18px"><button class="btn sm" data-act="gBack">‹ Main</button><span class="lbl ${yk(g.c)?'':'w'}" style="--lc:${g.c};margin:0">${g.nama}</span>${extra||'<span style="width:60px"></span>'}</div>`}
-function vGame(){if(G.over){const o=G.over,sc=o.max?o.score/o.max:Math.min(1,o.score/15),nb=Math.max(1,Math.round(sc*10));
-  return gHead()+`<div class="glass card has-st" style="text-align:center;padding:24px 16px">${gst()}<div class="cap">Selesai</div><div class="big">${o.score}${o.max?'<span class="muted" style="font-size:24px">/'+o.max+'</span>':''}</div><div class="small muted" style="margin-top:4px">${o.nb?'<span class="chip y">Rekor baru!</span>':'Terbaik: '+S.games[G.id].best}</div>
+function gHead(extra){const hud=G._hud;G._hud=false;const g=GAMES.find(x=>x.id===G.id);return`<div class="row sp" style="margin:0 2px 18px"><button class="btn sm" data-act="gBack">‹ Main</button><span class="lbl ${yk(g.c)?'':'w'}" style="--lc:${g.c};margin:0">${g.nama}</span>${extra||'<span style="width:60px"></span>'}</div>${hud?gHudRow():''}`}
+function vGame(){if(G.intro){const g=GAMES.find(x=>x.id===G.id);return gHead()+introCard(g.nama,g.c,GAME_INTRO[G.id]||[],'gGo',null,'Mulai main')+(G.id==='geser'?`<div style="text-align:center"><button class="btn sm" data-act="gCepat">⚡ Mode cepat: Geser Setara 60 detik</button></div>`:'')}
+  if(G.over){const o=G.over,sc=o.max?o.score/o.max:Math.min(1,o.score/15),nb=Math.max(1,Math.round(sc*10));
+  return gHead()+`<div class="glass card has-st" style="text-align:center;padding:24px 16px">${gst()}<div class="cap">Selesai</div><div class="big">${o.score}${o.max?'<span class="muted" style="font-size:24px">/'+o.max+'</span>':''}</div><div class="small muted" style="margin-top:4px">${o.nb?'<span class="chip y">Rekor baru!</span>':'Terbaik: '+(S.games[G.id][o.field||'best']||0)}${o.field==='cepat'?'<br><span class="tiny">Mode cepat</span>':''}</div>
   <div class="mtower" style="justify-content:center;margin-top:14px">${[...Array(nb)].map((_,i)=>`<span class="b new" style="--c:${gc()};animation-delay:${i*60}ms"></span>`).join('')}</div>
-  <div class="row" style="justify-content:center;margin-top:16px"><button class="btn" data-act="gBack">Kembali</button><button class="btn p" data-act="gStart" data-v="${G.id}">Main lagi</button></div></div>`}
-  return({geser:vGeser,gerbang:vGerbang,venn:vVenn,detektif:vDetektif,kasir:vKasir,hakim:vHakim,cukup:vCukup,kursi:vKursi,tren:vTren})[G.id]()}
-function startGame(id){clearInterval(gTimer);G={id};
-  if(id==='geser'){G.end=Date.now()+60000;G.score=0;G.n=0;G.cur=genGeser();gTimer=setInterval(()=>{const l=Math.max(0,G.end-Date.now());const e=$('#gtime');if(e)e.textContent=Math.ceil(l/1000)+' dtk';if(l<=0)gDone(G.score,0)},250)}
-  if(id==='gerbang'){G.rounds=shuffle(GERBANG).slice(0,5);G.i=0;G.score=0;gerbangRound()}
+  <div class="row" style="justify-content:center;margin-top:16px"><button class="btn" data-act="gBack">Kembali</button><button class="btn p" ${G.mode==='cepat'?'data-act="gCepat"':`data-act="gAgain"`}>Main lagi</button></div></div>`}
+  return({geser:()=>G.mode==='cepat'?vGeser():vRantai(),gerbang:vBandara,venn:vVenn,detektif:vDetektif,kasir:vBelanja,hakim:vHakim,cukup:vCukup,kursi:vKursi,tren:vTren})[G.id]()}
+function startGame(id){clearInterval(gTimer);G={id,intro:true};render()}
+function initGame(id){clearInterval(gTimer);G={id};
+  if(id==='geser'){const r=S.games.geser;if(r&&r.cepat===undefined){r.cepat=r.best||0;save()}G.round=0;G.n=6;G.lives=3;G.score=0;newRantaiRound()}
+  if(id==='gerbang'){G.rules=shuffle(BANDARA).slice(0,3);G.lv=0;G.lives=3;G.score=0;newBandaraLevel()}
   if(id==='venn'){G.round=0;G.score=0;G.n=9;G.lives=3;newVennRound()}
-  if(id==='detektif'){G.rounds=shuffle(DETEKTIF).slice(0,5);G.i=0;G.score=0;G.step=0;G.pick=null;G.ans=null}
-  if(id==='kasir'){G.i=0;G.score=0;G.n=8;newKasir()}
-  if(id==='hakim'){G.i=0;G.score=0;G.n=8;newHakim()}
-  if(id==='cukup'){G.i=0;G.score=0;G.n=6;G.cur=genCukup();G.ans=null}
-  if(id==='kursi'){G.i=0;G.score=0;G.n=4;G.cur=genKursi();G.ans=null;G.place=[null,null,null,null,null];G.selName=null;G.msg=''}
-  if(id==='tren'){G.i=0;G.score=0;G.n=8;G.cur=genTren();G.ans=null}
+  if(id==='detektif'){G.rounds=shuffle(DETEKTIF).slice(0,5);G.i=0;G.score=0;G.step=0;G.pick=null;G.ans=null;G.lives=3;G.combo=0}
+  if(id==='kasir'){G.bonus=0;newBelanja()}
+  if(id==='hakim'){G.i=0;G.score=0;G.n=8;G.lives=3;G.combo=0;newHakim()}
+  if(id==='cukup'){G.round=0;G.n=6;G.coins=10;newCukupRound()}
+  if(id==='kursi'){G.i=0;G.score=0;G.n=4;G.valid=false;G.cur=genKursi();G.ans=null;G.place=[null,null,null,null,null];G.selName=null;G.msg=''}
+  if(id==='tren'){G.i=0;G.score=0;G.n=8;G.lives=3;G.combo=0;G.cur=genTren();G.ans=null}
   render()}
 
-/* --- Geser Setara --- */
+/* --- Rantai Kunci (id 'geser') --- */
+const RANTAI=[
+ [['hujan deras','hujan tidak deras'],['lapangan becek','lapangan tidak becek'],['upacara dipindah ke aula','upacara tidak dipindah ke aula'],['kursi aula ditata ulang','kursi aula tidak ditata ulang']],
+ [['alarm Gilang mati','alarm Gilang tidak mati'],['Gilang bangun kesiangan','Gilang tidak bangun kesiangan'],['Gilang ketinggalan bus','Gilang tidak ketinggalan bus'],['Gilang terlambat ke sekolah','Gilang tidak terlambat ke sekolah']],
+ [['Dina rutin latihan soal','Dina tidak rutin latihan soal'],['nilai try out Dina naik','nilai try out Dina tidak naik'],['Dina masuk kelas unggulan','Dina tidak masuk kelas unggulan'],['Dina mendapat jadwal mentoring','Dina tidak mendapat jadwal mentoring']],
+ [['listrik padam','listrik tidak padam'],['wifi sekolah mati','wifi sekolah tidak mati'],['kelas daring dibatalkan','kelas daring tidak dibatalkan'],['tugas dikumpulkan besok','tugas tidak dikumpulkan besok']],
+ [['promo berlaku','promo tidak berlaku'],['harga sepatu turun','harga sepatu tidak turun'],['Lala membeli sepatu','Lala tidak membeli sepatu'],['tabungan Lala berkurang','tabungan Lala tidak berkurang']],
+ [['tim debat menang di semifinal','tim debat tidak menang di semifinal'],['tim debat masuk final','tim debat tidak masuk final'],['tim debat berangkat ke Surabaya','tim debat tidak berangkat ke Surabaya'],['sekolah menyewa bus','sekolah tidak menyewa bus']],
+ [['kuota pendaftar terpenuhi','kuota pendaftar tidak terpenuhi'],['pendaftaran ditutup lebih awal','pendaftaran tidak ditutup lebih awal'],['Bayu tidak sempat mendaftar','Bayu sempat mendaftar'],['Bayu mencari lomba lain','Bayu tidak mencari lomba lain']]];
+const rkT=(A,s)=>A[s.i][s.n?1:0];
+const rkSt=(A,a,b)=>`Jika ${rkT(A,a)}, maka ${rkT(A,b)}.`;
+const rkEq=(a,b)=>a.i===b.i&&a.n===b.n;
+function rkKind(t){if(!t.a.n&&!t.b.n&&t.b.i>t.a.i)return'ok';if(t.a.n&&t.b.n&&t.a.i>t.b.i)return'ok';if(!t.a.n&&!t.b.n&&t.b.i<t.a.i)return'J1';if(t.a.n&&t.b.n&&t.a.i<t.b.i)return'J2';return'x'}
+function genRantai(lv){const A=rnd(RANTAI);const k=lv===3?4:3;const rules=[];for(let i=0;i<k-1;i++)rules.push({a:{i,n:0},b:{i:i+1,n:0}});
+  const contra=lv>=2;const fact=contra?{i:k-1,n:1}:{i:0,n:0},goal=contra?{i:0,n:1}:{i:k-1,n:0};
+  const tiles=[];for(let i=0;i<k-1;i++)tiles.push(contra?{a:{i:i+1,n:1},b:{i,n:1}}:{a:{i,n:0},b:{i:i+1,n:0}});
+  if(lv===3)tiles.push({a:{i:k-1,n:1},b:{i:1,n:1}});
+  const fakes=[];for(let i=0;i<k-1;i++){fakes.push({a:{i:i+1,n:0},b:{i,n:0}});fakes.push({a:{i,n:1},b:{i:i+1,n:1}})}
+  const nf=lv===1?2:3;const T=shuffle(tiles.concat(shuffle(fakes).slice(0,nf))).map((t,id)=>Object.assign({id,kind:rkKind(t)},t));
+  const ru=rules.map(r=>rkSt(A,r.a,r.b));
+  const last=k-1;const C=x=>cap(x);
+  const items=contra?[{t:`Jika ${rkT(A,{i:last,n:1})}, maka ${rkT(A,{i:0,n:1})}.`,ok:1},{t:`Jika ${rkT(A,{i:0,n:1})}, maka ${rkT(A,{i:last,n:1})}.`,j:'J2'},{t:`Jika ${rkT(A,{i:last,n:0})}, maka ${rkT(A,{i:0,n:0})}.`,j:'J1'},{t:`${C(rkT(A,{i:0,n:0}))} dan ${rkT(A,{i:last,n:1})}.`,j:'J3'},{t:`Jika ${rkT(A,{i:1,n:0})}, maka ${rkT(A,{i:0,n:0})}.`,j:'J1'}]
+    :[{t:`Jika ${rkT(A,{i:0,n:0})}, maka ${rkT(A,{i:last,n:0})}.`,ok:1},{t:`Jika ${rkT(A,{i:last,n:0})}, maka ${rkT(A,{i:0,n:0})}.`,j:'J1'},{t:`Jika ${rkT(A,{i:0,n:1})}, maka ${rkT(A,{i:last,n:1})}.`,j:'J2'},{t:`${C(rkT(A,{i:0,n:0}))} dan ${rkT(A,{i:last,n:1})}.`,j:'J3'},{t:`Jika ${rkT(A,{i:1,n:1})}, maka ${rkT(A,{i:0,n:0})}.`,j:'J6'}];
+  return{A,ru,fact,goal,T,q:mkOpts(items)}}
+function newRantaiRound(){G.round++;G.lv=G.round<=2?1:G.round<=4?2:3;G.cur=genRantai(G.lv);G.chain=[];G.used=new Set();G.phase='build';G.msg='';G.ans=null}
+function rkState(){const c=G.cur;return G.chain.length?c.T[G.chain[G.chain.length-1]].b:c.fact}
+function rkTap(id){if(G.phase!=='build'||G.used.has(id))return;const c=G.cur,t=c.T[id],st=rkState();
+  if(t.kind!=='ok'){G.lives--;G.used.add(id);G.msg=`<div class="fb small"><b style="color:var(--bad)">Ubin palsu! −1 nyawa.</b> “${esc(rkSt(c.A,t.a,t.b))}” ${t.kind==='J1'?'membalik arah aturan (konvers, J1)':'menyangkal anteseden (invers, J2)'}, jadi tidak sah.</div>`;
+    if(G.lives<=0){G.phase='close';G.msg+=`<div class="fb small"><b style="color:var(--bad)">Nyawa habis.</b></div>`}return render()}
+  if(!rkEq(t.a,st)){G.msg=`<div class="fb small"><b style="color:var(--warn)">Tidak nyambung.</b> Ubin ini sah, tetapi harus dimulai dari “${esc(rkT(c.A,st))}”.</div>`;return render()}
+  G.chain.push(id);G.used.add(id);G.msg='';
+  if(rkEq(t.b,c.goal)){G.phase='open';G.score+=2;setTimeout(()=>{if(G&&G.id==='geser'&&G.phase==='open'){G.phase='close';render()}},900)}
+  render()}
+function vRantai(){const c=G.cur,A=c.A,st=rkState();const hearts=[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('');
+  let h=gHead(`<span class="row" style="gap:2px">${hearts}</span>`)+`<div class="glass card has-st">${gst()}
+  <div class="row sp"><div class="cap" style="margin:0">Ronde ${G.round}/${G.n} · Level ${G.lv}</div><span class="tiny muted">Skor ${G.score}</span></div>
+  <div class="cap" style="margin-top:8px">Aturan</div>${c.ru.map((r,i)=>`<div class="vline"><span class="rkn">${i+1}</span><span>${esc(r)}</span></div>`).join('')}
+  <div class="rkgoal"><div><span class="cap" style="margin:0">Fakta</span><b>${esc(cap(rkT(A,c.fact)))}</b></div><div class="door ${G.phase!=='build'&&G.phase!=='close'||G.phase==='close'&&rkEq(st,c.goal)?'open':''}"><span class="lock">${rkEq(st,c.goal)?'🔓':'🔒'}</span><span><span class="cap" style="margin:0">Pintu</span><b>${esc(cap(rkT(A,c.goal)))}</b></span></div></div>
+  <div class="cap" style="margin-top:12px">Rantaimu</div><div class="chainv"><span class="node f">${esc(cap(rkT(A,c.fact)))}</span>${G.chain.map(id=>`<span class="arr">→</span><span class="node">${esc(cap(rkT(A,c.T[id].b)))}</span>`).join('')}${G.phase==='build'?'<span class="arr">→</span><span class="node q">?</span>':''}</div>`;
+  if(G.phase==='build'){
+    h+=`<div class="cap" style="margin-top:12px">Ubin</div><div class="tiles">${c.T.map(t=>`<button class="tile2 ${G.used.has(t.id)?(G.chain.includes(t.id)?'in':'dead'):''}" data-act="rkTap" data-v="${t.id}" ${G.used.has(t.id)?'disabled':''}>${esc(rkSt(A,t.a,t.b))}</button>`).join('')}</div>
+    ${G.msg}<div class="row" style="margin-top:10px"><button class="btn sm" data-act="rkUndo" ${G.chain.length?'':'disabled'}>↶ Urungkan</button></div>`}
+  else if(G.phase==='open')h+=`<div class="fb small"><b style="color:var(--ok)">Pintu terbuka! +2.</b></div>`;
+  else{const q=c.q;h+=G.msg+`<div style="font-weight:600;margin-top:12px">Berdasarkan aturan di atas, pernyataan yang PASTI BENAR adalah …</div>
+    <div class="opts">${q.opsi.map((o,i)=>{let cl='';if(G.ans!=null)cl=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${cl}" data-act="rkAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
+    if(G.ans!=null)h+=`<div class="fb small">${G.ans===q.kunci?'<b style="color:var(--ok)">+2.</b> ':'<b style="color:var(--bad)">Belum tepat. −1 nyawa.</b> '}Aturan berantai p→q→r memberi p→r, dan kontraposisinya bukan r → bukan p.${q.j[G.ans]&&TRAPS[q.j[G.ans]]?` <span class="chip bad">${q.j[G.ans]} · ${TRAPS[q.j[G.ans]]}</span>`:''}</div>
+     <button class="btn p w" style="margin-top:10px" data-act="rkNext">${G.lives>0&&G.round<G.n?'Ronde berikutnya':'Lihat skor'}</button>`}
+  return h+'</div>'}
+function startCepat(){clearInterval(gTimer);G={id:'geser',mode:'cepat',end:Date.now()+60000,score:0,n:0,cur:genGeser()};gTimer=setInterval(()=>{const l=Math.max(0,G.end-Date.now());const e=$('#gtime');if(e)e.textContent=Math.ceil(l/1000)+' dtk';if(l<=0)gDone(G.score,0,'cepat')},250);render()}
+
+/* --- Geser Setara (mode cepat Rantai Kunci) --- */
 function genGeser(){const{P,Q}=pq();const base=`Jika ${P.pos}, maka ${Q.pos}.`;const t=rnd(['kontra','kontra','disj','konv','inv','neg']);
   const M={kontra:[`Jika ${Q.neg}, maka ${P.neg}.`,true,'Kontraposisi: setara.'],disj:[`${cap(P.neg)} atau ${Q.pos}.`,true,'“Bukan p atau q” setara dengan “jika p maka q”.'],
    konv:[`Jika ${Q.pos}, maka ${P.pos}.`,false,'Konvers (dibalik): tidak setara · J1.'],inv:[`Jika ${P.neg}, maka ${Q.neg}.`,false,'Invers: tidak setara · J2.'],neg:[`${cap(P.pos)} dan ${Q.neg}.`,false,'Ini ingkarannya, bukan pernyataan setara.']};
@@ -958,7 +1247,7 @@ function bindSwipe(){const el=$('#scard');if(!el)return;let x0=null,dx=0;
   el.onpointerdown=e=>{x0=e.clientX;dx=0;el.style.transition='none';el.setPointerCapture(e.pointerId)};
   el.onpointermove=e=>{if(x0===null)return;dx=e.clientX-x0;el.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`};
   el.onpointerup=()=>{if(x0===null)return;x0=null;el.style.transition='';if(Math.abs(dx)>70)answerGeser(dx>0);else el.style.transform=''}}
-function answerGeser(v){if(!G||G.id!=='geser'||G.over)return;const c=G.cur,ok=v===c.setara;G.n++;if(ok)G.score++;
+function answerGeser(v){if(!G||G.id!=='geser'||G.mode!=='cepat'||G.over)return;const c=G.cur,ok=v===c.setara;G.n++;if(ok)G.score++;
   G.last=`${ok?'<b style="color:var(--ok)">✓</b>':'<b style="color:var(--bad)">✗</b>'} ${esc(c.why)}`;
   const el=$('#scard');if(el){el.style.transform=`translateX(${v?420:-420}px) rotate(${v?20:-20}deg)`;el.style.opacity='0'}
   G.cur=genGeser();setTimeout(()=>{if(G&&G.id==='geser'&&!G.over)render()},180)}
@@ -973,14 +1262,102 @@ const GERBANG=[
  {aturan:'Jika pesanan di atas Rp50.000, maka ongkirnya gratis.',ket:'Tiap kartu satu pesanan: satu sisi total belanja, sisi lain ongkir.',kartu:['Rp72.000','Rp38.000','Ongkir gratis','Ongkir Rp9.000']},
  {aturan:'Jika ikut lomba debat, maka sudah mengisi formulir izin.',ket:'Tiap kartu satu siswa: satu sisi lomba, sisi lain formulir.',kartu:['Ikut debat','Ikut futsal','Formulir terisi','Formulir kosong']},
  {aturan:'Jika hari Minggu, maka perpustakaan tutup.',ket:'Tiap kartu satu hari: satu sisi nama hari, sisi lain status perpustakaan.',kartu:['Minggu','Rabu','Tutup','Buka']}];
-function gerbangRound(){G.ord=shuffle([0,1,2,3]);G.key=new Set(G.ord.map((c,p)=>c===0||c===3?p:-1).filter(p=>p>=0));G.sel=new Set();G.checked=false}
-function vGerbang(){const r=G.rounds[G.i];if(!G.ord)gerbangRound();
-  let h=gHead(`<span class="chip">${G.i+1}/${G.rounds.length}</span>`)+`<div class="glass card has-st">${gst()}<div class="cap">Aturan</div><div style="font-weight:600">${esc(r.aturan)}</div><div class="tiny muted" style="margin-top:4px">${esc(r.ket)}</div>
-  <div class="small" style="margin-top:10px">Kartu mana saja yang <b>wajib dibalik</b> untuk memeriksa apakah aturan dilanggar?</div>
-  <div class="wcards">${G.ord.map((ci,p)=>{let c='';if(G.checked){const need=G.key.has(p);c=need&&G.sel.has(p)?'ok':need?'miss':G.sel.has(p)?'bad':''}else if(G.sel.has(p))c='sel';return`<button class="wc ${c}" data-act="gCard" data-v="${p}" ${G.checked?'disabled':''}>${esc(r.kartu[ci])}</button>`}).join('')}</div>`;
-  if(!G.checked)h+=`<button class="btn p w" style="margin-top:12px" data-act="gCheck" ${G.sel.size?'':'disabled'}>Periksa</button>`;
-  else h+=`<div class="fb">${G.lastOk?'<b style="color:var(--ok)">Tepat.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}Balik <b>${esc(r.kartu[0])}</b> (cek akibatnya) dan <b>${esc(r.kartu[3])}</b> (cek syaratnya). <b>${esc(r.kartu[2])}</b> tidak perlu: aturan tidak melarangnya terjadi tanpa syarat (J1). <b>${esc(r.kartu[1])}</b> tidak perlu: aturan tidak berlaku untuknya (J2).</div>
-    <button class="btn p w" style="margin-top:10px" data-act="gNext">${G.i<G.rounds.length-1?'Berikutnya':'Lihat skor'}</button>`;
+/* --- Belanja Hemat (id 'kasir') --- */
+const BT_BELANJA=20000;
+const BRG_EMO={'Sepatu':'👟','Tas sekolah':'🎒','Jaket':'🧥','Headphone':'🎧','Paket buku':'📚','Jam tangan':'⌚'};
+const rb=n=>(n/1000).toLocaleString('id-ID')+'rb';
+function tagParts(l){let m;
+  if(m=l.match(/^Diskon (\d+)% \+ (\d+)%$/))return{k:'DISKON',b:`${m[1]}%`,s:`+ ${m[2]}% lagi`};
+  if(m=l.match(/^Diskon (\d+)%, lalu potong Rp([\d.]+)$/))return{k:'DISKON',b:`${m[1]}%`,s:`lalu −${rb(+m[2].replace(/\./g,''))}`};
+  if(m=l.match(/^Diskon (\d+)%$/))return{k:'DISKON',b:`${m[1]}%`,s:''};
+  if(m=l.match(/^Potongan Rp([\d.]+)$/))return{k:'POTONGAN',b:`−${rb(+m[1].replace(/\./g,''))}`,s:''};
+  return{k:'PROMO',b:esc(l),s:''}}
+function genBarang(){let q=null;for(let t=0;t<50;t++){q=genKasir();if(q&&q.P<=200000)return q}return q}
+function belanjaQ(){const r=[];
+  {const P=rnd([120,150,200,250,300])*1000,a=rnd([10,20,25,30]),b=rnd([10,20,25]);const ok=P*(1-a/100)*(1-b/100);
+   const it=[{t:fmtRp(ok),ok:1},{t:fmtRp(P*(1-(a+b)/100)),j:'J12'},{t:fmtRp(P*(1-a/100)),j:'J5'},{t:fmtRp(P*(a+b)/100),j:'J12'},{t:fmtRp(P*(1-a/100)*(b/100)),j:'J12'}];
+   if(new Set(it.map(x=>x.t)).size===5)r.push(Object.assign({teks:`Sebuah ${rnd(['jaket','tas','sepatu','headphone']).toLowerCase()} seharga ${fmtRp(P)} mendapat diskon ${a}% lalu diskon lagi ${b}% dari harga setelah diskon pertama.`,perintah:'Harga yang harus dibayar adalah …'},mkOpts(it)))}
+  {let P,d,Y;do{d=rnd([20,25,40,50]);P=rnd([8,10,12,16,20,24])*10000;Y=P*(1-d/100)}while(Y%1000);
+   const it=[{t:fmtRp(P),ok:1},{t:fmtRp(Y*(1+d/100)),j:'J12'},{t:fmtRp(Y*(1-d/100)),j:'J12'},{t:fmtRp(Y+d*1000),j:'J11'},{t:fmtRp(P+Y*d/100),j:'J12'}];
+   if(new Set(it.map(x=>x.t)).size===5)r.push(Object.assign({teks:`Setelah didiskon ${d}%, harga sebuah buku paket menjadi ${fmtRp(Y)}.`,perintah:'Harga buku paket sebelum diskon adalah …'},mkOpts(it)))}
+  return r.length===2?r:belanjaQ()}
+function newBelanja(){clearInterval(gTimer);G.dana=500000;const nm=shuffle(BARANG);G.items=[...Array(6)].map((_,i)=>Object.assign(genBarang(),{item:nm[i%nm.length]}));G.k=0;G.cart=[];G.phase='shop';G.res=null;G.qs=null;G.qi=0;G.ans=null;belanjaTimer()}
+function belanjaTimer(){clearInterval(gTimer);G.kend=Date.now()+BT_BELANJA;gTimer=setInterval(()=>{if(!G||G.id!=='kasir'||G.phase!=='shop')return;const l=Math.max(0,G.kend-Date.now());const e=$('#btime');if(e)e.style.width=(l/BT_BELANJA*100)+'%';if(l<=0)belanjaPick(-1)},100)}
+function belanjaPick(i){if(G.phase!=='shop')return;clearInterval(gTimer);const it=G.items[G.k],min=Math.min(...it.pr.map(x=>x.f));let msg,ok=true;
+  if(i===-2){msg=`Barang dilewati.${min<=G.dana?` Promo termurah sebenarnya ${fmtRp(min)}.`:''}`}
+  else if(i===-1){ok=false;msg='<b style="color:var(--bad)">Waktu habis</b>, barang terlewat.'}
+  else{const f=it.pr[i].f;if(f>G.dana){ok=false;msg=`<b style="color:var(--bad)">Uang tidak cukup.</b> Harga dengan promo itu ${fmtRp(f)}, sisa danamu ${fmtRp(G.dana)}.`}
+    else{G.dana-=Math.round(f);G.cart.push({n:it.item,f});ok=f===min;msg=ok?`<b style="color:var(--ok)">Pilihan paling hemat!</b> Dibayar ${fmtRp(f)}.`:`<b style="color:var(--bad)">Terbeli, tapi kurang hemat.</b> Dibayar ${fmtRp(f)}; promo termurah ${fmtRp(min)} (rugi ${fmtRp(f-min)}).`}}
+  G.res={i,msg,ok};G.phase='reveal';render();if(ok&&i>=0)setTimeout(()=>{if(G&&G.id==='kasir'&&G.phase==='reveal')belanjaNext()},1400)}
+function belanjaNext(){if(G.phase!=='reveal')return;G.k++;if(G.k>=G.items.length){G.phase='quiz';G.qs=belanjaQ();G.qi=0;G.ans=null;return render()}G.phase='shop';G.res=null;render();belanjaTimer()}
+function belanjaSkor(){return G.cart.length*10+Math.floor(G.dana/10000)+(G.bonus||0)}
+function vBelanja(){let h=gHead(`<span class="coin">${fmtRp(G.dana)}</span>`)+`<div class="glass card has-st">${gst()}`;
+  h+=`<div class="row sp"><div class="cap" style="margin:0">${G.phase==='quiz'?'Soal penutup':`Barang ${G.k+1}/${G.items.length}`}</div><span class="tiny muted">Skor ${belanjaSkor()}</span></div>
+`;
+  if(G.phase==='shop'||G.phase==='reveal'){const it=G.items[G.k],min=Math.min(...it.pr.map(x=>x.f)),rv=G.phase==='reveal';
+    h+=`<div class="shelf"><div class="pemo">${BRG_EMO[it.item]||'🛍️'}</div><div class="pname">${esc(it.item)}</div><div class="pprice">${fmtRp(it.P)}</div></div>
+    ${rv?'':`<div class="bar" style="margin-top:8px"><i id="btime" style="width:100%"></i></div>`}
+
+    <div class="tags">${it.pr.map((x,i)=>{let c='';if(rv)c=x.f===min?'ok':i===G.res.i?'bad':'dim';const t=tagParts(x.l);return`<button class="ptag2 ${c}" data-act="bPick" data-v="${i}" ${rv?'disabled':''}><span class="hole"></span><span class="tk">${t.k}</span><span class="tb">${t.b}</span>${t.s?`<span class="ts">${t.s}</span>`:''}${rv?`<span class="tf">${fmtRp(x.f)}</span>`:''}</button>`}).join('')}</div>`;
+    if(rv)h+=`<div class="fb small">${G.res.msg}<br><span class="muted">${it.pr.map(x=>`${esc(x.l)}: ${x.why} = ${fmtRp(x.f)}`).join('<br>')}</span></div>${G.res.ok&&G.res.i>=0?'':'<button class="btn p w" style="margin-top:10px" data-act="bNext">Lanjut</button>'}`;
+    else h+=`<button class="btn w" style="margin-top:10px" data-act="bPick" data-v="-2">Lewati barang ini</button>`}
+  else{const q=G.qs[G.qi];
+    h+=`<div class="stim" style="margin-top:10px">${esc(q.teks)}</div><div style="font-weight:600;margin-top:6px">${esc(q.perintah)}</div>
+    <div class="opts">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="bAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
+    if(G.ans!=null)h+=`<div class="fb small">${G.ans===q.kunci?'<b style="color:var(--ok)">+5.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}${G.qi===0?'Diskon bertingkat dihitung dari harga yang sudah turun, bukan dijumlahkan.':'Harga awal = harga akhir ÷ (100% − diskon).'}${q.j[G.ans]&&TRAPS[q.j[G.ans]]?` <span class="chip bad">${q.j[G.ans]} · ${TRAPS[q.j[G.ans]]}</span>`:''}</div>
+     <button class="btn p w" style="margin-top:10px" data-act="bQNext">${G.qi<G.qs.length-1?'Soal berikutnya':'Lihat skor'}</button>`}
+  return h+'</div>'}
+
+/* --- Inspektur Bandara (id 'gerbang') --- */
+const BANDARA=[
+ {aturan:'Jika koper bertujuan Bali, maka koper berstiker hijau.',p:'koper bertujuan Bali',np:'koper tidak bertujuan Bali',q:'koper berstiker hijau',nq:'koper tidak berstiker hijau',P:['Tujuan: Bali'],NP:['Tujuan: Medan','Tujuan: Lombok','Tujuan: Batam'],Q:['Stiker: hijau'],NQ:['Stiker: merah','Stiker: kuning']},
+ {aturan:'Jika koper berisi cairan, maka koper disegel plastik.',p:'koper berisi cairan',np:'koper tidak berisi cairan',q:'koper disegel plastik',nq:'koper tidak disegel plastik',P:['Isi: cairan'],NP:['Isi: pakaian','Isi: buku','Isi: sepatu'],Q:['Segel plastik: ada'],NQ:['Segel plastik: tidak ada']},
+ {aturan:'Jika koper milik penumpang kelas bisnis, maka koper berlabel prioritas.',p:'koper milik penumpang kelas bisnis',np:'koper bukan milik penumpang kelas bisnis',q:'koper berlabel prioritas',nq:'koper tidak berlabel prioritas',P:['Kelas: bisnis'],NP:['Kelas: ekonomi'],Q:['Label: prioritas'],NQ:['Label: biasa']},
+ {aturan:'Jika berat koper lebih dari 20 kg, maka bagasi tambahan sudah dibayar.',p:'berat koper lebih dari 20 kg',np:'berat koper tidak lebih dari 20 kg',q:'bagasi tambahan sudah dibayar',nq:'bagasi tambahan belum dibayar',P:['Berat: 23 kg','Berat: 27 kg'],NP:['Berat: 15 kg','Berat: 18 kg'],Q:['Struk bagasi: lunas'],NQ:['Struk bagasi: belum bayar']},
+ {aturan:'Jika koper berisi baterai cadangan, maka koper dibawa ke kabin.',p:'koper berisi baterai cadangan',np:'koper tidak berisi baterai cadangan',q:'koper dibawa ke kabin',nq:'koper tidak dibawa ke kabin',P:['Isi: baterai cadangan'],NP:['Isi: oleh-oleh','Isi: pakaian'],Q:['Masuk: kabin'],NQ:['Masuk: bagasi']},
+ {aturan:'Jika koper ikut penerbangan internasional, maka koper berstempel bea cukai.',p:'koper ikut penerbangan internasional',np:'koper tidak ikut penerbangan internasional',q:'koper berstempel bea cukai',nq:'koper tidak berstempel bea cukai',P:['Rute: Singapura','Rute: Tokyo'],NP:['Rute: Surabaya','Rute: Makassar'],Q:['Stempel bea cukai: ada'],NQ:['Stempel bea cukai: tidak ada']}];
+const BT=[0,6500,5200,4200];
+function genKoper(r){for(let t=0;t<200;t++){const L=[];for(let i=0;i<7;i++){const v=rnd(['P','NP','Q','NQ']);let hid;
+    if(v==='P')hid=Math.random()<.4?'NQ':'Q';else if(v==='NQ')hid=Math.random()<.4?'P':'NP';else if(v==='NP')hid=rnd(['Q','NQ']);else hid=rnd(['P','NP']);
+    L.push({v,hid,vt:rnd(r[v]),ht:rnd(r[hid]),need:v==='P'||v==='NQ',bad:(v==='P'&&hid==='NQ')||(v==='NQ'&&hid==='P')})}
+  const need=L.filter(x=>x.need).length;if(need>=2&&need<=4&&L.some(x=>x.bad)&&L.some(x=>!x.need))return L}}
+function newBandaraLevel(){G.lv++;G.rule=G.rules[G.lv-1];G.kop=genKoper(G.rule);G.k=0;G.jatah=G.kop.filter(x=>x.need).length+1;G.phase='belt';G.last=null;G.stat={ok:0,n:0};G.cq=null;G.ans=null;bandaraTimer()}
+function bandaraTimer(){clearInterval(gTimer);G.kend=Date.now()+BT[G.lv];gTimer=setInterval(()=>{if(!G||G.id!=='gerbang'||G.phase!=='belt')return;const l=Math.max(0,G.kend-Date.now());const e=$('#ktime');if(e)e.style.width=(l/BT[G.lv]*100)+'%';if(l<=0)bandaraDecide(false,true)},100)}
+function bandaraDecide(open,auto){if(G.phase!=='belt')return;clearInterval(gTimer);const x=G.kop[G.k],r=G.rule;let ok,msg,pts=0;
+  if(open&&G.jatah<=0){open=false;auto=true}
+  if(open){G.jatah--;
+    if(x.need){ok=true;pts=x.bad?2:1;msg=x.bad?`<b style="color:var(--ok)">Pelanggaran ketemu! +2.</b> Sisi lain: “${esc(x.ht)}”. Aturan dilanggar.`:`<b style="color:var(--ok)">Tepat diperiksa. +1.</b> Sisi lain: “${esc(x.ht)}”. Aman, tapi memang wajib dicek.`}
+    else{ok=false;msg=`<b style="color:var(--bad)">Tidak perlu dibuka.</b> ${x.v==='Q'?`Aturan tidak melarang “${esc(r.q)}” tanpa syarat terpenuhi (J1).`:`Aturan tidak berlaku untuk koper ini (J2).`} Jatah buka terpakai.`}}
+  else{if(!x.need){ok=true;pts=1;msg=`<b style="color:var(--ok)">Tepat diloloskan. +1.</b> ${x.v==='Q'?'Akibatnya sudah terpenuhi; syaratnya tidak perlu dicek.':'Syaratnya tidak terpenuhi, jadi aturan tidak berlaku.'}`}
+    else if(x.bad){ok=false;G.lives--;msg=`<b style="color:var(--bad)">${auto?'Terlambat! ':''}Pelanggar lolos! −1 nyawa.</b> Sisi lain: “${esc(x.ht)}”. Koper “${esc(x.vt)}” wajib dibuka.`}
+    else{ok=false;msg=`<b style="color:var(--bad)">${auto?'Terlambat. ':''}Seharusnya dibuka.</b> Ternyata aman (“${esc(x.ht)}”), tapi koper “${esc(x.vt)}” wajib dicek.`}}
+  G.score+=pts;G.stat.n++;if(ok)G.stat.ok++;G.last={ok,msg,open:open,x};G.phase='reveal';render();
+  if(ok)setTimeout(()=>{if(G&&G.id==='gerbang'&&G.phase==='reveal'&&G.last&&G.last.x===x)bandaraNext()},1200)}
+function bandaraNext(){if(G.phase!=='reveal')return;if(G.lives<=0){G.phase='close';G.cq=bandaraQ(G.rule);return render()}
+  G.k++;if(G.k>=G.kop.length){G.phase='close';G.cq=bandaraQ(G.rule);return render()}G.phase='belt';G.last=null;render();bandaraTimer()}
+function bandaraQ(r){const t=rnd(['setara','ingkaran','tollens']);const C=s=>cap(s);
+  if(t==='setara')return Object.assign({perintah:`Pernyataan yang setara dengan aturan “${r.aturan}” adalah …`},mkOpts([{t:`Jika ${r.nq}, maka ${r.np}.`,ok:1},{t:`Jika ${r.q}, maka ${r.p}.`,j:'J1'},{t:`Jika ${r.np}, maka ${r.nq}.`,j:'J2'},{t:`${C(r.p)} dan ${r.nq}.`,j:'J3'},{t:`${C(r.p)} atau ${r.nq}.`,j:'J3'}]));
+  if(t==='ingkaran')return Object.assign({perintah:`Ingkaran dari aturan “${r.aturan}” adalah …`},mkOpts([{t:`${C(r.p)} dan ${r.nq}.`,ok:1},{t:`Jika ${r.np}, maka ${r.nq}.`,j:'J2'},{t:`Jika ${r.q}, maka ${r.p}.`,j:'J1'},{t:`${C(r.np)} dan ${r.q}.`,j:'J3'},{t:`${C(r.np)} atau ${r.q}.`,j:'J3'}]));
+  return Object.assign({perintah:`Aturan: “${r.aturan}” Diketahui: ${r.nq}. Simpulan yang pasti benar adalah …`},mkOpts([{t:`${C(r.np)}.`,ok:1},{t:`${C(r.p)}.`,j:'J6'},{t:`${C(r.q)}.`,j:'J5'},{t:'Tidak dapat disimpulkan apa pun tentang koper itu.',j:'J13'},{t:`${C(r.np)} dan ${r.q}.`,j:'J3'}]))}
+function vBandara(){const r=G.rule;const hearts=[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('');
+  let h=gHead(`<span class="row" style="gap:2px">${hearts}</span>`)+`<div class="glass card has-st">${gst()}
+  <div class="row sp"><div class="cap" style="margin:0">Level ${G.lv}/3</div><span class="tiny muted">Skor ${G.score}</span></div>
+  <div class="cap" style="margin-top:8px">Aturan bandara</div><div class="rule">${esc(r.aturan)}</div>`;
+  if(G.phase==='belt'||G.phase==='reveal'){const x=G.kop[G.k];const rev=G.phase==='reveal';
+    h+=`<div class="row sp" style="margin-top:10px"><span class="tiny muted">Koper ${G.k+1}/${G.kop.length}</span><span class="jatah">Jatah buka: ${'<i></i>'.repeat(Math.max(0,G.jatah))}${G.jatah<=0?'<b>habis</b>':''}</span></div>
+    <div class="belt"><div class="kop ${rev?(G.last.ok?'okk':'badk'):'slide'}" ${rev?'':`key="${G.k}"`}>
+      <div class="khandle"></div><div class="kbody"><span class="ktag">${esc(x.vt)}</span>${rev&&(G.last.open||!G.last.ok)?`<span class="khid">${esc(x.ht)}</span>`:'<span class="kq">?</span>'}</div></div>
+      ${G.k+1<G.kop.length?'<div class="kop next"><div class="khandle"></div><div class="kbody"></div></div>':''}</div>
+    ${rev?`<div class="fb small">${G.last.msg}</div>${G.last.ok?'':'<button class="btn p w" style="margin-top:10px" data-act="iNext">Lanjut</button>'}`:
+    `<div class="bar" style="margin-top:10px"><i id="ktime" style="width:100%"></i></div>
+    <div class="row" style="margin-top:10px"><button class="btn" style="flex:1" data-act="iPass">Loloskan ›</button><button class="btn p" style="flex:1" data-act="iOpen" ${G.jatah<=0?'disabled':''}>Buka koper</button></div>
+`}`}
+  else{const q=G.cq;
+    h+=`
+    <div style="font-weight:600;margin-top:12px">${esc(q.perintah)}</div>
+    <div class="opts">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="iAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
+    if(G.ans!=null)h+=`<div class="fb small" >${G.lives<=0?'<b style="color:var(--bad)">Nyawa habis.</b> ':''}Keputusan tepat ${G.stat.ok} dari ${G.stat.n} koper. Yang wajib dibuka hanya dua jenis: koper yang menunjukkan syarat (“${esc(r.P[0])}”) dan koper yang menunjukkan akibat tidak terpenuhi (“${esc(r.NQ[0])}”).</div><div class="fb small">${G.ans===q.kunci?'<b style="color:var(--ok)">+2.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}“Jika p, maka q” setara dengan kontraposisi “jika bukan q, maka bukan p”; ingkarannya “p dan bukan q”.${q.j[G.ans]&&TRAPS[q.j[G.ans]]?` <span class="chip bad">${q.j[G.ans]} · ${TRAPS[q.j[G.ans]]}</span>`:''}</div>
+     <button class="btn p w" style="margin-top:10px" data-act="iLvl">${G.lives>0&&G.lv<3?'Level berikutnya':'Lihat skor'}</button>`}
   return h+'</div>'}
 
 /* --- Venn Kilat --- */
@@ -1031,11 +1408,10 @@ function vVenn(){const q=G.cur,N=q.N,m=worldMask();const lab=['A','B','C'];
   <div class="row sp"><div class="cap" style="margin:0">Ronde ${G.round}/${G.n} · Level ${G.lv}</div><span class="tiny muted">Skor ${G.score}</span></div>`;
   const ok=s=>vEval(m,s);const empty=BIT.filter(b=>!setFilled(m,b));
   const mark=(good,live)=>live?`<span class="vm ${good?'y':'n'}">${good?'✓':'✗'}</span>`:'';
-  const live=G.phase===1&&Object.keys(G.tok).length>0;
+  const live=false;
   h+=`<div class="cap" style="margin-top:8px">Premis</div>${q.pre.map((s,i)=>`<div class="vline">${mark(ok(s),live)}<span>${esc(vText(s,N))}</span></div>`).join('')}
   <div class="cap" style="margin-top:8px">Simpulan</div><div class="vline" style="font-weight:600">${live?`<span class="vm ${ok(q.con)?'n':'y'}">${ok(q.con)?'benar':'salah'}</span>`:''}<span>${esc(vText(q.con,N))}</span></div>`;
   if(G.phase===1){
-    h+=`<div class="vtask">Bangun <b>dunia tandingan</b>: seret hewan ke kandang sampai semua premis benar (✓) tetapi simpulan <b>salah</b>. Setiap kelompok minimal berisi satu hewan. Kalau mustahil, simpulannya pasti benar.</div>`;
     h+=`<div class="vboard" id="vboard"><svg viewBox="0 0 ${VB.W} ${VB.H}">${BIT.map((b,i)=>{const[cx,cy]=VB.C[b];return`<circle cx="${cx}" cy="${cy}" r="${VB.R}" fill="${['#ef5f5a','#4b8ae8','#3fb46e'][i]}" fill-opacity=".09" stroke="${['#ef5f5a','#4b8ae8','#3fb46e'][i]}" stroke-width="2"/>`}).join('')}
       ${[[30,26],[270,26],[150,246]].map((p,i)=>`<text x="${p[0]}" y="${p[1]}" text-anchor="middle" font-size="15" font-weight="700" fill="${['#ef5f5a','#4b8ae8','#3fb46e'][i]}">${lab[i]}</text>`).join('')}</svg>
       ${Object.keys(G.tok).map(k=>`<span class="vtok on" data-id="${k}" style="left:${G.tok[k].x/VB.W*100}%;top:${G.tok[k].y/VB.H*100}%">${HEWAN[k]}</span>`).join('')}</div>
@@ -1047,10 +1423,10 @@ function vVenn(){const q=G.cur,N=q.N,m=worldMask();const lab=['A','B','C'];
       <div style="text-align:center;margin-top:6px"><button class="btn sm" data-act="vReset">Kosongkan kandang</button></div>`;
     after(bindVenn)}
   else{
-    h+=`<div class="fb small" style="margin-top:10px">${G.p1}</div>
+    h+=`${G.ans==null?verdict(G.p1):''}
     <div style="font-weight:600;margin-top:12px">Jadi, simpulan tersebut …</div>
     <div class="opts">${KS_OPSI.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.v?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="vAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
-    if(G.ans!=null)h+=`<div class="fb">${vennSVG(q)}<div class="tiny muted" style="margin-top:4px">A = ${esc(N[0])} · B = ${esc(N[1])} · C = ${esc(N[2])}<br>Daerah abu-abu pasti kosong; tanda × pasti ada isinya.</div>
+    if(G.ans!=null)h+=`<div class="fb small">${G.p1}</div><div class="fb">${vennSVG(q)}<div class="tiny muted" style="margin-top:4px">A = ${esc(N[0])} · B = ${esc(N[1])} · C = ${esc(N[2])}<br>Daerah abu-abu pasti kosong; tanda × pasti ada isinya.</div>
      <div class="small" style="margin-top:6px">${q.v===0?'Tidak ada dunia tandingan, jadi simpulan pasti benar.':q.v===1?'Ada dunia yang membuat simpulan salah dan ada yang membuatnya benar: mungkin benar.':'Di semua dunia yang memenuhi premis, simpulan selalu salah: pasti salah.'}</div></div>
      <button class="btn p w" style="margin-top:10px" data-act="vNext">${G.lives>0&&G.round<G.n?'Ronde berikutnya':'Lihat skor'}</button>`}
   return h+'</div>'}
@@ -1092,13 +1468,17 @@ const DETEKTIF=[
  {judul:'Bimbel X',pesan:[['Rafi','Anak yang ikut bimbel X nilainya rata-rata lebih tinggi.'],['Wulan','Tapi yang ikut kebanyakan memang sudah rajin dari awal.'],['Tegar','Wifi sekolah lemot banget hari ini.'],['Rafi','Jadi bimbel X pasti menaikkan nilai.']],pengalih:2,simpulan:'Bimbel X pasti menaikkan nilai.',v:1,why:'Hubungan bersamaan belum tentu sebab-akibat (J8), dan kelompoknya sejak awal berbeda (J9), seperti kata Wulan. Belum tentu.'},
  {judul:'Lomba lari',pesan:[['Panitia','Tidak ada peserta di bawah 15 tahun yang boleh ikut lari 10 km.'],['Dodi','Adikku umur 13.'],['Mira','Kaos lombanya warna biru, keren.'],['Dodi','Jadi adikku tidak boleh ikut lari 10 km.']],pengalih:2,simpulan:'Adik Dodi tidak boleh ikut lari 10 km.',v:0,why:'Umur 13 di bawah 15, dan tidak ada yang di bawah 15 boleh ikut. Pasti benar.'},
  {judul:'Les tambahan',pesan:[['Wali kelas','Les tambahan diadakan jika pesertanya minimal 10 orang.'],['Gilang','Baru 7 orang yang daftar.'],['Gilang','Berarti les pasti nggak jadi.'],['Sari','Eh, kalian sudah nonton film baru itu?']],pengalih:3,simpulan:'Les tambahan pasti tidak jadi.',v:1,why:'Aturan hanya bilang: minimal 10 → les diadakan. Kurang dari 10 tidak otomatis batal (J2), dan pendaftar bisa bertambah. Belum tentu.'}];
+const AVC=['#ef5f5a','#4b8ae8','#3fb46e','#ff9d4d','#8f7ae8','#f47eab'];
+function chatView(r){const ppl=[...new Set(r.pesan.map(x=>x[0]))];const col=n=>AVC[ppl.indexOf(n)%AVC.length];const lock=G.step>0||G.pick!==null;
+  return`<div class="wa"><div class="wah"><span class="wag">👥</span><span><b>${esc(r.judul)}</b><br><span class="tiny">${ppl.map(esc).join(', ')}</span></span></div><div class="wab">
+  ${r.pesan.map(([w,t],i)=>{let c='';if(lock){if(i===r.pengalih)c='ok';else if(i===G.pick)c='bad'}const prev=i>0&&r.pesan[i-1][0]===w;
+    return`<div class="wam${prev?' cont':''}">${prev?'<span class="wav sp"></span>':`<span class="wav" style="background:${col(w)}">${esc(w[0])}</span>`}<button class="wbub ${c}" data-act="dMsg" data-v="${i}" ${lock?'disabled':''}>${prev?'':`<span class="who" style="color:${col(w)}">${esc(w)}</span>`}${esc(t)}<span class="wt">07.${String(10+i*3).padStart(2,'0')}</span></button></div>`}).join('')}</div></div>`}
 function vDetektif(){const r=G.rounds[G.i],O=['Pasti benar','Belum tentu','Pasti salah'];
-  let h=gHead(`<span class="chip">${G.i+1}/${G.rounds.length}</span>`)+`<div class="glass card has-st">${gst()}<div class="cap">Grup “${esc(r.judul)}”</div><div class="chat">${r.pesan.map(([w,t],i)=>{let c='';if(G.step>0||G.pick!==null){if(i===r.pengalih)c='ok';else if(i===G.pick)c='bad'}
-    return`<button class="msg ${i%2?'r':''} ${c}" data-act="dMsg" data-v="${i}" ${G.step>0||G.pick!==null?'disabled':''}><span class="who">${esc(w)}</span>${esc(t)}</button>`}).join('')}</div>`;
-  if(G.step===0){h+=`<div class="small" style="margin-top:12px;font-weight:600">1 · Ketuk pesan pengalih: yang tidak berkaitan dengan simpulan.</div>`;
-    if(G.pick!==null)h+=`<div class="fb">${G.pick===r.pengalih?'<b style="color:var(--ok)">Tepat.</b> Pesan itu tidak menyangkut simpulan.':'<b style="color:var(--bad)">Belum tepat.</b> Pesan yang kamu pilih ikut membangun simpulan. Pengalihnya ditandai hijau.'}</div><button class="btn p w" style="margin-top:10px" data-act="dStep">Lanjut</button>`}
-  else{h+=`<div class="small" style="margin-top:12px;font-weight:600">2 · Simpulan: “${esc(r.simpulan)}”</div><div class="opts">${O.map((o,i)=>{let c='';if(G.ans!==null)c=i===r.v?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="dAns" data-v="${i}" ${G.ans!==null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
-    if(G.ans!==null)h+=`<div class="fb">${esc(r.why)}</div><button class="btn p w" style="margin-top:10px" data-act="dNext">${G.i<G.rounds.length-1?'Grup berikutnya':'Lihat skor'}</button>`}
+  let h=gHead(gHud(`<span class="chip">${G.i+1}/${G.rounds.length}</span>`))+`<div class="glass card has-st">${gst()}${chatView(r)}`;
+  if(G.step===0){h+=`<div class="small" style="margin-top:12px;font-weight:600">Mana pesan pengalihnya?</div>`;
+    if(G.pick!==null)h+=`<div class="fb">${G.pick===r.pengalih?'<b style="color:var(--ok)">Tepat.</b> Pesan itu tidak menyangkut simpulan.':'<b style="color:var(--bad)">Belum tepat.</b> Pesan yang kamu pilih ikut membangun simpulan. Pengalihnya ditandai hijau.'}</div>${G.lives>0?'<button class="btn p w" style="margin-top:10px" data-act="dStep">Lanjut</button>':'<button class="btn p w" style="margin-top:10px" data-act="dNext">Lihat skor</button>'}`}
+  else{h+=`<div class="small" style="margin-top:12px;font-weight:600">Simpulan: “${esc(r.simpulan)}”</div><div class="opts">${O.map((o,i)=>{let c='';if(G.ans!==null)c=i===r.v?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="dAns" data-v="${i}" ${G.ans!==null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
+    if(G.ans!==null)h+=`<div class="fb">${esc(r.why)}${gBonusTxt()}</div><button class="btn p w" style="margin-top:10px" data-act="dNext">${gLanjut(G.i<G.rounds.length-1)?'Grup berikutnya':'Lihat skor'}</button>`}
   return h+'</div>'}
 
 /* --- Kasir Jebakan --- */
@@ -1123,6 +1503,12 @@ function vKasir(){const q=G.cur,min=Math.min(...q.pr.map(x=>x.f));
 function answerKasir(i){if(G.ans!==null)return;clearInterval(gTimer);G.ans=i;const min=Math.min(...G.cur.pr.map(x=>x.f));if(i>=0&&G.cur.pr[i].f===min)G.score++;render()}
 
 
+/* --- nyawa & kombo (Hakim, Detektif, Tren) --- */
+function gHit(ok){if(ok){G.combo=(G.combo||0)+1;G.bonus1=G.combo>=3?1:0;G.score+=1+G.bonus1}else{G.combo=0;G.bonus1=0;G.lives--}}
+function gHud(extra){G._hud=true;return extra||''}
+function gHudRow(){return`<div class="row sp" style="margin:-6px 4px 16px"><span class="row" style="gap:1px">${[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('')}</span>${G.combo>=2?`<span class="chip y combo">Kombo ×${G.combo}</span>`:'<span class="tiny muted">3 benar beruntun = bonus</span>'}</div>`}
+const gBonusTxt=()=>G.bonus1?' <span class="chip y">Kombo! +1 bonus</span>':'';
+const gLanjut=(more)=>more&&G.lives>0;
 /* --- Hakim Simpulan --- */
 const NAMA=['Rani','Bayu','Tari','Gio','Nadia','Dimas','Lala','Fajar','Wulan','Kevin','Hana','Arga','Sari','Tegar','Mira','Yoga'];
 const HAKIM_SET=[
@@ -1144,13 +1530,13 @@ function genHakim(){const t=rnd(HAKIM_SET),x=rnd(NAMA),v=ri(0,4);
    [`Lebih dari separuh ${t.g2} ${t.g3}.`,`Topiknya dibahas, tetapi “sebagian” tidak menyebut berapa banyak, jadi tidak ada cara untuk menilainya: tidak dapat dinilai. Kalau kamu memilih “mungkin benar”, itu jebakan J13.`]];
   return{pre,sim:C[v][0],why:C[v][1],v}}
 function newHakim(){G.cur=genHakim();G.ans=null;G.end=Date.now()+20000;clearInterval(gTimer);gTimer=setInterval(()=>{if(!G)return;const l=Math.max(0,G.end-Date.now());const e=$('#gtime');if(e)e.textContent=Math.ceil(l/1000)+' dtk';if(l<=0&&G.ans===null)answerHakim(-1)},250)}
-function answerHakim(i){if(!G||G.ans!==null)return;clearInterval(gTimer);G.ans=i;if(i===G.cur.v)G.score++;render()}
+function answerHakim(i){if(!G||G.ans!==null)return;clearInterval(gTimer);G.ans=i;gHit(i===G.cur.v);render()}
 function vHakim(){const q=G.cur;
-  let h=gHead(`<span class="chip" id="gtime">20 dtk</span>`)+`<div class="glass card has-st">${gst()}<div class="row sp"><div class="cap" style="margin:0">Ronde ${G.i+1}/${G.n}</div><span class="tiny muted">Skor ${G.score}</span></div>
+  let h=gHead(gHud(`<span class="chip" id="gtime">20 dtk</span>`))+`<div class="glass card has-st">${gst()}<div class="row sp"><div class="cap" style="margin:0">Ronde ${G.i+1}/${G.n}</div><span class="tiny muted">Skor ${G.score}</span></div>
   <div class="cap" style="margin-top:8px">Informasi</div><div class="stim">${q.pre.map(esc).join('\n')}</div>
   <div class="cap" style="margin-top:10px">Simpulan</div><div style="font-weight:600">${esc(q.sim)}</div>
   <div class="opts">${KS_OPSI.map((o,i)=>{let c='';if(G.ans!==null)c=i===q.v?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="hAns" data-v="${i}" ${G.ans!==null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
-  if(G.ans!==null)h+=`<div class="fb">${G.ans===-1?'<b style="color:var(--bad)">Waktu habis.</b> ':''}${esc(q.why)}</div><button class="btn p w" style="margin-top:10px" data-act="hNext">${G.i<G.n-1?'Berikutnya':'Lihat skor'}</button>`;
+  if(G.ans!==null)h+=`<div class="fb">${G.ans===-1?'<b style="color:var(--bad)">Waktu habis.</b> ':''}${esc(q.why)}${gBonusTxt()}</div><button class="btn p w" style="margin-top:10px" data-act="hNext">${gLanjut(G.i<G.n-1)?'Berikutnya':'Lihat skor'}</button>`;
   return h+'</div>'}
 
 /* --- Cukup Nggak? --- */
@@ -1164,6 +1550,9 @@ function genCukup(){const target=ri(0,4);let last=null;
     const st=()=>{const n=Math.random()<.45?2:1;const a=[];for(let i=0;i<n;i++)a.push(mk());return a};
     const s1=st(),s2=st();
     if([...s1,...s2].some(c=>q.t==='cmp'&&c.f==='gt'&&((c.a===q.x&&c.b===q.y)||(c.a===q.y&&c.b===q.x))))continue;
+    if(q.t==='top'&&[...s1,...s2].some(c=>c.f==='top'))continue;
+    const kk=c=>c.f+c.a+(c.b??'');if(s1.map(kk).sort().join()===s2.map(kk).sort().join())continue;
+    if(new Set(s1.map(kk)).size<s1.length||new Set(s2.map(kk)).size<s2.length)continue;
     const M1=PERMS4.filter(p=>s1.every(c=>cEval(p,c))),M2=PERMS4.filter(p=>s2.every(c=>cEval(p,c))),M12=M1.filter(p=>s2.every(c=>cEval(p,c)));
     if(!M1.length||!M2.length||!M12.length)continue;
     const ans=p=>q.t==='cmp'?(p.indexOf(q.x)<p.indexOf(q.y)?'ya':'tidak'):N[p[0]];
@@ -1171,14 +1560,36 @@ function genCukup(){const target=ri(0,4);let last=null;
     const v=d1&&d2?3:d1?0:d2?1:d12?2:4;
     last={N,K,q,s1,s2,v,d1,d2,d12,jaw:d12?ans(M12[0]):null};if(v===target)return last}
   return last}
-function vCukup(){const c=G.cur,N=c.N,K=c.K;const tanya=c.q.t==='cmp'?`Apakah ${K} ${N[c.q.x]} lebih tinggi daripada ${K} ${N[c.q.y]}?`:`Siapa yang mendapat ${K} tertinggi?`;
-  let h=gHead(`<span class="chip">${G.i+1}/${G.n}</span>`)+`<div class="glass card has-st">${gst()}<div class="stim">Empat siswa, yaitu ${N.slice(0,3).join(', ')}, dan ${N[3]}, mendapat ${K} yang berbeda-beda.</div>
-  <div class="cap" style="margin-top:10px">Pertanyaan</div><div style="font-weight:600">${esc(tanya)}</div>
-  <div class="cap" style="margin-top:10px">Pernyataan</div><div class="stim">(i) ${c.s1.map(x=>esc(cText(x,N,K))).join(' ')}\n(ii) ${c.s2.map(x=>esc(cText(x,N,K))).join(' ')}</div>
-  <div class="opts">${CUKUP_OPSI.map((o,i)=>{let cl='';if(G.ans!=null)cl=i===c.v?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${cl}" data-act="cAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
-  if(G.ans!=null){const w=b=>b?'<b style="color:var(--ok)">cukup</b>':'<b style="color:var(--bad)">tidak cukup</b>';
-    h+=`<div class="fb small">(i) saja: ${w(c.d1)} · (ii) saja: ${w(c.d2)} · bersama: ${w(c.d12)}${c.jaw?`<br>Jawabannya: <b>${esc(c.jaw)}</b>.`:''}<br><span class="muted">Cukup berarti semua urutan yang mungkin memberi jawaban yang sama.</span></div>
-    <button class="btn p w" style="margin-top:10px" data-act="cNext">${G.i<G.n-1?'Berikutnya':'Lihat skor'}</button>`}
+function cTanya(c){const N=c.N,K=c.K;return c.q.t==='cmp'?`Apakah ${K} ${N[c.q.x]} lebih tinggi daripada ${K} ${N[c.q.y]}?`:`Siapa yang mendapat ${K} tertinggi?`}
+function cJawab(c,p){return c.q.t==='cmp'?(p.indexOf(c.q.x)<p.indexOf(c.q.y)?'ya':'tidak'):c.N[p[0]]}
+function cKnown(){const c=G.cur;const cl=[...(G.bought[0]?c.s1:[]),...(G.bought[1]?c.s2:[])];const M=PERMS4.filter(p=>cl.every(x=>cEval(p,x)));const A=new Set(M.map(p=>cJawab(c,p)));return{det:A.size===1,ans:A.size===1?[...A][0]:null}}
+function newCukupRound(){G.round++;G.cur=genCukup();G.bought=[false,false];G.phase=1;G.res='';G.ans=null;G.delta=null}
+function cCoins(d){G.coins+=d;G.delta=d}
+function cBuy(i){if(G.phase!==1||G.bought[i])return;if(G.coins<1){G.res='<div class="fb small"><b style="color:var(--bad)">Koin habis.</b> Jawab dengan informasi yang ada.</div>';return render()}cCoins(-1);G.bought[i]=true;G.res='';render()}
+function cAnswer(val){const c=G.cur,k=cKnown(),both=G.bought[0]&&G.bought[1],used=G.bought.filter(Boolean).length;let msg;
+  if(val==='none'){if(!k.det){cCoins(4);msg=`<b style="color:var(--ok)">+4 koin.</b> Tepat, kedua petunjuk memang belum cukup.`}else{cCoins(-2);msg=`<b style="color:var(--bad)">−2 koin.</b> Sebenarnya informasimu sudah cukup. Jawabannya: <b>${esc(k.ans)}</b>.`}}
+  else if(!k.det){cCoins(-3);msg=`<b style="color:var(--bad)">−3 koin hangus.</b> Terlalu cepat: ${used?'dengan petunjuk yang kamu buka':'tanpa petunjuk'}, masih ada lebih dari satu kemungkinan jawaban.`}
+  else if(val===k.ans){cCoins(4);msg=`<b style="color:var(--ok)">+4 koin.</b> Benar, dengan ${used} petunjuk.${used===2&&(c.d1||c.d2)?' Sebenarnya satu petunjuk sudah cukup; lain kali hemat koin.':''}`}
+  else{cCoins(-2);msg=`<b style="color:var(--bad)">−2 koin.</b> Informasinya sudah cukup, tetapi jawabannya <b>${esc(k.ans)}</b>.`}
+  G.res=msg;G.phase=2;G.bought=[true,true];render()}
+function vCukup(){const c=G.cur,N=c.N,K=c.K;
+  let h=gHead(`<span class="coin">● ${G.coins}${G.delta!=null?`<i class="${G.delta>0?'up':'dn'}">${G.delta>0?'+':''}${G.delta}</i>`:''}</span>`)+`<div class="glass card has-st">${gst()}
+  <div class="row sp"><div class="cap" style="margin:0">Ronde ${G.round}/${G.n}</div></div>
+  <div class="stim" style="margin-top:6px">Empat siswa, yaitu ${N.slice(0,3).join(', ')}, dan ${N[3]}, mendapat ${K} yang berbeda-beda.</div>
+  <div class="cap" style="margin-top:10px">Pertanyaan</div><div style="font-weight:600">${esc(cTanya(c))}</div>
+  <div class="clues">${[c.s1,c.s2].map((s,i)=>G.bought[i]?`<div class="clue open"><span class="cn">(${i?'ii':'i'})</span>${s.map(x=>esc(cText(x,N,K))).join(' ')}</div>`:`<button class="clue shut" data-act="cBuy" data-v="${i}"><span class="cn">(${i?'ii':'i'})</span><span>Petunjuk tertutup</span><span class="price">● 1 · Beli</span></button>`).join('')}</div>`;
+  if(G.phase===1){
+    const opts=c.q.t==='cmp'?[['ya','Ya'],['tidak','Tidak']]:N.map(n=>[n,n]);
+    h+=`<div class="cap" style="margin-top:12px">Jawab</div><div class="ansrow">${opts.map(([v,l])=>`<button class="btn" data-act="cAnswer" data-v="${esc(v)}">${esc(l)}</button>`).join('')}</div>
+    <button class="btn w" style="margin-top:8px" data-act="cAnswer" data-v="none" ${G.bought[0]&&G.bought[1]?'':'disabled'}>Tetap tidak bisa dijawab</button>
+    ${G.res}`}
+  else{
+    h+=`${G.ans==null?verdict(G.res):''}
+    <div style="font-weight:600;margin-top:12px">Pernyataan mana yang cukup untuk menjawab?</div>
+    <div class="opts">${CUKUP_OPSI.map((o,i)=>{let cl='';if(G.ans!=null)cl=i===c.v?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${cl}" data-act="cAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
+    if(G.ans!=null){const w=b=>b?'<b style="color:var(--ok)">cukup</b>':'<b style="color:var(--bad)">tidak cukup</b>';
+      h+=`<div class="fb small">${G.res}</div><div class="fb small">${G.ans===c.v?'<b style="color:var(--ok)">+2 koin.</b> ':'<b style="color:var(--bad)">−1 koin.</b> '}(i) saja: ${w(c.d1)} · (ii) saja: ${w(c.d2)} · bersama: ${w(c.d12)}${c.jaw?`<br>Jawabannya: <b>${esc(c.jaw)}</b>.`:''}<br><span class="muted">Cukup berarti semua urutan yang mungkin memberi jawaban yang sama.</span></div>
+      <button class="btn p w" style="margin-top:10px" data-act="cNext">${G.coins>0&&G.round<G.n?'Ronde berikutnya':'Lihat skor'}</button>`}}
   return h+'</div>'}
 
 /* --- Kursi Rapat --- */
@@ -1199,17 +1610,39 @@ function genKursi(){for(let t=0;t<600;t++){const N=shuffle(NAMA).slice(0,5);cons
     const items=shuffle([{c:rnd(must),ok:1},...shuffle(maybe).slice(0,4).map(c=>({c}))]);
     return{N,cons,sols,opsi:items.map(x=>kText(x.c,N)),kunci:items.findIndex(x=>x.ok)}}
   return null}
-function vKursi(){const q=G.cur,N=q.N;
-  let h=gHead(`<span class="chip">${G.i+1}/${G.n}</span>`)+`<div class="glass card has-st">${gst()}<div class="stim">Lima pengurus kelas duduk berjajar di kursi 1–5 (dari kiri ke kanan) saat rapat.</div>
-  <div class="cap" style="margin-top:10px">Syarat</div><div class="stim">${q.cons.map((c,i)=>`${i+1}. ${esc(kText(c,N))}`).join('\n')}</div>
-  <div class="cap" style="margin-top:12px">Coret-coret: ketuk nama, lalu ketuk kursi</div>
-  <div class="names">${N.map((n,i)=>`<button class="nm ${G.selName===i?'sel':''} ${G.place.includes(i)?'used':''}" data-act="kuName" data-v="${i}">${esc(n)}</button>`).join('')}</div>
-  <div class="seats">${G.place.map((x,k)=>`<button class="seat ${x!==null?'f':''}" data-act="kuSeat" data-v="${k}"><small>${k+1}</small>${x!==null?esc(N[x]):''}</button>`).join('')}</div>
-  <div class="row" style="margin-top:8px"><button class="btn sm" data-act="kuCek">Cek susunanku</button><button class="btn sm" data-act="kuClear">Kosongkan</button></div><div id="kumsg">${G.msg||''}</div>
-  <div style="font-weight:600;margin-top:14px">Pernyataan yang PASTI BENAR adalah …</div>
-  <div class="opts">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="kuAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
-  if(G.ans!=null)h+=`<div class="fb small">Ada ${q.sols.length} susunan yang memenuhi semua syarat:<br>${q.sols.slice(0,6).map(p=>p.map(k=>esc(N[k])).join(' – ')).join('<br>')}<br><span class="muted">Hanya opsi yang benar di semua susunan itu yang PASTI BENAR.</span></div>
-   <button class="btn p w" style="margin-top:10px" data-act="kuNext">${G.i<G.n-1?'Berikutnya':'Lihat skor'}</button>`;
+function kuDrop(name,from,cx,cy){const el=document.elementFromPoint(cx,cy);const seat=el&&el.closest('.seat');
+  if(seat){const k=+seat.dataset.v;const occ=G.place[k];const old=G.place.indexOf(name);if(old>=0)G.place[old]=null;
+    if(occ!==null&&occ!==name&&from!==null)G.place[from]=occ;G.place[k]=name}
+  else if(from!==null)G.place[from]=null;
+  G.selName=null;G.msg='';render()}
+function bindKursi(){document.querySelectorAll('.nm,.seat.f').forEach(el=>{let sx=0,sy=0,moved=false,ghost=null,pid=null;
+  const isSeat=el.classList.contains('seat');const name=isSeat?G.place[+el.dataset.v]:+el.dataset.v;const from=isSeat?+el.dataset.v:null;
+  el.onpointerdown=e=>{sx=e.clientX;sy=e.clientY;moved=false;pid=e.pointerId;el.setPointerCapture(pid)};
+  el.onpointermove=e=>{if(pid!==e.pointerId||!el.hasPointerCapture(pid))return;if(!moved&&Math.hypot(e.clientX-sx,e.clientY-sy)<6)return;
+    if(!moved){moved=true;ghost=document.createElement('span');ghost.className='nm ghostnm';ghost.innerHTML=kAv(name,G.cur.N)+'<span>'+esc(G.cur.N[name])+'</span>';document.body.appendChild(ghost);el.style.opacity='.35'}
+    ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px'};
+  el.onpointerup=e=>{if(ghost){ghost.remove();ghost=null}if(moved){window._noClick=Date.now();kuDrop(name,from,e.clientX,e.clientY)}pid=null};
+  el.onpointercancel=()=>{if(ghost){ghost.remove();ghost=null}el.style.opacity='';pid=null}})}
+function kAv(i,N,sm){return`<span class="kav${sm?' sm':''}" style="background:${AVC[i%AVC.length]}">${esc(N[i][0])}</span>`}
+function kCard(c,N){const A=kAv(c.a,N,1),B=c.b!=null?kAv(c.b,N,1):'';
+  return{pos:[`${A}<span class="kic">🪑${c.k+1}</span>`,`duduk di kursi ${c.k+1}`],notPos:[`${A}<span class="kic no">🪑${c.k+1}</span>`,`bukan kursi ${c.k+1}`],
+   left:[`${A}<span class="kic">⋯</span>${B}`,`di kiri (boleh berjarak)`],imm:[`${A}${B}`,`tepat di kiri`],adj:[`${A}<span class="kic">⇄</span>${B}`,`bersebelahan`],
+   notAdj:[`${A}<span class="kic no">⇄</span>${B}`,`tidak bersebelahan`],end:[`<span class="kic">⇤</span>${A}<span class="kic">⇥</span>`,`di salah satu ujung`]}[c.f]}
+function kState(c){const inv=[c.a].concat(c.b!=null?[c.b]:[]);if(inv.some(x=>!G.place.includes(x)))return'wait';
+  if(c.f==='notPos'||c.f==='notAdj'||c.f==='left'||c.f==='adj'||c.f==='imm'||c.f==='pos'||c.f==='end')return kEval(G.place,c)?'on':'off';return'wait'}
+function vKursi(){const q=G.cur,N=q.N;if(G.ans==null&&!G.valid)after(bindKursi);
+  const st=q.cons.map(kState);const full=!G.place.includes(null);const ok=full&&st.every(x=>x==='on');
+  if(ok&&!G.valid){G.valid=true;G.score+=1}
+  let h=gHead(`<span class="chip">${G.i+1}/${G.n}</span>`)+`<div class="glass card has-st">${gst()}
+  <div class="kcards">${q.cons.map((c,i)=>{const [ic,tx]=kCard(c,N);return`<div class="kcard ${st[i]}"><div class="kci">${ic}</div><div class="kct">${esc(N[c.a])} ${tx}${c.b!=null?' '+esc(N[c.b]):''}</div></div>`}).join('')}</div>
+  <div class="meja"><div class="tbl">MEJA RAPAT</div><div class="chairs">${G.place.map((x,k)=>`<button class="seat chair ${x!==null?'f':''}" data-act="kuSeat" data-v="${k}" ${G.valid?'disabled':''}><span class="back"></span>${x!==null?`${kAv(x,N)}<span class="cn2">${esc(N[x])}</span>`:`<span class="cnum">${k+1}</span>`}</button>`).join('')}</div></div>`;
+  if(!G.valid)h+=`<div class="lobby">${N.map((n,i)=>G.place.includes(i)?'':`<button class="nm tok ${G.selName===i?'sel':''}" data-act="kuName" data-v="${i}">${kAv(i,N)}<span>${esc(n)}</span></button>`).join('')||'<span class="tiny muted">Semua sudah duduk. Kartu merah = syarat belum terpenuhi.</span>'}</div>`;
+  else{h+=`<div class="verdict" style="display:block"><b style="color:var(--ok)">Susunan sah! +1.</b> Semua kartu menyala. Ingat, mungkin masih ada susunan lain.</div>
+    <div style="font-weight:600;margin-top:12px">Pernyataan yang PASTI BENAR adalah …</div>
+    <div class="opts">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="kuAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
+    if(G.ans!=null)h+=`<div class="fb small">${G.ans===q.kunci?'<b style="color:var(--ok)">+2.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}Ada ${q.sols.length} susunan yang sah:<br>${q.sols.slice(0,6).map(p=>p.map(k=>esc(N[k])).join(' – ')).join('<br>')}<br><span class="muted">PASTI BENAR berarti benar di semua susunan itu.</span></div>
+     <button class="btn p w" style="margin-top:10px" data-act="kuNext">${G.i<G.n-1?'Meja berikutnya':'Lihat skor'}</button>`}
+  if(!G.valid&&G.place.some(x=>x!==null))h+=`<div style="text-align:center;margin-top:10px"><button class="btn sm" data-act="kuClear">Kosongkan kursi</button></div>`;
   return h+'</div>'}
 
 /* --- Tren Selang-seling --- */
@@ -1224,12 +1657,25 @@ function genTren(){const type=rnd(['alt2','pm','tm','grow','altmul']);let s=[],d
   [s[idx-1]+prevD,ans+1,ans-1,ans+2,ans-2,ans+prevD,s[idx-2]!==undefined?s[idx-1]+(s[idx-1]-s[idx-2]):ans+3].forEach(x=>{if(dis.size<4&&x>0&&x!==ans)dis.add(x)});
   while(dis.size<4)dis.add(ans+dis.size*3);
   const opsi=shuffle([...dis]);return{show:gap?s:s.slice(0,6),idx,ans,opsi,kunci:opsi.indexOf(ans),d,gap}}
-function vTren(){const q=G.cur;
-  let h=gHead(`<span class="chip">${G.i+1}/${G.n}</span>`)+`<div class="glass card has-st">${gst()}<div class="cap">${q.gap?'Isi suku yang kosong':'Tentukan suku berikutnya'}</div>
-  <div class="seq">${q.show.map((x,i)=>i===q.idx?'<span class="q">?</span>':`<span>${x}</span>`).join('')}${q.gap?'':'<span class="q">?</span>'}</div>
-  <div class="grid4">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" style="justify-content:center;font-weight:700;font-size:17px" data-act="tAns" data-v="${i}" ${G.ans!=null?'disabled':''}>${o}</button>`}).join('')}</div>`;
-  if(G.ans!=null)h+=`<div class="fb">${esc(q.d)} Jawabannya <b>${q.ans}</b>.</div><button class="btn p w" style="margin-top:10px" data-act="tNext">${G.i<G.n-1?'Berikutnya':'Lihat skor'}</button>`;
+function vTren(){const q=G.cur;const stones=q.gap?q.show.slice():q.show.concat([null]);if(!q.gap)stones[q.idx]=null;
+  if(G.ans==null)after(bindBatu);
+  const ok=G.ans!=null&&G.ans===q.kunci;
+  let h=gHead(gHud(`<span class="chip">${G.i+1}/${G.n}</span>`))+`<div class="glass card has-st">${gst()}
+  <div class="river ${ok?'cross':''}"><div class="bank l"></div><div class="bank r"></div>
+    <div class="hopper"><svg viewBox="0 0 40 40"><rect x="9" y="4" width="8" height="6" rx="2.5" fill="#ffd24f" stroke="#c9971a" stroke-width="1.6"/><rect x="23" y="4" width="8" height="6" rx="2.5" fill="#ffd24f" stroke="#c9971a" stroke-width="1.6"/><rect x="5" y="9" width="30" height="22" rx="6" fill="#ffd24f" stroke="#c9971a" stroke-width="1.8"/><circle cx="15" cy="19" r="3.4" fill="#fff" stroke="#26304b" stroke-width="1.2"/><circle cx="25" cy="19" r="3.4" fill="#fff" stroke="#26304b" stroke-width="1.2"/><circle cx="15.6" cy="19.6" r="1.7" fill="#26304b"/><circle cx="25.6" cy="19.6" r="1.7" fill="#26304b"/><path d="M16 25q4 3 8 0" stroke="#26304b" stroke-width="1.5" fill="none" stroke-linecap="round"/><rect x="11" y="31" width="7" height="6" rx="2" fill="#4b8ae8"/><rect x="22" y="31" width="7" height="6" rx="2" fill="#4b8ae8"/></svg></div>
+    <div class="stones">${stones.map((x,i)=>x===null?`<span class="stone slot ${G.ans!=null?(ok?'filled':'miss'):''}" data-slot="1">${G.ans!=null?(ok?q.ans:'?'):'?'}</span>`:`<span class="stone">${x}</span>`).join('')}</div></div>
+  <div class="cap" style="margin-top:12px">${q.gap?'Batu yang hilang':'Batu berikutnya'}</div>
+  <div class="floaties">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'key':i===G.ans?'sunk':'gone';return`<button class="stone fl ${c}" data-act="tAns" data-v="${i}" ${G.ans!=null?'disabled':''} style="animation-delay:${-i*.7}s">${o}</button>`}).join('')}</div>`;
+  if(G.ans!=null)h+=`<div class="fb small">${ok?'<b style="color:var(--ok)">Bloki menyeberang!</b> ':'<b style="color:var(--bad)">Byur! Batunya tenggelam.</b> '}${esc(q.d)} Jawabannya <b>${q.ans}</b>.${gBonusTxt()}</div><button class="btn p w" style="margin-top:10px" data-act="tNext">${gLanjut(G.i<G.n-1)?'Sungai berikutnya':'Lihat skor'}</button>`;
   return h+'</div>'}
+function bindBatu(){document.querySelectorAll('.stone.fl').forEach(el=>{let sx=0,sy=0,moved=false,ghost=null,pid=null;
+  el.onpointerdown=e=>{sx=e.clientX;sy=e.clientY;moved=false;pid=e.pointerId;el.setPointerCapture(pid)};
+  el.onpointermove=e=>{if(pid!==e.pointerId)return;if(!moved&&Math.hypot(e.clientX-sx,e.clientY-sy)<6)return;
+    if(!moved){moved=true;ghost=document.createElement('span');ghost.className='stone ghoststone';ghost.textContent=el.textContent;document.body.appendChild(ghost);el.style.opacity='.3'}
+    ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px'};
+  el.onpointerup=e=>{if(ghost){ghost.remove();ghost=null}pid=null;if(!moved)return;window._noClick=Date.now();el.style.opacity='';
+    const t=document.elementFromPoint(e.clientX,e.clientY);if(t&&t.closest('[data-slot]')){G.ans=+el.dataset.v;gHit(G.ans===G.cur.kunci);render()}};
+  el.onpointercancel=()=>{if(ghost){ghost.remove();ghost=null}el.style.opacity='';pid=null}})}
 
 /* ================= RESET ================= */
 function resetHariIni(){const t=today();
@@ -1243,7 +1689,7 @@ function resetHariIni(){const t=today();
     Object.assign(r,{tgl:t,selesai:false,lengkap:false,butir:0,benar:0,akurasi:0,beruntun:streak(),diperbarui:new Date().toISOString()});localStorage.setItem(KEY_RING,JSON.stringify(r))}catch(e){}
   closeSheet();nav('hari-ini');toast('Progres hari ini direset')}
 function resetSemua(){const keep={};for(const k in S.paket){if(/^\d/.test(k)&&!S.paket[k].dipakai)keep[k]=S.paket[k]}
-  const jur=S.jurnal;S=blank();S.paket=keep;S.jurnal=jur;clearInterval(pemTimer);PEM=KAS=JEM=null;LT=-1;save();
+  const jur=S.jurnal,cf=S.set;S=blank();S.paket=keep;S.jurnal=jur;if(cf)S.set=cf;clearInterval(pemTimer);PEM=KAS=JEM=null;LT=-1;save();
   try{localStorage.removeItem(KEY_RING)}catch(e){}
   closeSheet();nav('hari-ini');toast('Semua progres direset')}
 function askReset(all){openSheet(`<h2>${all?'Reset semua progres?':'Reset progres hari ini?'}</h2>
@@ -1255,6 +1701,11 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   switch(a){
   case'nav':nav(v);break;
   case'closeSheet':closeSheet();break;
+  case'openCfg':openCfg();break;
+  case'cfgTerang':setCfg('terang',!cfg().terang);openCfg();break;
+  case'cfgGerak':setCfg('gerak',!cfg().gerak);openCfg();break;
+  case'resetTodayAsk':askReset(false);break;
+  case'resetAllAsk':askReset(true);break;
   case'mulai':if(s.fase===0)s.fase=1;save();render();break;
   case'pem':answerPem(+v);break;
   case'nextPem':nextPem();break;
@@ -1289,44 +1740,181 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'askResetAll':askReset(true);break;
   case'resetToday':resetHariIni();break;
   case'resetAll':resetSemua();break;
-  case'restore':try{const o=JSON.parse($('#rtext').value);if(!o.skills)throw 0;localStorage.setItem(KEY,JSON.stringify(o));S=load();closeSheet();toast('Data dipulihkan');render()}catch(err){toast('Cadangan tidak valid')}break;
+  case'restore':try{const o=JSON.parse($('#rtext').value);if(!o.skills)throw 0;localStorage.setItem(KEY,JSON.stringify(o));S=load();applyCfg();closeSheet();toast('Data dipulihkan');render()}catch(err){toast('Cadangan tidak valid')}break;
   case'gStart':startGame(v);break;
+  case'gGo':initGame(G.id);break;
+  case'gAgain':initGame(G.id);break;
+  case'sesiGo':{(s.intro||(s.intro={}))[+v]=true;save();render();window.scrollTo(0,0);break}
   case'gBack':clearInterval(gTimer);G=null;render();break;
   case'geser':answerGeser(v==='1');break;
-  case'gCard':{const i=+v;G.sel.has(i)?G.sel.delete(i):G.sel.add(i);render();break}
-  case'gCheck':{const ok=G.sel.size===G.key.size&&[...G.key].every(p=>G.sel.has(p));G.checked=true;G.lastOk=ok;if(ok)G.score++;render();break}
-  case'gNext':if(G.i<G.rounds.length-1){G.i++;gerbangRound();render()}else gDone(G.score,G.rounds.length);break;
+  case'gCepat':startCepat();break;
+  case'rkTap':rkTap(+v);break;
+  case'rkUndo':if(G.chain.length){G.chain.pop();G.used=new Set([...G.used].filter(id=>G.cur.T[id].kind!=='ok'||G.chain.includes(id)));G.msg='';render()}break;
+  case'rkAns':{if(G.ans!=null)break;G.ans=+v;const ok=G.ans===G.cur.q.kunci;if(ok)G.score+=2;else G.lives--;S.log.push({t:today(),src:'game',sk:'N2',ok:ok?1:0,j:ok?null:G.cur.q.j[G.ans]});save();render();break}
+  case'rkNext':if(G.lives>0&&G.round<G.n){newRantaiRound();render();window.scrollTo(0,0)}else{const r=S.games.geser||(S.games.geser={best:0,main:0});r.lvl=Math.max(r.lvl||0,G.lv);gDone(G.score,0)}break;
+  case'iOpen':bandaraDecide(true,false);break;
+  case'iPass':bandaraDecide(false,false);break;
+  case'iNext':bandaraNext();break;
+  case'iAns':{if(G.ans!=null)break;G.ans=+v;const ok=G.ans===G.cq.kunci;if(ok)G.score+=2;S.log.push({t:today(),src:'game',sk:'N2',ok:ok?1:0,j:ok?null:G.cq.j[G.ans]});save();render();break}
+  case'iLvl':if(G.lives>0&&G.lv<3){newBandaraLevel();render();window.scrollTo(0,0)}else{const r=S.games.gerbang||(S.games.gerbang={best:0,main:0});r.lvl=Math.max(r.lvl||0,G.lv);gDone(G.score,0)}break;
   case'vAns':{G.ans=+v;const ok=G.ans===G.cur.v;if(ok)G.score++;else G.lives--;vLog(ok,G.ans>=3?'J13':G.ans===0?'J6':G.ans===2?'J6':null);render();break}
   case'vNext':if(G.lives>0&&G.round<G.n){newVennRound();render();window.scrollTo(0,0)}else{const r=S.games.venn||(S.games.venn={best:0,main:0});r.lvl=Math.max(r.lvl||0,G.lv);gDone(G.score,G.n*2)}break;
   case'vUji':vUji();break;
   case'vMustahil':vMustahil();break;
   case'vReset':G.tok={};G.sel=null;G.msg='';render();break;
-  case'dMsg':{G.pick=+v;if(G.pick===G.rounds[G.i].pengalih)G.score++;render();break}
+  case'dMsg':{if(G.pick!==null)break;G.pick=+v;gHit(G.pick===G.rounds[G.i].pengalih);render();break}
   case'dStep':G.step=1;render();break;
-  case'dAns':{G.ans=+v;if(G.ans===G.rounds[G.i].v)G.score++;render();break}
-  case'dNext':if(G.i<G.rounds.length-1){G.i++;G.step=0;G.pick=null;G.ans=null;render()}else gDone(G.score,G.rounds.length*2);break;
+  case'dAns':{if(G.ans!==null)break;G.ans=+v;gHit(G.ans===G.rounds[G.i].v);render();break}
+  case'dNext':if(gLanjut(G.i<G.rounds.length-1)){G.i++;G.step=0;G.pick=null;G.ans=null;render()}else gDone(G.score,0);break;
   case'kAns':answerKasir(+v);break;
+  case'bPick':belanjaPick(+v);break;
+  case'bNext':belanjaNext();break;
+  case'bAns':{if(G.ans!=null)break;G.ans=+v;const q=G.qs[G.qi],ok=G.ans===q.kunci;if(ok)G.bonus+=5;S.log.push({t:today(),src:'game',sk:'N8',ok:ok?1:0,j:ok?null:q.j[G.ans]});save();render();break}
+  case'bQNext':if(G.qi<G.qs.length-1){G.qi++;G.ans=null;render()}else gDone(belanjaSkor(),0);break;
   case'hAns':answerHakim(+v);break;
-  case'hNext':if(G.i<G.n-1){G.i++;newHakim();render()}else gDone(G.score,G.n);break;
-  case'cAns':G.ans=+v;if(G.ans===G.cur.v)G.score++;render();break;
-  case'cNext':if(G.i<G.n-1){G.i++;G.cur=genCukup();G.ans=null;render()}else gDone(G.score,G.n);break;
-  case'kuName':G.selName=+v;render();break;
-  case'kuSeat':{const k=+v;if(G.selName===null){if(G.place[k]!==null){G.selName=G.place[k];G.place[k]=null}}else{const old=G.place.indexOf(G.selName);if(old>=0)G.place[old]=null;G.place[k]=G.selName;G.selName=null}G.msg='';render();break}
+  case'hNext':if(gLanjut(G.i<G.n-1)){G.i++;newHakim();render()}else gDone(G.score,0);break;
+  case'cBuy':cBuy(+v);break;
+  case'cAnswer':cAnswer(v);break;
+  case'cAns':{if(G.ans!=null)break;G.ans=+v;const ok=G.ans===G.cur.v;cCoins(ok?2:-1);S.log.push({t:today(),src:'game',sk:'N8',ok:ok?1:0,j:ok?null:(G.ans===4?'J13':G.cur.v===4?'J6':null)});save();render();break}
+  case'cNext':if(G.coins>0&&G.round<G.n){newCukupRound();render();window.scrollTo(0,0)}else gDone(Math.max(0,G.coins),0);break;
+  case'kuName':if(Date.now()-(window._noClick||0)<400)break;G.selName=+v;render();break;
+  case'kuSeat':{if(Date.now()-(window._noClick||0)<400)break;const k=+v;if(G.selName===null){if(G.place[k]!==null){G.selName=G.place[k];G.place[k]=null}}else{const old=G.place.indexOf(G.selName);if(old>=0)G.place[old]=null;G.place[k]=G.selName;G.selName=null}G.msg='';render();break}
   case'kuClear':G.place=[null,null,null,null,null];G.selName=null;G.msg='';render();break;
   case'kuCek':{if(G.place.includes(null)){G.msg='<div class="fb small">Isi kelima kursi dulu.</div>'}else{const bad=G.cur.cons.map((c,i)=>kEval(G.place,c)?null:i+1).filter(Boolean);G.msg=`<div class="fb small">${bad.length?`<b style="color:var(--bad)">Syarat ${bad.join(', ')} belum terpenuhi.</b>`:'<b style="color:var(--ok)">Susunanmu memenuhi semua syarat.</b> Tapi ingat, mungkin ada susunan lain.'}</div>`}render();break}
-  case'kuAns':G.ans=+v;if(G.ans===G.cur.kunci)G.score++;render();break;
-  case'kuNext':if(G.i<G.n-1){G.i++;G.cur=genKursi();G.ans=null;G.place=[null,null,null,null,null];G.selName=null;G.msg='';render();window.scrollTo(0,0)}else gDone(G.score,G.n);break;
-  case'tAns':G.ans=+v;if(G.ans===G.cur.kunci)G.score++;render();break;
-  case'tNext':if(G.i<G.n-1){G.i++;G.cur=genTren();G.ans=null;render()}else gDone(G.score,G.n);break;
+  case'kuAns':if(G.ans!=null)break;G.ans=+v;if(G.ans===G.cur.kunci)G.score+=2;S.log.push({t:today(),src:'game',sk:'N4',ok:G.ans===G.cur.kunci?1:0,j:null});save();render();break;
+  case'kuNext':if(G.i<G.n-1){G.i++;G.cur=genKursi();G.ans=null;G.valid=false;G.place=[null,null,null,null,null];G.selName=null;G.msg='';render();window.scrollTo(0,0)}else gDone(G.score,G.n);break;
+  case'tAns':if(G.ans!=null||Date.now()-(window._noClick||0)<400)break;G.ans=+v;gHit(G.ans===G.cur.kunci);render();break;
+  case'tNext':if(gLanjut(G.i<G.n-1)){G.i++;G.cur=genTren();G.ans=null;render()}else gDone(G.score,0);break;
   case'kNext':if(G.i<G.n-1){G.i++;newKasir();render()}else gDone(G.score,G.n);break;
   }
 });
-document.addEventListener('keydown',e=>{if(G&&G.id==='geser'&&!G.over){if(e.key==='ArrowRight')answerGeser(true);if(e.key==='ArrowLeft')answerGeser(false)}});
+document.addEventListener('keydown',e=>{if(G&&G.id==='geser'&&G.mode==='cepat'&&!G.over){if(e.key==='ArrowRight')answerGeser(true);if(e.key==='ArrowLeft')answerGeser(false)}});
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==route&&['hari-ini','main','peta','rekap','jurnal','paket'].includes(h)){route=h;G=null;render()}});
-(function init(){$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','jurnal','paket'].includes(h))route=h;
+(function init(){applyCfg();$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','jurnal','paket'].includes(h))route=h;
   const s=S.sesi[today()];if(s&&s.fase===1)s.fase=1; /* pemanasan diulang dari awal bila halaman dimuat ulang */
   render();if(s&&s.selesai)writeRingkasan()})();
 </script>
+<!-- Maskot Bloki: teleport ke app lain (pintasan sama seperti sebelumnya) -->
+<style>
+.blk{position:fixed;z-index:60;top:0;left:0;width:0;height:0;font-family:"Rubik",system-ui,-apple-system,sans-serif}
+.blk-dot{position:fixed;top:var(--blk-y,60vh);width:58px;height:58px;margin-top:-29px;border:0;padding:0;background:transparent;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;transition:right .32s cubic-bezier(.2,1.2,.4,1),left .32s cubic-bezier(.2,1.2,.4,1)}
+.blk[data-side="right"] .blk-dot{right:calc(-18px + env(safe-area-inset-right,0px))}
+.blk[data-side="left"] .blk-dot{left:calc(-18px + env(safe-area-inset-left,0px))}
+.blk.open[data-side="right"] .blk-dot,.blk.tp[data-side="right"] .blk-dot,.blk[data-side="right"] .blk-dot:focus-visible{right:calc(8px + env(safe-area-inset-right,0px))}
+.blk.open[data-side="left"] .blk-dot,.blk.tp[data-side="left"] .blk-dot,.blk[data-side="left"] .blk-dot:focus-visible{left:calc(8px + env(safe-area-inset-left,0px))}
+.blk-dot:focus-visible{outline:3px solid #ffd24f;outline-offset:2px;border-radius:12px}
+.blk-m{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 3px 0 rgba(52,78,150,.28));transition:transform .3s cubic-bezier(.2,1.2,.4,1)}
+.blk[data-side="right"]:not(.open):not(.drag):not(.tp) .blk-m{transform:rotate(-14deg)}
+.blk[data-side="left"]:not(.open):not(.drag):not(.tp) .blk-m{transform:rotate(14deg) scaleX(-1)}
+.blk.drag .blk-m{transform:scale(1.08) rotate(6deg)}
+.blk-bob{animation:blkbob 3.2s ease-in-out infinite;transform-origin:30px 56px}
+.blk.hop .blk-bob{animation:blkhop .5s cubic-bezier(.3,1.6,.5,1)}
+.blk-eyes{transform-origin:30px 33px;animation:blkblink 4.6s infinite}
+.blk-open,.blk-o{display:none}
+.blk.open .blk-smile,.blk.tp .blk-smile,.blk.drag .blk-smile{display:none}
+.blk.open .blk-open,.blk.tp .blk-open{display:inline}
+.blk.drag .blk-o{display:inline}
+/* portal teleport */
+.blk-portal{position:absolute;left:50%;bottom:-4px;width:74px;height:24px;margin-left:-37px;border-radius:50%;background:radial-gradient(ellipse at center,#fff 0,#a99bf0 28%,#4b8ae8 58%,rgba(75,138,232,0) 72%);opacity:0;transform:scale(0);pointer-events:none}
+.blk.tp .blk-portal{animation:blkportal .9s ease-out forwards}
+.blk.tp .blk-m{animation:blkgo .6s .25s cubic-bezier(.5,0,.8,.4) forwards}
+@keyframes blkportal{0%{opacity:0;transform:scale(0) rotate(0)}25%{opacity:1;transform:scale(1) rotate(90deg)}80%{opacity:1;transform:scale(1) rotate(300deg)}100%{opacity:0;transform:scale(.4) rotate(360deg)}}
+@keyframes blkgo{0%{transform:none;opacity:1}100%{transform:translateY(22px) scale(.05) rotate(540deg);opacity:0}}
+/* panel */
+.blk-veil{position:fixed;inset:0;background:rgba(20,30,60,.14)}
+.blk-veil[hidden],.blk-ring[hidden]{display:none!important}
+.blk-ring{position:fixed;top:var(--blk-ry,40vh);padding:26px 12px 10px;border-radius:14px;background:#fff;border:2px solid #5b6d99;box-shadow:0 5px 0 rgba(52,78,150,.22);transform-origin:var(--blk-ox,100%) 50%;animation:blkpop .28s cubic-bezier(.2,1.25,.4,1) both}
+.blk[data-side="right"] .blk-ring{right:calc(var(--blk-rx,76px) + env(safe-area-inset-right,0px))}
+.blk[data-side="left"] .blk-ring{left:calc(var(--blk-rx,76px) + env(safe-area-inset-left,0px))}
+.blk-ttl{position:absolute;top:-11px;left:12px;font:700 11.5px "Rubik",sans-serif;color:#26304b;background:#ffd24f;border:2px solid #b8901c;border-radius:6px;padding:1px 8px;box-shadow:0 2px 0 #b8901c}
+.blk-grid{display:grid;grid-template-columns:repeat(3,84px);grid-auto-rows:84px;gap:6px 2px}
+.blk-app{display:flex;flex-direction:column;align-items:center;gap:5px;padding-top:4px;text-decoration:none;color:#26304b;border-radius:10px;min-width:0}
+.blk-app:active{transform:translateY(2px)}
+.blk-app:focus-visible{outline:2px solid #4b8ae8;outline-offset:0}
+.blk-logo{position:relative;width:46px;height:34px;margin-top:5px;border-radius:6px;display:grid;place-items:center;color:#fff;font:400 15px "Lilita One","Rubik",sans-serif;background:var(--c);border:2px solid color-mix(in srgb,var(--c) 62%,#1f2a4d);box-shadow:0 3px 0 color-mix(in srgb,var(--c) 70%,#1f2a4d)}
+.blk-logo::before,.blk-logo::after{content:"";position:absolute;top:-6px;width:10px;height:5px;background:var(--c);border:2px solid color-mix(in srgb,var(--c) 62%,#1f2a4d);border-bottom:0;border-radius:3px 3px 0 0}
+.blk-logo::before{left:7px}.blk-logo::after{right:7px}
+.blk-logo.yk{color:#26304b}
+.blk-t{display:block;width:100%;text-align:center;font-size:11.5px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.blk-s{display:block;width:100%;text-align:center;font-size:10px;font-weight:500;color:#64708e;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:-3px}
+.blk-app[aria-current="page"] .blk-logo{box-shadow:0 3px 0 color-mix(in srgb,var(--c) 70%,#1f2a4d),0 0 0 3px #fff,0 0 0 5px #4b8ae8}
+.blk-app[aria-current="page"] .blk-s{color:#4b8ae8;font-weight:700}
+.blk.blk-off{display:none}
+@keyframes blkpop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+@keyframes blkbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes blkhop{0%{transform:translateY(0) scale(1)}40%{transform:translateY(-10px) scale(1.06,.95)}100%{transform:translateY(0) scale(1)}}
+@keyframes blkblink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@media (prefers-reduced-motion:reduce){.blk *{animation:none!important;transition:none!important}}
+</style>
+<div class="blk" id="blk" data-side="right">
+  <div class="blk-veil" id="blkVeil" hidden></div>
+  <div class="blk-ring" id="blkRing" role="menu" aria-label="Teleport ke app lain" hidden><span class="blk-ttl">Teleport ke</span><div class="blk-grid" id="blkGrid"></div></div>
+  <button type="button" class="blk-dot" id="blkDot" aria-label="Bloki: buka teleport ke app lain" aria-expanded="false" aria-controls="blkRing">
+    <span class="blk-portal"></span>
+    <svg class="blk-m" viewBox="0 0 60 64" aria-hidden="true">
+      <g class="blk-bob">
+        <rect x="14" y="4" width="13" height="10" rx="4" fill="#ffd24f" stroke="#c9971a" stroke-width="2.6"/><rect x="33" y="4" width="13" height="10" rx="4" fill="#ffd24f" stroke="#c9971a" stroke-width="2.6"/>
+        <rect x="6" y="11" width="48" height="44" rx="11" fill="#ffd24f" stroke="#c9971a" stroke-width="3"/>
+        <rect x="11" y="16" width="5" height="18" rx="2.5" fill="#fff" opacity=".4"/>
+        <g class="blk-eyes"><ellipse cx="21" cy="33" rx="6" ry="7" fill="#fff" stroke="#26304b" stroke-width="2.2"/><ellipse cx="39" cy="33" rx="6" ry="7" fill="#fff" stroke="#26304b" stroke-width="2.2"/><circle cx="22" cy="35" r="3.2" fill="#26304b"/><circle cx="40" cy="35" r="3.2" fill="#26304b"/><circle cx="23.2" cy="33.4" r="1.2" fill="#fff"/><circle cx="41.2" cy="33.4" r="1.2" fill="#fff"/></g>
+        <ellipse cx="14" cy="45" rx="4" ry="2.6" fill="#ff8fa3" opacity=".6"/><ellipse cx="46" cy="45" rx="4" ry="2.6" fill="#ff8fa3" opacity=".6"/>
+        <path class="blk-smile" d="M25 45q5 6 10 0" stroke="#26304b" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+        <path class="blk-open" d="M24 44q6 10 12 0z" fill="#a8434f" stroke="#26304b" stroke-width="2" stroke-linejoin="round"/>
+        <ellipse class="blk-o" cx="30" cy="47" rx="3" ry="3.6" fill="#26304b"/>
+      </g>
+    </svg>
+  </button>
+</div>
+<script>
+(function(){
+  var BASE='https://faiqdk07-tech.github.io/', SELF='logic-games';
+  var APPS=[
+    {k:'progres-harian',l:'Progres',s:'Jadwal harian',t:'PH',c:'#3fb46e',h:'progres-harian/#hari-ini'},
+    {k:'latihan-kuantitatif',l:'Kuantitatif',s:'PU · PK · PM',t:'LK',c:'#ef5f5a',h:'latihan-kuantitatif/'},
+    {k:'logic-games',l:'Nalar',s:'Logika PU',t:'NH',c:'#8d6be8',h:'logic-games/'},
+    {k:'latihan-ppu-pbm',l:'PPU & PBM',s:'Kebahasaan',t:'PB',c:'#4fc0ec',h:'latihan-ppu-pbm/'},
+    {k:'vocab-lab',l:'Vocab Lab',s:'Kosakata',t:'VL',c:'#4b8ae8',h:'vocab-lab/'},
+    {k:'ruang-baca',l:'Ruang Baca',s:'Literasi',t:'RB',c:'#ff9d4d',yk:1,h:'ruang-baca/'}
+  ];
+  var hf=document.getElementById('blk'), dot=document.getElementById('blkDot'), ring=document.getElementById('blkRing'), veil=document.getElementById('blkVeil'), grid=document.getElementById('blkGrid');
+  var here=(location.pathname.split('/').filter(Boolean)[0]||'').toLowerCase();
+  grid.innerHTML=APPS.map(function(a){ var cur=SELF===a.k||here===a.k; return '<a role="menuitem" class="blk-app" href="'+BASE+a.h+'"'+(cur?' aria-current="page"':'')+'><span class="blk-logo'+(a.yk?' yk':'')+'" style="--c:'+a.c+'">'+a.t+'</span><span class="blk-t">'+a.l+'</span><span class="blk-s">'+(cur?'Sedang dibuka':a.s)+'</span></a>'; }).join('');
+  var KEY='hubfab.pos', pos={side:'right',y:0.62};
+  try{ var p=JSON.parse(localStorage.getItem(KEY)||'null'); if(p&&(p.side==='left'||p.side==='right')&&p.y>0&&p.y<1) pos=p; }catch(e){}
+  function clampY(px){ return Math.max(80,Math.min(window.innerHeight-140,px)); }
+  function place(){ var y=clampY(pos.y*window.innerHeight); hf.dataset.side=pos.side; hf.style.setProperty('--blk-y',y+'px');
+    hf.style.setProperty('--blk-ry',Math.max(12,Math.min(window.innerHeight-250,y-110))+'px');
+    hf.style.setProperty('--blk-rx',Math.max(0,Math.min(76,window.innerWidth-300))+'px'); hf.style.setProperty('--blk-ox',pos.side==='right'?'100%':'0%'); }
+  function hop(){ hf.classList.remove('hop'); void hf.offsetWidth; hf.classList.add('hop'); setTimeout(function(){ hf.classList.remove('hop'); },520); }
+  function open(){ if(hf.classList.contains('open')) return; hf.classList.add('open'); hop(); ring.hidden=false; veil.hidden=false; dot.setAttribute('aria-expanded','true'); dot.setAttribute('aria-label','Bloki: tutup teleport'); }
+  function close(){ if(!hf.classList.contains('open')) return; hf.classList.remove('open'); ring.hidden=true; veil.hidden=true; dot.setAttribute('aria-expanded','false'); dot.setAttribute('aria-label','Bloki: buka teleport ke app lain'); }
+  place(); window.addEventListener('resize',place);
+  var sx=0, sy=0, moved=false, pid=null;
+  dot.addEventListener('pointerdown',function(e){ pid=e.pointerId; sx=e.clientX; sy=e.clientY; moved=false; try{ dot.setPointerCapture(pid); }catch(_){} });
+  dot.addEventListener('pointermove',function(e){ if(pid!==e.pointerId) return; var dx=e.clientX-sx, dy=e.clientY-sy;
+    if(!moved&&Math.abs(dx)+Math.abs(dy)<8) return; if(!moved){ moved=true; close(); hf.classList.add('drag'); }
+    dot.style.left=(e.clientX-29)+'px'; dot.style.right='auto'; hf.style.setProperty('--blk-y',clampY(e.clientY)+'px'); });
+  function reset(){ hf.classList.remove('drag'); dot.style.left=''; dot.style.right=''; }
+  dot.addEventListener('pointerup',function(e){ if(pid!==e.pointerId) return; pid=null;
+    if(moved){ reset(); pos={side:e.clientX<window.innerWidth/2?'left':'right',y:clampY(e.clientY)/window.innerHeight}; try{ localStorage.setItem(KEY,JSON.stringify(pos)); }catch(_){} place(); }
+    else { hf.classList.contains('open')?close():open(); } });
+  dot.addEventListener('pointercancel',function(e){ if(pid===e.pointerId){ pid=null; reset(); place(); } });
+  dot.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); hf.classList.contains('open')?close():open(); } });
+  /* teleport: Bloki masuk portal, lalu pindah. Di dalam bingkai artefak, tautan dibiarkan jalan biasa. */
+  grid.addEventListener('click',function(e){ var a=e.target.closest('.blk-app'); if(!a) return; close(); hf.classList.add('tp');
+    if(window.self===window.top&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey){ e.preventDefault(); setTimeout(function(){ location.href=a.href; },750); }
+    else setTimeout(function(){ hf.classList.remove('tp'); },1000); });
+  /* sembunyi saat mengerjakan soal supaya tidak menutupi jawaban */
+  var HIDE='.sheet:not(.hidden),.opt,.roles,.vboard,.wa,.kcards,.rkgoal,.river,.shelf,.swipe,.bsrow,.intro2,#kal';
+  function inSession(){ try{ return !!(document.body.classList.contains('sess')||document.querySelector(HIDE)); }catch(_){ return false; } }
+  function check(){ var off=inSession(); if(off&&pid===null) close(); if(pid===null) hf.classList.toggle('blk-off',off); }
+  check(); setInterval(check,400); window.addEventListener('hashchange',function(){ setTimeout(check,0); });
+  document.addEventListener('click',function(){ setTimeout(check,30); },true);
+  veil.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
+})();
+</script>
+
 </body>
 </html>
