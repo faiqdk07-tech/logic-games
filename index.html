@@ -649,9 +649,11 @@ const PERAN=['klaim','alasan','contoh','pengalih'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
-const rnd=a=>a[Math.floor(Math.random()*a.length)];
-const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
-function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+/* RNG bisa diberi benih sementara (pemanasan harian); bawaan Math.random */
+let RNG=Math.random;
+const rnd=a=>a[Math.floor(RNG()*a.length)];
+const ri=(a,b)=>a+Math.floor(RNG()*(b-a+1));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(RNG()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 const fmtRp=n=>'Rp'+Math.round(n).toLocaleString('id-ID');
 const ymd=d=>{const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())};
 const today=()=>ymd(new Date());
@@ -785,7 +787,10 @@ const QB=[
 ['penumpang bus malam','membawa bantal','tidak membawa bantal','Pak Sarip'],
 ['peserta lomba cerdas cermat','berlatih setiap Rabu','tidak berlatih setiap Rabu','Lala']
 ];
-function pq(){const c=rnd(COND);return{P:{pos:c[0][0],neg:c[0][1]},Q:{pos:c[1][0],neg:c[1][1]}}}
+/* ambil butir bank tanpa mengulang subjek yang sama dalam satu set kartu */
+let FRESH=null;
+function pickFresh(arr,tag){if(!FRESH)return rnd(arr);const left=arr.filter((_,i)=>!FRESH.has(tag+i));const pool=left.length?left:arr;const x=rnd(pool);FRESH.add(tag+arr.indexOf(x));return x}
+function pq(){const c=pickFresh(COND,'c');return{P:{pos:c[0][0],neg:c[0][1]},Q:{pos:c[1][0],neg:c[1][1]}}}
 /* wadah kalimat: pernyataan yang sama disajikan dalam bungkus berbeda */
 const wadah=s=>rnd([`“${s}”`,`Pengumuman: “${s}”`,`Ketua kelas menulis di grup: “${s}”`,`Aturan tertulis: ${s}`,`Kata Bu Ratna: “${s}”`]);
 /* angka acak berbenih tanggal: susunan bentuk berbeda tiap hari, tetap sama bila dimuat ulang */
@@ -816,7 +821,7 @@ const WARM={
   negIf(){const{P,Q}=pq();return Object.assign({sk:'N2',label:'Ingkaran',teks:wadah(`Jika ${P.pos}, maka ${Q.pos}.`),
     why:'Ingkaran “jika p maka q” adalah “p dan bukan q”: syaratnya terjadi, akibatnya tidak.'},mkOpts([
     {t:`${cap(P.pos)} dan ${Q.neg}.`,ok:1},{t:`Jika ${P.neg}, maka ${Q.neg}.`,j:'J2'},{t:`Jika ${Q.pos}, maka ${P.pos}.`,j:'J1'},{t:`${cap(P.neg)} dan ${Q.pos}.`,j:'J3'}]))},
-  setara(){const{P,Q}=pq();const k=Math.random()<.6?`Jika ${Q.neg}, maka ${P.neg}.`:`${cap(P.neg)} atau ${Q.pos}.`;
+  setara(){const{P,Q}=pq();const k=RNG()<.6?`Jika ${Q.neg}, maka ${P.neg}.`:`${cap(P.neg)} atau ${Q.pos}.`;
     return Object.assign({sk:'N2',label:'Pernyataan yang setara',teks:wadah(`Jika ${P.pos}, maka ${Q.pos}.`),
     why:'“Jika p maka q” setara dengan kontraposisinya “jika bukan q maka bukan p”, dan dengan “bukan p atau q”.'},mkOpts([
     {t:k,ok:1},{t:`Jika ${Q.pos}, maka ${P.pos}.`,j:'J1'},{t:`Jika ${P.neg}, maka ${Q.neg}.`,j:'J2'},{t:`${cap(P.pos)} dan ${Q.neg}.`,j:'J3'}]))},
@@ -826,12 +831,16 @@ const WARM={
     if(f==='MT'){teks=pre+`${cap(Q.neg)}.\nJadi, ${P.neg}.`;ok=true;why='Sah (modus tollens): akibatnya tidak terjadi, berarti syaratnya juga tidak.'}
     if(f==='KONV'){teks=pre+`${cap(Q.pos)}.\nJadi, ${P.pos}.`;ok=false;jw='J1';why='Tidak sah: membalik implikasi. q bisa terjadi karena hal lain.'}
     if(f==='INV'){teks=pre+`${cap(P.neg)}.\nJadi, ${Q.neg}.`;ok=false;jw='J2';why='Tidak sah: menyangkal anteseden. Aturan tidak menyebut apa yang terjadi bila p tidak terjadi.'}
-    return{sk:'N2',label:'Sah atau tidak sah?',teks,opsi:['Sah','Tidak sah'],kunci:ok?0:1,j:ok?[null,null]:[jw,null],why}},
-  negQ(){const[s,p,np]=rnd(QB);if(Math.random()<.55)return Object.assign({sk:'N3',label:'Ingkaran',teks:`“Semua ${s} ${p}.”`,why:'Ingkaran “semua … ” adalah “ada … yang tidak”. Satu contoh yang tidak sudah cukup.'},mkOpts([
+    /* 4 opsi berisi alasan: harus mengenali bentuknya, tidak cukup menebak sah/tidak (50%) */
+    const SO={MP:'Sah: syaratnya terjadi, jadi akibatnya pasti terjadi.',MT:'Sah: akibatnya tidak terjadi, jadi syaratnya pasti tidak terjadi.',
+      KONV:'Tidak sah: akibat yang terjadi dipakai untuk memastikan syaratnya.',INV:'Tidak sah: aturan tidak mengatur keadaan saat syaratnya tidak terjadi.'};
+    const it=['MP','MT','KONV','INV'].map(x=>x===f?{t:SO[x],ok:1}:{t:SO[x],j:(!ok&&(x==='MP'||x==='MT'))?jw:null});
+    return Object.assign({sk:'N2',label:'Sah atau tidak sah? Pilih alasannya',teks,why},mkOpts(it))},
+  negQ(){const[s,p,np]=pickFresh(QB,'q');if(Math.random()<.55)return Object.assign({sk:'N3',label:'Ingkaran',teks:`“Semua ${s} ${p}.”`,why:'Ingkaran “semua … ” adalah “ada … yang tidak”. Satu contoh yang tidak sudah cukup.'},mkOpts([
       {t:`Ada ${s} yang ${np}.`,ok:1},{t:`Semua ${s} ${np}.`,j:'J4'},{t:`Tidak ada ${s} yang ${p}.`,j:'J4'},{t:`Ada ${s} yang ${p}.`,j:'J4'}]));
     return Object.assign({sk:'N3',label:'Ingkaran',teks:`“Ada ${s} yang ${p}.”`,why:'Ingkaran “ada … yang …” adalah “semua … tidak …”.'},mkOpts([
       {t:`Semua ${s} ${np}.`,ok:1},{t:`Ada ${s} yang ${np}.`,j:'J4'},{t:`Semua ${s} ${p}.`,j:'J4'},{t:`Sebagian ${s} ${p}.`,j:'J4'}]))},
-  kalib(){const[s,p,np,x]=rnd(QB);const f=rnd(['A','B','C','D','E']);const O=['Pasti benar','Belum tentu','Pasti salah'];let teks,k,why,jw=['J6',null,'J6'];
+  kalib(){const[s,p,np,x]=pickFresh(QB,'q');const f=rnd(['A','B','C','D','E']);const O=['Pasti benar','Belum tentu','Pasti salah'];let teks,k,why,jw=['J6',null,'J6'];
     if(f==='A'){teks=`Semua ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${p}.`;k=0;why='Semua anggota kelompok punya sifat itu, dan ia anggota kelompok. Pasti benar.';jw=[null,'J6','J6']}
     if(f==='B'){teks=`Semua ${s} ${p}.\n${x} ${p}.\n\nSimpulan: ${x} termasuk ${s}.`;k=1;why='Yang punya sifat itu bisa saja dari luar kelompok. Belum tentu (membalik arah).';jw=['J1',null,'J6']}
     if(f==='C'){teks=`Semua ${s} ${p}.\n${x} ${np}.\n\nSimpulan: ${x} termasuk ${s}.`;k=2;why='Kalau ia anggota kelompok, ia pasti punya sifat itu. Karena tidak, ia pasti bukan anggota.';jw=['J6','J6',null]}
@@ -846,26 +855,41 @@ const WARM={
     why:'“Bukan p atau q” setara dengan “jika p, maka q”: begitu p terjadi, pilihan yang tersisa hanya q.'},mkOpts([
     {t:`Jika ${P.pos}, maka ${Q.pos}.`,ok:1},{t:`Jika ${Q.pos}, maka ${P.pos}.`,j:'J1'},{t:`Jika ${P.neg}, maka ${Q.pos}.`,j:'J3'},{t:`${cap(P.pos)} dan ${Q.neg}.`,j:'J3'}]))},
   kecuali(){const{P,Q}=pq();return Object.assign({sk:'N2',label:'Setara, KECUALI',teks:wadah(`Jika ${P.pos}, maka ${Q.pos}.`)+'\n\nSemua pernyataan berikut setara dengan aturan itu, KECUALI …',
-    why:'Kontraposisi, “bukan p atau q”, dan “tidak mungkin p tetapi bukan q” semuanya setara. Yang dibalik arahnya (konvers) tidak setara.'},mkOpts([
-    {t:`Jika ${Q.pos}, maka ${P.pos}.`,ok:1},{t:`Jika ${Q.neg}, maka ${P.neg}.`},{t:`${cap(P.neg)} atau ${Q.pos}.`},{t:`Tidak mungkin ${P.pos} tetapi ${Q.neg}.`}]))},
-  rantai(){const A=rnd(RANTAI),T=(i,n)=>A[i][n];return Object.assign({sk:'N2',label:'Dua aturan, satu fakta',
+    why:'Kontraposisi, “bukan p atau q”, “p hanya jika q”, dan “tidak mungkin p tetapi bukan q” semuanya setara. Konvers (dibalik) dan invers (sama-sama diingkari) tidak setara.'},
+    mkOpts([RNG()<.5?{t:`Jika ${Q.pos}, maka ${P.pos}.`,ok:1}:{t:`Jika ${P.neg}, maka ${Q.neg}.`,ok:1}].concat(shuffle([{t:`Jika ${Q.neg}, maka ${P.neg}.`},{t:`${cap(P.neg)} atau ${Q.pos}.`},{t:`Tidak mungkin ${P.pos} tetapi ${Q.neg}.`},{t:`${cap(P.pos)} hanya jika ${Q.pos}.`}]).slice(0,3))))},
+  rantai(){const A=rnd(RANTAI),T=(i,n)=>A[i][n];
+    if(RNG()<.5)return Object.assign({sk:'N2',label:'Dua aturan, satu fakta',
+    teks:`Jika ${T(0,0)}, maka ${T(1,0)}.\nJika ${T(1,0)}, maka ${T(2,0)}.\nDiketahui: ${T(0,0)}.\n\nSimpulan yang PASTI BENAR adalah …`,
+    why:'Rantai p→q→r dengan p terjadi: q terjadi, lalu r terjadi (modus ponens dua kali).'},mkOpts([
+    {t:`${cap(T(2,0))}.`,ok:1},{t:`${cap(T(2,1))}.`,j:'J6'},{t:`${cap(T(1,0))}, tetapi ${T(2,1)}.`,j:'J3'},{t:'Tidak dapat disimpulkan apa pun tentang akhir rantai.',j:'J13'}]));
+    return Object.assign({sk:'N2',label:'Dua aturan, satu fakta',
     teks:`Jika ${T(0,0)}, maka ${T(1,0)}.\nJika ${T(1,0)}, maka ${T(2,0)}.\nDiketahui: ${T(2,1)}.\n\nSimpulan yang PASTI BENAR tentang awal rantai adalah …`,
     why:'Rantai p→q→r memberi p→r. Karena r tidak terjadi, p pasti tidak terjadi (modus tollens).'},mkOpts([
     {t:`${cap(T(0,1))}.`,ok:1},{t:`${cap(T(0,0))}.`,j:'J6'},{t:`${cap(T(0,0))}, tetapi ${T(1,1)}.`,j:'J3'},{t:'Tidak dapat disimpulkan apa pun tentang awal rantai.',j:'J13'}]))},
-  kalib5(){const[s,p,np,x]=rnd(QB);const f=rnd(['A','B','C','D','E']);let teks,k,why;
+  kalib5(){const[s,p,np,x]=pickFresh(QB,'q');const f=rnd(['A','B','C','D','E']);let teks,k,why;
     if(f==='A'){teks=`Semua ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${p}.`;k=0;why='Anggota kelompok pasti punya sifat kelompoknya. Pasti benar.'}
     if(f==='B'){teks=`Sebagian ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${p}.`;k=1;why='Subjeknya dibahas dan tidak bertentangan, tetapi “sebagian” tidak menjamin anggota tertentu. Mungkin benar.'}
     if(f==='C'){teks=`Tidak ada ${s} yang ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${p}.`;k=2;why='Bertentangan langsung dengan informasi. Pasti salah.'}
+    if(f==='B'&&RNG()<.5){teks=`Sebagian ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${np}.`}
+    if(f==='C'&&RNG()<.5){teks=`Semua ${s} ${p}.\n${x} ${np}.\n\nSimpulan: ${x} termasuk ${s}.`;why='Kalau ia anggota kelompok, ia pasti punya sifat itu. Karena tidak, simpulan bahwa ia anggota pasti salah.'}
     if(f==='D'){teks=`Semua ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${rnd(LUAR)}.`;k=3;why='Informasinya sama sekali tidak menyentuh hal ini. Tidak relevan.'}
-    if(f==='E'){teks=`Sebagian ${s} ${p}.\n\nSimpulan: Lebih dari separuh ${s} ${p}.`;k=4;why='Topiknya dibahas, tetapi “sebagian” tidak menyebut berapa banyak. Tidak dapat dinilai; memilih “mungkin benar” adalah jebakan J13.'}
+    if(f==='E'){teks=`Sebagian ${s} ${p}.\n\nSimpulan: ${rnd(['Lebih dari separuh','Sebagian besar','Paling sedikit tiga','Kurang dari sepuluh'])} ${s} ${p}.`;k=4;why='Topiknya dibahas, tetapi “sebagian” tidak menyebut berapa banyak, jadi jumlahnya tidak bisa dinilai. Memilih “mungkin benar” adalah jebakan J13.'}
     const j=KS_OPSI.map((_,i)=>i===k?null:((i===1&&k===4)||(i===4&&k===1))?'J13':'J6');
     return{sk:'N4',label:'Kualitas simpulan · 5 opsi baku',teks,opsi:KS_OPSI,kunci:k,j,why}}
 };
 const WARM_LAMA=['negIf','setara','sah','negQ','kalib','negAnd','negOr'],WARM_BARU=['hanyaJika','atauJika','kecuali','rantai','kalib5'];
 /* tiap hari: 3–4 kartu bentuk baru + sisanya bentuk dasar, susunannya berbeda per tanggal */
-function genWarmup(n){const r=seedRng('pem'+today()),nb=3+Math.floor(r()*2);
-  const pick=shuffleR(WARM_BARU,r).slice(0,nb).concat(shuffleR(WARM_LAMA,r).slice(0,n-nb));
-  return shuffleR(pick,r).map(t=>Object.assign(WARM[t](),{baru:WARM_BARU.includes(t)}))}
+/* kartu pemanasan dari paket Claude (opsional): isinya baru tiap hari */
+function paketPemanasan(){const t=today(),pid=getPaketId(sesi(t)),p=pid&&S.paket[pid];
+  return(p&&Array.isArray(p.pemanasan)?p.pemanasan:[]).filter(c=>c&&Array.isArray(c.opsi)&&c.opsi.length>=3&&Number.isInteger(c.kunci)&&c.kunci>=0&&c.kunci<c.opsi.length)}
+function genWarmup(n){const t=today(),salt=((S.resetN||{})[t])||0,r=seedRng('pem'+t+'#'+salt),prevR=RNG;
+  RNG=seedRng('pemisi'+t+'#'+salt);FRESH=new Set();
+  try{const pk=paketPemanasan().slice(0,4).map(c=>{const o=mkOpts(c.opsi.map((x,i)=>i===c.kunci?{t:x,ok:1}:{t:x,j:(c.jebakan_opsi||[])[i]||null}));
+      return Object.assign({sk:SKILLS[c.keterampilan]?c.keterampilan:'N2',label:c.label||'Kartu hari ini',teks:String(c.teks||''),why:c.pembahasan||'',baru:true},o)});
+    const m=n-pk.length,nb=Math.min(m,(pk.length?1:3)+Math.floor(r()*2));
+    const pick=shuffleR(WARM_BARU,r).slice(0,nb).concat(shuffleR(WARM_LAMA,r).slice(0,m-nb));
+    return shuffleR(pick.map(x=>Object.assign(WARM[x](),{baru:WARM_BARU.includes(x)})).concat(pk),r)}
+  finally{RNG=prevR;FRESH=null}}
 
 /* ================= PAKET CONTOH ================= */
 const CONTOH={versi:2,tgl:'contoh',kasus:{keterampilan:'N2',tahap:1,konteks:'chat grup',judul:'Rapat OSIS sore ini',
@@ -907,7 +931,28 @@ function validate(o){
         if(q.jebakan_opsi&&(!isArr(q.jebakan_opsi)||q.jebakan_opsi.length!==q.opsi.length))E.push(`${qw}.jebakan_opsi harus sepanjang opsi.`)}
       if(!q.teks&&!q.perintah)E.push(`${qw} butuh teks atau perintah.`);
     });
+    /* bagian opsional (versi 3): kartu pemanasan & ronde Detektif harian */
+    if(p.pemanasan!=null){if(!isArr(p.pemanasan))E.push(`${w}.pemanasan harus berupa daftar.`);
+      else p.pemanasan.forEach((c,j)=>{const cw=`${w}.pemanasan[${j}]`;if(!c||!c.teks)E.push(`${cw}.teks kosong.`);
+        if(!isArr(c&&c.opsi)||c.opsi.length<3||c.opsi.length>5)E.push(`${cw}.opsi harus 3–5.`);else if(!(Number.isInteger(c.kunci)&&c.kunci>=0&&c.kunci<c.opsi.length))E.push(`${cw}.kunci di luar rentang.`)})}
+    if(p.detektif!=null){if(!isArr(p.detektif))E.push(`${w}.detektif harus berupa daftar.`);
+      else p.detektif.forEach((r,j)=>{const dw=`${w}.detektif[${j}]`;
+        if(!r||!isArr(r.pesan)||r.pesan.length<3||r.pesan.some(m=>!isArr(m)||m.length!==2))E.push(`${dw}.pesan harus 3–6 baris ["Nama","isi"].`);
+        else if(!(Number.isInteger(r.pengalih)&&r.pengalih>=0&&r.pengalih<r.pesan.length))E.push(`${dw}.pengalih di luar rentang.`);
+        if(!r||![0,1,2].includes(r.v))E.push(`${dw}.v harus 0, 1, atau 2.`);if(!r||!r.simpulan)E.push(`${dw}.simpulan kosong.`);
+        if(r&&r.cek&&(!isArr(r.cek.opsi)||r.cek.opsi.length!==4||!Number.isInteger(r.cek.kunci)||r.cek.kunci<0||r.cek.kunci>3))E.push(`${dw}.cek harus 4 opsi dengan kunci 0–3.`)})}
   });return E}
+/* peringatan (tidak menolak paket): pola kunci yang mudah ditebak */
+function tebakWarn(o){const W=[];const len=x=>String(x||'').length;const huruf=[];
+  o.paket.forEach(p=>{const pg=[].concat((p.jembatan||[]).filter(q=>(q.jenis||'pg')==='pg'&&Array.isArray(q.opsi)),
+      (p.kasus&&p.kasus.langkah||[]).filter(l=>l.jenis!=='tandai'&&l.jenis!=='kalibrasi'&&Array.isArray(l.opsi)),(p.pemanasan||[]).filter(c=>Array.isArray(c.opsi)));
+    const terpanjang=pg.filter(q=>{const L=q.opsi.map(len),k=L[q.kunci];return L.every((x,i)=>i===q.kunci||x*1.2<k)}).length;
+    if(terpanjang>=2)W.push(`${p.tgl}: kunci jelas paling panjang di ${terpanjang} soal.`);
+    (p.jembatan||[]).forEach(q=>{if(Number.isInteger(q.kunci))huruf.push(q.kunci)});
+    const ks=(p.jembatan||[]).filter(q=>Number.isInteger(q.kunci)).map(q=>q.kunci);if(ks.length===3&&new Set(ks).size===1)W.push(`${p.tgl}: ketiga jembatan berkunci ${HURUF(ks[0])}.`)});
+  if(huruf.length>=6){const c={};huruf.forEach(h=>c[h]=(c[h]||0)+1);const [h,m]=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];if(m/huruf.length>.4)W.push(`Kunci jembatan menumpuk di huruf ${HURUF(+h)} (${m} dari ${huruf.length}).`)}
+  const dv=[].concat(...o.paket.map(p=>(p.detektif||[]).map(r=>r.v)));if(dv.length>=4&&new Set(dv).size===1)W.push('Semua ronde Detektif punya vonis yang sama.');
+  return W}
 
 /* ================= RENCANA & PROMPT ================= */
 function weekLog(days=7){const from=addDays(today(),-(days-1));return S.log.filter(x=>x.t>=from)}
@@ -926,7 +971,16 @@ function buildPlan(n,start){
   for(let i=0;i<n;i++){let c=null;for(let t=0;t<8;t++){const cand=KONTEKS[(ci+t)%8];if(!recent.has(cand)){c=cand;ci=(ci+t+1)%8;break}}
     if(!c){c=KONTEKS[ci%8];ci++}recent.add(c);if(recent.size>=8)recent.clear();
     const sk=seq[i],th=S.skills[sk].tahap,tg=addDays(start,i);plan.push({tgl:tg,sk,tahap:th,konteks:c,bentuk:BENTUK[th],mut:mutasi(tg)})}
+  /* target huruf kunci: tersebar rata dan acak, supaya posisi kunci tidak bisa ditebak */
+  const deck=(k,m)=>{let d=[];while(d.length<m)d=d.concat(shuffle([...Array(k).keys()]));return d};
+  const J=deck(5,n*4),K=deck(4,n*2),P=deck(4,n*4);
+  plan.forEach((p,i)=>{let a=J.slice(i*4,i*4+3);if(new Set(a).size===1)a[2]=(a[2]+2)%5;p.kJem=a;p.kKas=K.slice(i*2,i*2+2);p.kPem=P.slice(i*4,i*4+4)});
   return plan}
+const HURUF=i=>String.fromCharCode(65+i);
+/* kerangka yang sudah dipakai paket lain: dikirim ke Claude supaya tidak diulang */
+function kerangkaTerpakai(start){const ids=Object.keys(S.paket).filter(k=>/^\d/.test(k)&&k>=addDays(start,-21)).sort().slice(-14);const L=[];
+  ids.forEach(k=>{const p=S.paket[k];const j=(p.jembatan||[]).map(q=>String(q.perintah||'').replace(/\s+/g,' ').slice(0,60)).filter(Boolean);
+    L.push(`${k}: kasus “${String(p.kasus&&p.kasus.judul||'').slice(0,50)}”${j.length?'; jembatan: '+j.map(x=>`“${x}”`).join(', '):''}`)});return L}
 const BENTUK_TAB={
  N1:['Asumsi yang mendasari argumen; simpulan utama','Argumen dalam laporan atau cerita; informasi tambahan agar simpulan TEPAT','Dua tokoh menafsirkan data yang sama; asumsi yang TIDAK diperlukan'],
  N2:['Implikasi, modus tollens, silogisme hipotetis tertulis rapi; ingkaran; pernyataan setara','Cerita bertokoh 4–8 kalimat dengan dan, atau, jika, dan kalimat pengalih; "kesimpulan PALING TEPAT"','Aturan lomba, syarat pendaftaran, atau jadwal; tiga aturan; "simpulan yang TIDAK sah" atau "pernyataan setara"'],
@@ -942,9 +996,10 @@ function buildPrompt(n,start){
   const plan=buildPlan(n,start);const tr=topTraps(weekLog(14).filter(x=>x.src!=='game'));
   const L=[];
   L.push('Kamu adalah pembuat paket latihan untuk aplikasi "Nalar Harian": latihan logika subtes Penalaran Umum (PU) UTBK-SNBT, 15 menit sehari, yang berangkat dari situasi nyata lalu menyeberang ke soal UTBK.');
-  L.push(`Buat paket untuk ${n} hari sesuai rencana di bawah. Balas HANYA dengan satu blok kode JSON yang valid, tanpa teks lain di luar blok.`);
+  L.push(`Buat paket untuk ${n} hari sesuai rencana di bawah. Setiap hari berisi: 1 kasus, 3 soal jembatan, 4 kartu pemanasan, dan 1 ronde Detektif Chat. Balas HANYA dengan satu blok kode JSON yang valid, tanpa teks lain di luar blok.`);
+  L.push('Masalah yang harus dihindari: soal yang kuncinya bisa ditebak tanpa bernalar, dan soal yang terasa sama dari hari ke hari. Dua bagian "Anti-tebak" dan "Kesegaran harian" di bawah wajib dipatuhi.');
   L.push('\n## Rencana per hari');
-  plan.forEach(p=>L.push(`- ${p.tgl} · ${p.sk} (${SKILLS[p.sk]}) · Tahap ${p.tahap} (${TAHAP[p.tahap]}) · konteks: ${p.konteks}\n  bentuk eksperimen (jembatan 3): ${fmtMut(p.mut)}`));
+  plan.forEach(p=>L.push(`- ${p.tgl} · ${p.sk} (${SKILLS[p.sk]}) · Tahap ${p.tahap} (${TAHAP[p.tahap]}) · konteks: ${p.konteks}\n  bentuk eksperimen (jembatan 3): ${fmtMut(p.mut)}\n  target kunci: kasus langkah 2 = ${HURUF(p.kKas[0])}, langkah 3 = ${HURUF(p.kKas[1])} · jembatan 1–3 = ${p.kJem.map(HURUF).join(', ')} · pemanasan 1–4 = ${p.kPem.map(HURUF).join(', ')}`));
   L.push('\n## Profil pengguna');
   L.push('- Siswa persiapan UTBK-SNBT 2027, target jurusan non-saintek.');
   L.push('- Tahap per keterampilan saat ini: '+Object.keys(SKILLS).map(k=>`${k} T${S.skills[k].tahap}`).join(', ')+'.');
@@ -957,14 +1012,32 @@ function buildPrompt(n,start){
     L.push(`- Jembatan 1, bentuk "${BENTUK[p.tahap]}" (${BENTUK_NOTE[p.tahap]}) Pilih salah satu: ${BENTUK_TAB[p.sk][p.tahap-1]}.`);
     L.push(`- Jembatan 2, bentuk "${BENTUK[nx]}" (${BENTUK_NOTE[nx]}) Pilih salah satu: ${BENTUK_TAB[p.sk][nx-1]}.`+(nx===p.tahap?' Pakai wadah dan kata tanya yang berbeda dari jembatan 1.':''));
     const tg=TETANGGA[p.sk];L.push(`- Jembatan 1 atau 2 boleh memakai keterampilan tetangga: ${tg.map(t=>`${t} (${BENTUK_TAB[t][p.tahap-1]})`).join(' atau ')}.`);L.push('')});
-  L.push('## Variasi bentuk (wajib)');
-  L.push('- Tujuannya membiasakan bentuk soal yang berbeda setiap hari, bukan menghafal bentuk tahun lalu. Konsep yang diuji tetap; yang berganti adalah wadah, kata tanya, format, dan kejutan.');
-  L.push('- Jembatan 3 setiap hari adalah soal eksperimen 2027, apa pun tahapnya: susun dari kombinasi "bentuk eksperimen" hari itu di Rencana, lalu tulis "bentuk":"2027" dan "eksperimen":true. Ini perkiraan arah soal tahun depan, jadi jangan menyalin salah satu bentuk di bagian Bentuk UTBK.');
+  L.push('## Anti-tebak (wajib)');
+  [ 'Posisi kunci mengikuti "target kunci" di Rencana (A = indeks 0). Bila opsinya baku atau berurutan tetap (kualitas simpulan, dua pakar, kecukupan data, kalibrasi), susun stimulus atau simpulannya sehingga jawaban benarnya jatuh di huruf target. Bila target benar-benar tidak masuk akal untuk soal itu, boleh pindah huruf, tetapi dalam satu hari kunci tidak boleh semuanya sama.',
+    'Semua opsi satu soal sejajar: struktur kalimat sama, panjang mirip (selisih paling banyak sekitar 25%), dan sama-sama memakai istilah dari stimulus. Kunci TIDAK boleh menjadi opsi terpanjang, paling rinci, atau paling berhati-hati di lebih dari satu soal per hari.',
+    'Kata mutlak ("pasti", "semua", "selalu", "satu-satunya") dan kata lunak ("mungkin", "sebagian", "cenderung", "belum tentu") muncul di kunci maupun pengecoh. Kata lunak tidak boleh menjadi penanda kunci.',
+    'Setiap pengecoh salah karena tepat satu kesalahan nalar (sesuai labelnya) dan terdengar meyakinkan bagi siswa yang membaca cepat. Tidak ada opsi konyol, lucu, jelas di luar topik, atau yang bisa dicoret tanpa membaca stimulus.',
+    'Kunci tidak boleh satu-satunya opsi yang mengulang frasa penting stimulus; pengecoh juga memakai frasa stimulus. Hindari pola "dua opsi saling berlawanan, salah satunya kunci".',
+    'Opsi "tidak dapat disimpulkan", "tidak dapat dinilai", atau "tidak cukup" kadang menjadi kunci, kadang pengecoh. Di kasus, vonis kalibrasi tidak selalu "mungkin benar".',
+    'Kalimat pengalih (di kasus dan Detektif) satu topik dengan ceritanya: menyebut tokoh, tempat, waktu, atau angka yang sama, tetapi tidak memengaruhi simpulan. Jangan memakai obrolan yang jelas lain topik (cuaca, makanan, film, wifi).',
+    'Langkah "tandai": klaim tidak selalu di kalimat terakhir; letakkan klaim di awal, tengah, atau akhir secara bergantian antarhari.',
+    'Soal "bs": pola kunci tidak seragam (2–3 true dari 5, urutannya acak), dan pernyataan true dan false sama panjang dan sama gayanya.',
+    'Tes tutup-stimulus: baca opsinya saja tanpa stimulus. Bila kunci bisa ditebak dari bentuk opsinya, tulis ulang opsinya.'
+  ].forEach(x=>L.push('- '+x));
+  L.push('\n## Kesegaran harian (wajib)');
+  L.push('- Tiap hari memakai tokoh, latar, angka, dan susunan kalimat baru. Jangan mengganti nama saja pada kerangka yang sama.');
+  L.push('- Tiga jembatan dalam satu hari memakai tiga kata tanya berbeda. Pasangan jenis langkah 2 dan 3 kasus, serta kata tanya jembatan 1 dan 2, tidak boleh sama dengan hari sebelumnya.');
+  L.push('- Jembatan 3 setiap hari adalah soal eksperimen 2027, apa pun tahapnya: susun dari kombinasi "bentuk eksperimen" hari itu di Rencana, lalu tulis "bentuk":"2027" dan "eksperimen":true. Jangan menyalin salah satu bentuk di bagian Bentuk UTBK.');
   L.push('- Kasus menyajikan kalimatnya dalam wadah hari itu bila cocok dengan konteksnya.');
-  L.push('- Dalam satu kiriman, pasangan jenis langkah 2 dan 3 kasus, serta kata tanya jembatan 1 dan 2, tidak boleh sama dengan hari sebelumnya.');
   L.push('- Kata tanya negatif (TIDAK, KECUALI, PALING) ditulis kapital, seperti di soal UTBK.');
-  L.push('');
-  L.push('## Opsi baku (salin persis bila bentuknya dipakai)');
+  const kt=kerangkaTerpakai(start);
+  if(kt.length){L.push('- Kerangka yang sudah dipakai paket sebelumnya (jangan diulang, termasuk dengan nama lain):');kt.forEach(x=>L.push('  - '+x))}
+  L.push('\n## Pemanasan dan Detektif Chat (isi baru tiap hari)');
+  L.push('- "pemanasan": tepat 4 kartu cepat (dijawab ±20 detik) untuk N2–N4, di luar keterampilan kasus hari itu boleh. Tiap kartu: "keterampilan", "label" (2–4 kata), "teks" 1–3 kalimat, 4 "opsi", "kunci" sesuai target, "jebakan_opsi" sepanjang opsi, "pembahasan" 1–2 kalimat.');
+  L.push('  - Aplikasi sudah punya kartu bawaan: ingkaran "dan/atau/jika", kontraposisi, "hanya jika", silogisme "semua/sebagian/tidak ada", modus ponens/tollens. Buat bentuk lain: "kecuali", "tanpa … tidak …", "paling sedikit/tidak semua", rantai tiga aturan, aturan dengan pengecualian, dua pernyataan yang bertentangan, mana yang PASTI SALAH, mana yang TIDAK setara, dan sejenisnya. Empat kartu satu hari memakai empat bentuk berbeda.');
+  L.push('- "detektif": tepat 1 ronde obrolan grup untuk mini game Detektif Chat. Isi: "judul", "pesan" 4–6 baris berupa ["Nama","isi pesan"], "pengalih" (indeks satu pesan pengalih yang satu topik), "simpulan", "v" (0 = pasti benar, 1 = belum tentu, 2 = pasti salah), "why" (≤3 kalimat), dan "cek" {"opsi":[4 hal yang bisa dicek, semuanya satu topik],"kunci":indeks yang PALING menentukan}.');
+  L.push('  - Vonis "v" berganti antarhari; dalam satu kiriman, ketiga vonis muncul kira-kira sama sering. Jangan selalu "belum tentu".');
+  L.push('\n## Opsi baku (salin persis bila bentuknya dipakai)');
   L.push('- Kualitas simpulan: A. Simpulan tersebut pasti benar. · B. Simpulan tersebut mungkin benar. · C. Simpulan tersebut pasti salah. · D. Simpulan tidak relevan dengan informasi yang diberikan. · E. Simpulan tidak dapat dinilai karena informasi tidak cukup.');
   L.push('- Data dan dua pakar: A. Memperkuat pernyataan X. · B. Memperlemah pernyataan X. · C. Memperkuat pernyataan Y. · D. Memperlemah pernyataan Y. · E. Tidak relevan dengan pernyataan X dan Y.');
   L.push('- Kecukupan data versi PU (pernyataan i dan ii): '+CUKUP_OPSI.map((o,i)=>String.fromCharCode(65+i)+'. '+o).join(' · '));
@@ -989,17 +1062,19 @@ function buildPrompt(n,start){
   L.push('- Kunci boleh berupa simpulan sah yang lebih lemah (misalnya "beberapa" alih-alih "semua"), asalkan tepat satu opsi yang sah.');
   L.push('- Pembahasan maksimal 3 kalimat: mengapa kunci benar dan jebakan utama pengecoh.');
   L.push('\n## Cek sebelum mengirim');
-  ['Setiap kunci diperiksa ulang; untuk deduktif, setiap opsi dicek dengan tabel kebenaran.','Tepat satu opsi sah; tidak ada dua opsi yang sama-sama bisa dibela.','Opsi baku disalin persis.','Label jebakan sesuai kesalahan yang benar-benar diwakili opsi itu.','Jembatan 1 dan 2 sesuai bagian "Bentuk UTBK"; jembatan 3 memakai keempat sumbu kombinasi hari itu dan berlabel "eksperimen":true.','Tidak ada dua hari dalam kiriman ini yang memakai kerangka soal yang sama walau namanya diganti.','Kasus dan jembatan tidak memakai cerita yang sama.'].forEach((x,i)=>L.push(`${i+1}. ${x}`));
+  ['Setiap kunci diperiksa ulang; untuk deduktif, setiap opsi dicek dengan tabel kebenaran.','Tepat satu opsi sah; tidak ada dua opsi yang sama-sama bisa dibela.','Posisi kunci sesuai target, dan kunci bukan opsi terpanjang di lebih dari satu soal per hari.','Tes tutup-stimulus lolos untuk setiap soal, kartu, dan langkah kasus.','Opsi baku disalin persis.','Label jebakan sesuai kesalahan yang benar-benar diwakili opsi itu.','Jembatan 1 dan 2 sesuai bagian "Bentuk UTBK"; jembatan 3 memakai keempat sumbu kombinasi hari itu dan berlabel "eksperimen":true.','Tidak ada dua hari dalam kiriman ini, atau kerangka di daftar "sudah dipakai", yang memakai kerangka soal yang sama walau namanya diganti.','Kasus, jembatan, pemanasan, dan Detektif tidak memakai cerita yang sama.'].forEach((x,i)=>L.push(`${i+1}. ${x}`));
   const p0=plan[0];
   L.push('\n## Bentuk JSON');
-  L.push(JSON.stringify({versi:2,paket:[{tgl:p0.tgl,kasus:{keterampilan:p0.sk,tahap:p0.tahap,konteks:p0.konteks,judul:'…',kalimat:['…','…','…'],tabel:{kolom:['…','…'],baris:[['…','…']]},
-    langkah:[{jenis:'tandai',perintah:'Tandai peran setiap kalimat.',peran:['alasan','pengalih','klaim'],pembahasan:'…'},
-      {jenis:'celah',perintah:'…',opsi:['…','…','…','…'],kunci:2,pembahasan:'…'},
-      {jenis:'penjelasan',perintah:'…',opsi:['…','…','…','…'],kunci:0,pembahasan:'…'}],jebakan:'J8',pembahasan:'…'},
-   jembatan:[{jenis:'pg',keterampilan:p0.sk,bentuk:p0.bentuk,teks:'…',perintah:'…',opsi:['…','…','…','…','…'],kunci:3,jebakan_opsi:['J8','J6','J11',null,'J9'],pembahasan:'…'},
-    {jenis:'bs',keterampilan:'N7',bentuk:'2026',teks:'…',perintah:'…',pernyataan:['…','…','…','…','…'],kunci:[true,false,false,true,false],label_b:'MEMPERLEMAH',label_s:'TIDAK MEMPERLEMAH',jebakan:'J11',pembahasan:'…'},
-    {jenis:'pg',keterampilan:p0.sk,bentuk:'2027',eksperimen:true,teks:'…',perintah:'…',opsi:['…','…','…','…','…'],kunci:1,jebakan_opsi:['J1',null,'J6','J13','J4'],pembahasan:'…'}]}]}));
-  L.push('(Contoh hanya menunjukkan bentuk JSON; jenis "pg"/"bs" tiap soal mengikuti bentuknya. "tabel" boleh dihilangkan bila tidak perlu.)');
+  L.push(JSON.stringify({versi:3,paket:[{tgl:p0.tgl,kasus:{keterampilan:p0.sk,tahap:p0.tahap,konteks:p0.konteks,judul:'…',kalimat:['…','…','…'],tabel:{kolom:['…','…'],baris:[['…','…']]},
+    langkah:[{jenis:'tandai',perintah:'Tandai peran setiap kalimat.',peran:['klaim','pengalih','alasan'],pembahasan:'…'},
+      {jenis:'celah',perintah:'…',opsi:['…','…','…','…'],kunci:p0.kKas[0],pembahasan:'…'},
+      {jenis:'penjelasan',perintah:'…',opsi:['…','…','…','…'],kunci:p0.kKas[1],pembahasan:'…'}],jebakan:'J8',pembahasan:'…'},
+   jembatan:[{jenis:'pg',keterampilan:p0.sk,bentuk:p0.bentuk,teks:'…',perintah:'…',opsi:['…','…','…','…','…'],kunci:p0.kJem[0],jebakan_opsi:[0,1,2,3,4].map(i=>i===p0.kJem[0]?null:['J8','J6','J11','J9','J13'][i]),pembahasan:'…'},
+    {jenis:'bs',keterampilan:'N7',bentuk:'2026',teks:'…',perintah:'…',pernyataan:['…','…','…','…','…'],kunci:[false,true,false,true,false],label_b:'MEMPERLEMAH',label_s:'TIDAK MEMPERLEMAH',jebakan:'J11',pembahasan:'…'},
+    {jenis:'pg',keterampilan:p0.sk,bentuk:'2027',eksperimen:true,teks:'…',perintah:'…',opsi:['…','…','…','…','…'],kunci:p0.kJem[2],jebakan_opsi:[0,1,2,3,4].map(i=>i===p0.kJem[2]?null:['J1','J4','J6','J13','J3'][i]),pembahasan:'…'}],
+   pemanasan:[{keterampilan:'N2',label:'…',teks:'…',opsi:['…','…','…','…'],kunci:p0.kPem[0],jebakan_opsi:[0,1,2,3].map(i=>i===p0.kPem[0]?null:['J1','J2','J3','J6'][i]),pembahasan:'…'}],
+   detektif:[{judul:'…',pesan:[['Nama','…'],['Nama','…'],['Nama','…'],['Nama','…']],pengalih:2,simpulan:'…',v:2,why:'…',cek:{opsi:['…','…','…','…'],kunci:1}}]}]}));
+  L.push('(Contoh hanya menunjukkan bentuk JSON. "pemanasan" berisi 4 kartu; contoh di atas memuat 1 saja. Jenis "pg"/"bs" tiap jembatan mengikuti bentuknya. "tabel" boleh dihilangkan bila tidak perlu.)');
   return L.join('\n')}
 const CUKUP_OPSI=['Pernyataan (i) SAJA cukup untuk menjawab pertanyaan, tetapi pernyataan (ii) SAJA tidak cukup.','Pernyataan (ii) SAJA cukup untuk menjawab pertanyaan, tetapi pernyataan (i) SAJA tidak cukup.','DUA pernyataan BERSAMA-SAMA cukup untuk menjawab pertanyaan, tetapi SATU pernyataan SAJA tidak cukup.','SALAH SATU pernyataan SAJA cukup untuk menjawab pertanyaan.','Pernyataan (i) dan pernyataan (ii) TIDAK CUKUP untuk menjawab pertanyaan.'];
 const KS_OPSI=['Simpulan tersebut pasti benar.','Simpulan tersebut mungkin benar.','Simpulan tersebut pasti salah.','Simpulan tidak relevan dengan informasi yang diberikan.','Simpulan tidak dapat dinilai karena informasi tidak cukup.'];
@@ -1324,7 +1399,9 @@ function vPaket(){const ids=Object.keys(S.paket).filter(k=>/^\d/.test(k)).sort()
 function savePaket(){const m=$('#pmsg');let o;try{o=parsePaste($('#pjson').value)}catch(e){m.innerHTML=`<div class="fb" style="border-color:var(--bad)"><b>JSON tidak terbaca.</b> ${esc(e.message)}</div>`;return}
   const E=validate(o);if(E.length){m.innerHTML=`<div class="fb" style="border-color:var(--bad)"><b>${E.length} masalah:</b><br>${E.slice(0,8).map(esc).join('<br>')}</div>`;return}
   let n=0,skip=0;o.paket.forEach(p=>{if(S.paket[p.tgl]&&S.paket[p.tgl].dipakai){skip++;return}S.paket[p.tgl]=Object.assign({},p,{dipakai:null});n++});save();
-  toast(n+' paket tersimpan');render();if(skip)setTimeout(()=>toast(skip+' dilewati: tanggalnya sudah terpakai'),2300)}
+  const W=tebakWarn(o);
+  toast(n+' paket tersimpan');render();if(skip)setTimeout(()=>toast(skip+' dilewati: tanggalnya sudah terpakai'),2300);
+  if(W.length){const m2=$('#pmsg');if(m2)m2.innerHTML=`<div class="fb" style="border-color:var(--warn)"><b>Tersimpan, tetapi ada pola yang mudah ditebak:</b><br>${W.slice(0,6).map(esc).join('<br>')}<br><span class="muted">Minta Claude memperbaiki hari tersebut, lalu tempel ulang (tanggal yang sama akan ditimpa).</span></div>`}}
 
 /* ================= MINI GAME ================= */
 let G=null,gTimer=null;
@@ -1796,18 +1873,31 @@ const DETEKTIF=[
  {judul:'Jadwal piket',pesan:[['Ketua kelas','Kalau hari Senin, kelompok A piket.'],['Hana','Aku lupa bawa botol minum.'],['Bela','Hari ini kelompok A lagi piket.'],['Bela','Berarti hari ini Senin.']],pengalih:1,simpulan:'Hari ini Senin.',v:1,why:'Aturannya Senin → A piket, bukan sebaliknya. Kelompok A bisa piket di hari lain juga (J1). Belum tentu.'},
  {judul:'Bimbel X',pesan:[['Rafi','Anak yang ikut bimbel X nilainya rata-rata lebih tinggi.'],['Wulan','Tapi yang ikut kebanyakan memang sudah rajin dari awal.'],['Tegar','Wifi sekolah lemot banget hari ini.'],['Rafi','Jadi bimbel X pasti menaikkan nilai.']],pengalih:2,simpulan:'Bimbel X pasti menaikkan nilai.',v:1,why:'Hubungan bersamaan belum tentu sebab-akibat (J8), dan kelompoknya sejak awal berbeda (J9), seperti kata Wulan. Belum tentu.'},
  {judul:'Lomba lari',pesan:[['Panitia','Tidak ada peserta di bawah 15 tahun yang boleh ikut lari 10 km.'],['Dodi','Adikku umur 13.'],['Mira','Kaos lombanya warna biru, keren.'],['Dodi','Jadi adikku tidak boleh ikut lari 10 km.']],pengalih:2,simpulan:'Adik Dodi tidak boleh ikut lari 10 km.',v:0,why:'Umur 13 di bawah 15, dan tidak ada yang di bawah 15 boleh ikut. Pasti benar.'},
- {judul:'Les tambahan',pesan:[['Wali kelas','Les tambahan diadakan jika pesertanya minimal 10 orang.'],['Gilang','Baru 7 orang yang daftar.'],['Gilang','Berarti les pasti nggak jadi.'],['Sari','Eh, kalian sudah nonton film baru itu?']],pengalih:3,simpulan:'Les tambahan pasti tidak jadi.',v:1,why:'Aturan hanya bilang: minimal 10 → les diadakan. Kurang dari 10 tidak otomatis batal (J2), dan pendaftar bisa bertambah. Belum tentu.'}];
+ {judul:'Les tambahan',pesan:[['Wali kelas','Les tambahan diadakan jika pesertanya minimal 10 orang.'],['Gilang','Baru 7 orang yang daftar.'],['Gilang','Berarti les pasti nggak jadi.'],['Sari','Eh, kalian sudah nonton film baru itu?']],pengalih:3,simpulan:'Les tambahan pasti tidak jadi.',v:1,why:'Aturan hanya bilang: minimal 10 → les diadakan. Kurang dari 10 tidak otomatis batal (J2), dan pendaftar bisa bertambah. Belum tentu.'},
+ {judul:'Karyawisata',pesan:[['Wali kelas','Semua siswa yang belum mengumpulkan tugas tidak boleh ikut karyawisata.'],['Tegar','Tugasku belum kukumpulkan, ketinggalan di rumah.'],['Hana','Busnya berangkat jam enam pagi, jangan telat ya.'],['Tegar','Tenang, aku tetap boleh ikut karyawisata kok.']],pengalih:2,simpulan:'Tegar boleh ikut karyawisata.',v:2,why:'Tegar belum mengumpulkan tugas, dan semua siswa seperti itu tidak boleh ikut. Simpulannya bertentangan dengan aturan: pasti salah. Jam berangkat bus satu topik, tetapi tidak mengubah boleh-tidaknya Tegar ikut.'},
+ {judul:'Diskon member',pesan:[['Admin Toko Kita','Diskon 20% hanya berlaku jika pembeli menunjukkan kartu member.'],['Kevin','Kemarin aku dapat diskon 20%, pakai kartu member.'],['Mira','Tadi aku belanja, tapi kartu member ketinggalan, jadi nggak kutunjukkan.'],['Mira','Kayaknya aku tetap dapat diskon 20% deh.']],pengalih:1,simpulan:'Mira mendapat diskon 20%.',v:2,why:'“Hanya jika” menjadikan kartu member syarat perlu: tanpa menunjukkan kartu, diskon tidak berlaku. Mira tidak menunjukkan kartu, jadi simpulannya pasti salah. Pengalaman Kevin tidak menyangkut belanja Mira.'},
+ {judul:'Upacara Senin',pesan:[['Pak Darto','Siswa yang datang setelah pukul 06.45 tidak boleh ikut upacara.'],['Hana','Upacara hari ini dipimpin kelas 11.'],['Arga','Aku sampai gerbang 06.55 tadi.'],['Kevin','Arga ikut upacara pagi ini kok.']],pengalih:1,simpulan:'Arga ikut upacara pagi ini.',v:2,why:'Arga datang 06.55, setelah 06.45, jadi ia tidak boleh ikut upacara. Simpulan Kevin bertentangan dengan aturan: pasti salah. Siapa yang memimpin upacara tidak memengaruhi simpulan.'},
+ {judul:'Lomba poster',pesan:[['Panitia','Karya yang dikumpulkan setelah pukul 12.00 tidak dinilai juri.'],['Fajar','Juri tahun ini katanya dosen seni rupa.'],['Sari','Aku baru kumpul jam 12.40.'],['Sari','Yah, berarti posterku tidak dinilai juri.']],pengalih:1,simpulan:'Poster Sari tidak dinilai juri.',v:0,why:'12.40 setelah 12.00, dan aturannya langsung menyebut karya seperti itu tidak dinilai. Pasti benar. Siapa jurinya satu topik, tetapi tidak mengubah apa pun.'},
+ {judul:'Klub robotik',pesan:[['Pembina','Sebagian anggota klub robotik ikut olimpiade sains bulan depan.'],['Gio','Aku anggota klub robotik dari kelas 10.'],['Wulan','Tahun lalu tim robotik kita juara dua lho.'],['Tari','Berarti Gio ikut olimpiade sains bulan depan.']],pengalih:2,simpulan:'Gio ikut olimpiade sains bulan depan.',v:1,why:'“Sebagian” tidak menjamin anggota tertentu (J4). Gio bisa termasuk, bisa juga tidak: belum tentu. Prestasi tahun lalu tidak menyangkut Gio.'}];
 /* bentuk lain: informasi yang PALING perlu dicek (opsi pertama = kunci) */
 const DET_CEK={
- 'Rapat OSIS':['Apakah rapat pasti diadakan bila Pak Hadi hadir','Menu baru apa yang dijual di kantin','Warna mobil Pak Hadi','Siapa saja anggota OSIS yang membaca grup'],
- 'Grup keluarga':['Perbandingan kesehatan banyak orang yang rutin dan tidak rutin minum air hangat','Jam berapa arisan besok dimulai','Berapa usia tetangga Tante Lia','Merek termos yang dipakai tetangga itu'],
- 'Nilai Fisika':['Apakah ada aturan remedial untuk nilai 70 ke atas','Bagaimana cuaca kemarin','Berapa nilai Fisika Kevin','Siapa yang membuat soal ujian Fisika'],
- 'Promo sepatu':['Warna sepatu apa saja yang termasuk diskon 50%','Seberapa luas parkiran toko','Ukuran sepatu yang dipakai Yoga','Sejak kapan Toko Langkah berdiri'],
- 'Jadwal piket':['Apakah kelompok A juga piket pada hari selain Senin','Siapa yang lupa membawa botol minum','Berapa jumlah anggota kelompok A','Di kelas mana Bela belajar'],
- 'Bimbel X':['Nilai awal siswa sebelum ikut bimbel X dibandingkan siswa yang tidak ikut','Kecepatan wifi sekolah hari ini','Berapa biaya bimbel X per bulan','Siapa pengajar favorit di bimbel X'],
- 'Les tambahan':['Apakah ada aturan untuk peserta kurang dari 10, dan apakah pendaftar masih bisa bertambah','Judul film baru yang sedang ramai','Siapa yang pertama kali mendaftar','Di ruang mana les biasanya diadakan']};
-function detRounds(){return shuffle(DETEKTIF).slice(0,5).map((r,i)=>{const B=roundLv('detektif',i,5),cek=!!DET_CEK[r.judul]&&B.lv>=2;
-  return Object.assign({},r,{tgn:B.tantangan,mode:cek?'cek':'nilai',cq:cek?mkOpts(DET_CEK[r.judul].map((t,k)=>k?{t}:{t,ok:1})):null})})}
+ 'Rapat OSIS':['Apakah rapat pasti diadakan bila Pak Hadi hadir','Apakah mobil di parkiran benar milik Pak Hadi','Jam berapa Pak Hadi tiba di sekolah hari ini','Siapa yang biasanya memimpin rapat OSIS'],
+ 'Grup keluarga':['Kesehatan banyak orang yang rutin dibanding yang tidak rutin minum air hangat','Sudah berapa tahun tetangga Tante Lia rutin minum air hangat','Seberapa hangat air yang diminum tetangga Tante Lia setiap pagi','Apakah Om Rudi sendiri rutin minum air hangat setiap pagi'],
+ 'Nilai Fisika':['Apakah ada aturan remedial untuk nilai 70 ke atas','Berapa nilai rata-rata Fisika di kelas Arga','Berapa banyak siswa yang wajib ikut remedial','Kapan jadwal remedial Fisika diadakan'],
+ 'Promo sepatu':['Warna sepatu apa saja yang termasuk diskon 50%','Berapa harga sepatu hitam sebelum diskon','Apakah ukuran sepatu hitam Yoga masih ada','Berapa banyak pembeli yang memilih sepatu hitam'],
+ 'Jadwal piket':['Apakah kelompok A juga piket pada hari selain Senin','Siapa saja anggota kelompok A','Jam berapa kelompok A mulai piket hari ini','Apakah Bela sendiri anggota kelompok A'],
+ 'Bimbel X':['Nilai awal siswa bimbel X dibanding siswa yang tidak ikut','Berapa banyak siswa yang ikut bimbel X','Berapa jam per minggu siswa belajar di bimbel X','Berapa selisih rata-rata nilai kedua kelompok'],
+ 'Les tambahan':['Apakah les tetap diadakan bila pesertanya kurang dari 10','Siapa saja tujuh siswa yang sudah mendaftar','Berapa biaya les tambahan per pertemuan','Materi apa yang akan dibahas di les tambahan'],
+ 'Klub robotik':['Daftar anggota klub robotik yang ikut olimpiade','Berapa jumlah anggota klub robotik','Sejak kapan Gio menjadi anggota klub robotik','Di kota mana olimpiade sains diadakan']};
+/* ronde Detektif dari paket Claude (opsional), terbaru dulu */
+function detPaket(){const ids=Object.keys(S.paket).filter(k=>/^\d/.test(k)&&k<=today()).sort().reverse();const out=[];
+  ids.forEach(k=>{(S.paket[k].detektif||[]).forEach(r=>{if(r&&Array.isArray(r.pesan)&&r.pesan.length>=3&&Number.isInteger(r.pengalih)&&[0,1,2].includes(r.v)&&r.simpulan)out.push(Object.assign({},r,{judul:r.judul||'Grup',dariPaket:true}))})});return out}
+function detPilih(){const pk=detPaket().slice(0,2),pool=shuffle(DETEKTIF),out=pk.slice();
+  /* tiap vonis (pasti benar, belum tentu, pasti salah) muncul paling sedikit sekali bila bisa */
+  [0,1,2].forEach(v=>{if(!out.some(r=>r.v===v)){const r=pool.find(x=>x.v===v&&!out.includes(x));if(r)out.push(r)}});
+  pool.forEach(r=>{if(out.length<5&&!out.includes(r))out.push(r)});return shuffle(out.slice(0,5))}
+function detRounds(){return detPilih().map((r,i)=>{const B=roundLv('detektif',i,5),CK=r.dariPaket?(r.cek&&Array.isArray(r.cek.opsi)&&Number.isInteger(r.cek.kunci)?[r.cek.opsi[r.cek.kunci]].concat(r.cek.opsi.filter((_,k)=>k!==r.cek.kunci)):null):DET_CEK[r.judul],cek=!!CK&&B.lv>=2;
+  return Object.assign({},r,{tgn:B.tantangan,mode:cek?'cek':'nilai',cq:cek?mkOpts(CK.map((t,k)=>k?{t}:{t,ok:1})):null})})}
 const AVC=['#ef5f5a','#4b8ae8','#3fb46e','#ff9d4d','#8f7ae8','#f47eab'];
 function chatView(r){const ppl=[...new Set(r.pesan.map(x=>x[0]))];const col=n=>AVC[ppl.indexOf(n)%AVC.length];const lock=G.step>0||G.pick!==null;
   return`<div class="wa"><div class="wah"><span class="wag">👥</span><span><b>${esc(r.judul)}</b><br><span class="tiny">${ppl.map(esc).join(', ')}</span></span></div><div class="wab">
@@ -1865,11 +1955,11 @@ const LUAR=['suka makan bakso','punya kucing di rumah','bangun pukul lima pagi',
 function genHakim(mode,ph){const t=rnd(HAKIM_SET),x=rnd(NAMA),v=ri(0,4),pk=a=>ph?rnd(a.slice(1)):a[0];
   const pre=shuffle([pk([`Semua ${t.g1} adalah ${t.g2}.`,`Setiap ${t.g1} adalah ${t.g2}.`,`Tidak ada ${t.g1} yang bukan ${t.g2}.`]),pk([`Sebagian ${t.g2} ${t.g3}.`,`Ada ${t.g2} yang ${t.g3}.`,`Beberapa ${t.g2} ${t.g3}.`]),pk([`Tidak ada ${t.g2} yang ${t.g4}.`,`Semua ${t.g2} tidak ${t.g4}.`])]).concat([`${x} adalah ${t.g1}.`]);
   const C=[
-   [rnd([`${x} adalah ${t.g2}.`,`${x} tidak ${t.g4}.`]),`${x} termasuk ${t.g1}, dan semua ${t.g1} adalah ${t.g2} yang tidak ada satu pun ${t.g4}. Pasti benar.`],
-   [`${x} ${t.g3}.`,`${x} adalah ${t.g2}, dan hanya sebagian ${t.g2} yang ${t.g3}. Tidak bertentangan dan topiknya dibahas, tetapi tidak dipastikan: mungkin benar.`],
-   [`${x} ${t.g4}.`,`${x} adalah ${t.g2}, sedangkan tidak ada ${t.g2} yang ${t.g4}. Pasti salah.`],
+   [rnd([`${x} adalah ${t.g2}.`,`${x} tidak ${t.g4}.`,`Ada ${t.g2} yang tidak ${t.g4}.`]),`${x} termasuk ${t.g1}, dan semua ${t.g1} adalah ${t.g2} yang tidak ada satu pun ${t.g4}. Pasti benar.`],
+   [rnd([`${x} ${t.g3}.`,`${x} tidak ${t.g3}.`]),`${x} adalah ${t.g2}, dan hanya sebagian ${t.g2} yang ${t.g3}. Tidak bertentangan dan topiknya dibahas, tetapi tidak dipastikan: mungkin benar.`],
+   ...[RNG()<.6?[`${x} ${t.g4}.`,`${x} adalah ${t.g2}, sedangkan tidak ada ${t.g2} yang ${t.g4}. Pasti salah.`]:[`${x} bukan ${t.g2}.`,`${x} adalah ${t.g1}, dan semua ${t.g1} adalah ${t.g2}. Pasti salah.`]],
    [`${x} ${rnd(LUAR)}.`,`Informasi sama sekali tidak menyentuh hal ini. Tidak relevan.`],
-   [`Lebih dari separuh ${t.g2} ${t.g3}.`,`Topiknya dibahas, tetapi “sebagian” tidak menyebut berapa banyak, jadi tidak ada cara untuk menilainya: tidak dapat dinilai. Kalau kamu memilih “mungkin benar”, itu jebakan J13.`]];
+   [`${rnd(['Lebih dari separuh','Sebagian besar','Paling sedikit tiga','Hanya dua'])} ${t.g2} ${t.g3}.`,`Topiknya dibahas, tetapi “sebagian” tidak menyebut berapa banyak, jadi tidak ada cara untuk menilainya: tidak dapat dinilai. Kalau kamu memilih “mungkin benar”, itu jebakan J13.`]];
   if(mode==='pilih'){const tg=rnd([0,2]);const o=mkOpts(C.map((c,i)=>({t:c[0],ok:i===tg?1:0})));
     return{pre,mode,perintah:tg===0?'Simpulan yang PASTI BENAR adalah …':'Simpulan yang PASTI SALAH adalah …',opsi:o.opsi,kunci:o.kunci,why:C[tg][1]+''}}
   return{pre,mode:'nilai',sim:C[v][0],why:C[v][1],v,opsi:KS_OPSI,kunci:v}}
@@ -2056,7 +2146,7 @@ function resetHariIni(){const t=today();
   S.log=S.log.filter(x=>x.t!==t);S.salah=S.salah.filter(x=>x.t!==t);
   for(const k in S.paket){if(S.paket[k].dipakai===t)S.paket[k].dipakai=null}
   if(S.paket.contoh&&S.sesi[t]&&S.sesi[t].paketId==='contoh'){delete S.paket.contoh;S.contohDipakai=false}
-  delete S.sesi[t];S.snapDay=null;S.snapSkills=null;
+  delete S.sesi[t];S.snapDay=null;S.snapSkills=null;S.resetN={[t]:(((S.resetN||{})[t])||0)+1};
   clearInterval(pemTimer);PEM=KAS=JEM=null;LT=-1;save();
   try{const r=JSON.parse(localStorage.getItem(KEY_RING))||{};if(r.riwayat)delete r.riwayat[t];
     Object.assign(r,{tgl:t,selesai:false,lengkap:false,butir:0,benar:0,akurasi:0,beruntun:streak(),diperbarui:new Date().toISOString()});localStorage.setItem(KEY_RING,JSON.stringify(r))}catch(e){}
@@ -2105,7 +2195,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
     record('jembatan',q.keterampilan&&SKILLS[q.keterampilan]?q.keterampilan:p.kasus.keterampilan,JEM.ok,q.jebakan,{jenis:'bs',teks:q.teks,perintah:q.perintah,pernyataan:q.pernyataan,kunci:q.kunci,label_b:q.label_b,label_s:q.label_s,pembahasan:q.pembahasan});render();break}
   case'ubsPick':if(UB&&!UB.answered){UB.sel[+b.dataset.i]=v==='1';renderUlangBS()}break;
   case'ubsCek':{const x=S.salah.find(y=>y.id===UB.id);UB.answered=true;UB.ok=x.pernyataan.every((_,i)=>UB.sel[i]===x.kunci[i]);S.log.push({t:today(),src:'ulang',sk:x.sk,ok:UB.ok?1:0,j:null});if(UB.ok)x.tuntas=true;save();renderUlangBS();if(UB.ok&&route==='rekap')render();break}
-  case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<p.jembatan.length-1){JEM={i:JEM.i+1,answered:false,bs:{}}}else{JEM=null;donePart(3);break}render();window.scrollTo(0,0);break}
+  case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<p.jembatan.length-1){JEM={i:JEM.i+1,answered:false,bs:{}}}else{JEM=null;if(!p.dipakai)p.dipakai=today();donePart(3);break}render();window.scrollTo(0,0);break}
   case'finish':finishSesi(v==='1');break;
   case'ulang':openUlang(v);break;
   case'ulangOpt':answerUlang(b.dataset.id,+v);break;
