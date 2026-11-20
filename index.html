@@ -15,12 +15,6 @@
   --accent:var(--blue);--accent-soft:#e2ecfc;--ok:var(--green);--ok-soft:#e2f2e8;--bad:var(--red);--bad-soft:#fbe7e6;--warn:var(--orange);
   --base:#e6eefa;--stud-hi:#f5f8fe;--stud-lo:#d3e0f3;
 }
-@media (prefers-color-scheme:dark) and (max-width:0px){:root{
-  --ink:#262a33;--line:#58637c;--sh:rgba(0,0,0,.25);--plate:#283146;--text:#e4e7ee;--muted:#a1a9ba;--faint:#6e778b;--edge:#384360;--gray:#4d576c;
-  --red:#c9655f;--yellow:#d7b85f;--blue:#5a82c4;--green:#4f9c70;--orange:#cf9058;--sky:#64a9c7;--pink:#c9829f;--lime:#93b266;
-  --accent-soft:#1f3256;--ok-soft:#173a28;--bad-soft:#45201f;
-  --base:#1c2332;--stud-hi:#222b3c;--stud-lo:#171e2b;
-}}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font:14.5px/1.5 "Rubik",-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;
   background-color:var(--base);
@@ -229,7 +223,6 @@ pre.pv{white-space:pre-wrap;font-size:11.5px;line-height:1.4;max-height:220px;ov
 .opt.bad .k{background:var(--red);color:#fff;border-color:var(--red)}
 .opt.sel{border-color:var(--blue)}
 .fb{border:1.5px dashed #b9c6de;background:#f3f6fc}
-@media (prefers-color-scheme:dark) and (max-width:0px){.fb{border-color:#3d4a66;background:var(--base)}.opt,.promo,.opt .k{border-color:#3d4a66}.opt,.promo{box-shadow:0 2px 0 rgba(0,0,0,.25)}.opt .k{background:#313c55}}
 
 /* ===== MODE TERANG + LATAR BERGAMBAR ===== */
 :root{color-scheme:light}
@@ -668,6 +661,7 @@ const COL={pem:'var(--yellow)',kas:'var(--red)',jem:'var(--blue)',kal:'var(--gre
 const SKCOL={N1:'var(--red)',N2:'var(--yellow)',N3:'var(--blue)',N4:'var(--green)',N5:'var(--orange)',N6:'var(--sky)',N7:'var(--pink)',N8:'var(--lime)'};
 const DARKTXT=['var(--yellow)','var(--lime)','var(--sky)'];
 const yk=c=>DARKTXT.includes(c)?'yk':'';
+const tl=(t,c,m)=>c?`<span class="lbl ${yk(c)?'':'w'}" style="--lc:${c}${m?';margin:0':''}">${t}</span>`:`<span class="lbl"${m?' style="margin:0"':''}>${t}</span>`;
 const studs=(n,c,right)=>`<span class="st${right?' r':''}"${c?` style="--c:${c}"`:''}>${'<i></i>'.repeat(n)}</span>`;
 function seqPush(s,code){(s.seq||(s.seq=[])).push(code)}
 let LT=-1;
@@ -1272,17 +1266,17 @@ function vRekap(){const w=weekLog(7);const tr=topTraps(w.filter(x=>x.src!=='game
   if(ka.length>=3&&je.length>=3){if(pk-pj>=15)interp='Kasus nyata lebih baik daripada jembatan: masalahnya kemungkinan di membaca bentuk soal UTBK.';else if(pj-pk>=15)interp='Jembatan lebih baik daripada kasus nyata: masalahnya kemungkinan di menerapkan logika di luar soal.';else interp='Kasus nyata dan jembatan seimbang. Bagus, logikamu terbawa ke dua arah.'}
   const days=[...Array(7)].map((_,i)=>addDays(today(),i-6));
   let h=`<div class="glass card has-st">${studs(4)}<span class="lbl w" style="--lc:var(--green)">7 hari terakhir</span><div class="days">${days.map(d=>{const s=S.sesi[d];const on=s&&s.selesai;return`<div><span class="b${on?'':' x'}" style="--c:${on?'var(--green)':s&&s.fase>0?'var(--yellow)':'var(--gray)'}"></span><div class="tiny muted" style="margin-top:4px;font-weight:600">${HARI[new Date(d+'T12:00:00').getDay()].slice(0,3)}</div></div>`}).join('')}</div></div>`;
-  h+=`<div class="glass card"><div class="cap">Jebakan terbanyak</div>${tr.length?tr.map(([k,c],i)=>`<div class="kv"><span>${i+1}. <b>${k}</b> ${TRAPS[k]}</span><span class="muted">${c}x</span></div>`).join(''):'<div class="small muted">Belum ada jebakan yang menjeratmu minggu ini.</div>'}</div>`;
-  h+=`<div class="glass card"><div class="cap">Kasus nyata vs jembatan UTBK</div>
+  h+=`<div class="glass card has-st">${studs(3,'var(--red)')}${tl('Jebakan terbanyak','var(--red)')}${tr.length?tr.map(([k,c],i)=>`<div class="kv"><span>${i+1}. <b>${k}</b> ${TRAPS[k]}</span><span class="muted">${c}x</span></div>`).join(''):'<div class="small muted">Belum ada jebakan yang menjeratmu minggu ini.</div>'}</div>`;
+  h+=`<div class="glass card has-st">${studs(3,'var(--blue)')}${tl('Kasus nyata vs jembatan UTBK','var(--blue)')}
    <div class="kv"><span class="muted">Pemanasan</span>${pv(pe)}</div>
    <div class="kv"><span class="muted">Kasus nyata</span>${pv(ka)}</div>
    <div class="kv"><span class="muted">Jembatan UTBK</span>${pv(je)}</div>
    <div class="small" style="margin-top:6px">${interp}</div></div>`;
-  h+=`<div class="glass card"><div class="cap">Tahap keterampilan</div><div class="row wrapf" style="gap:6px;margin-top:4px">${Object.keys(SKILLS).map(k=>`<span class="chip" style="background:${SKCOL[k]};color:${yk(SKCOL[k])?'#2f333d':'#fff'}">${k} · T${S.skills[k].tahap}</span>`).join('')}</div></div>`;
+  h+=`<div class="glass card has-st">${studs(3,'var(--yellow)')}${tl('Tahap keterampilan')}<div class="row wrapf" style="gap:6px">${Object.keys(SKILLS).map(k=>`<span class="chip" style="background:${SKCOL[k]};color:${yk(SKCOL[k])?'#2f333d':'#fff'}">${k} · T${S.skills[k].tahap}</span>`).join('')}</div></div>`;
   const sal=S.salah.filter(x=>!x.tuntas).slice(-12).reverse();
-  h+=`<h3>Butir salah untuk diulang</h3>`;
-  h+=sal.length?`<div class="glass card list">${sal.map(x=>`<div class="it"><div style="flex:1;min-width:0"><div class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.perintah||x.teks||'')}</div><div class="tiny muted">${tglPendek(x.t)} · ${x.src} · ${x.sk}</div></div><button class="btn sm" data-act="ulang" data-v="${x.id}">Ulang</button></div>`).join('')}</div>`:'<div class="glass card empty">Belum ada butir salah.</div>';
-  const g=S.games;h+=`<h3>Mini game (pendamping)</h3><div class="glass card">${GAMES.map(x=>`<div class="kv"><span>${x.nama}</span><span class="muted">terbaik ${g[x.id]?g[x.id].best:0} · ${g[x.id]?g[x.id].main:0}x main</span></div>`).join('')}</div>`;
+  h+=`<div class="glass card has-st">${studs(3,'var(--orange)')}<div class="row sp">${tl('Butir salah untuk diulang','var(--orange)',1)}${sal.length?`<span class="tiny muted">${sal.length} butir</span>`:''}</div>`;
+  h+=sal.length?`<div class="list" style="margin-top:6px">${sal.map(x=>`<div class="it"><div style="flex:1;min-width:0"><div class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.perintah||x.teks||'')}</div><div class="tiny muted">${tglPendek(x.t)} · ${x.src} · ${x.sk}</div></div><button class="btn sm" data-act="ulang" data-v="${x.id}">Ulang</button></div>`).join('')}</div></div>`:'<div class="small muted" style="margin-top:10px">Belum ada butir salah. Butir yang salah di sesi harian akan muncul di sini.</div></div>';
+  const g=S.games;h+=`<div class="glass card has-st">${studs(3,'var(--purple)')}${tl('Mini game pendamping','var(--purple)')}${GAMES.map(x=>`<div class="kv"><span>${x.nama}</span><span class="muted">terbaik ${g[x.id]?g[x.id].best:0} · ${g[x.id]?g[x.id].main:0}x main</span></div>`).join('')}</div>`;
   return h}
 let UB=null;
 function openUlang(id){const x=S.salah.find(y=>y.id===id);if(!x)return;
@@ -1300,9 +1294,9 @@ function answerUlang(id,i){const x=S.salah.find(y=>y.id===id);if(!x)return;const
 
 /* ================= JURNAL ================= */
 function vJurnal(){const J=S.jurnal.slice().reverse();
-  let h=`<div class="glass card"><div class="lbl">Tambah catatan</div><textarea id="jnew" placeholder="Klaim yang kudengar … alasannya cukup/tidak karena …"></textarea><div class="row sp" style="margin-top:8px"><span class="tiny muted">${S.jurnal.length} catatan</span><button class="btn sm p" data-act="jAdd">Simpan</button></div></div>`;
-  h+=`<div class="row sp" style="margin:14px 2px 8px"><h3 style="margin:0">Catatanmu</h3><button class="btn sm" data-act="jCopy">Salin 7 hari untuk diulas Claude</button></div>`;
-  h+=J.length?`<div class="glass card list">${J.map(x=>`<div class="it" style="align-items:flex-start"><span class="chip">${tglPendek(x.t)}</span><div class="small" style="flex:1">${esc(x.teks)}</div></div>`).join('')}</div>`:'<div class="glass card empty">Belum ada catatan. Bagian terakhir sesi harian mengisinya.</div>';
+  let h=`<div class="glass card has-st">${studs(3,'var(--orange)')}${tl('Tambah catatan','var(--orange)')}<textarea id="jnew" placeholder="Klaim yang kudengar … alasannya cukup/tidak karena …"></textarea><div class="row sp" style="margin-top:8px"><span class="tiny muted">${S.jurnal.length} catatan</span><button class="btn sm p" data-act="jAdd">Simpan</button></div></div>`;
+  h+=`<div class="glass card has-st">${studs(3)}<div class="row sp">${tl('Catatanmu',0,1)}<button class="btn sm" data-act="jCopy">Salin 7 hari untuk Claude</button></div>`;
+  h+=J.length?`<div class="list" style="margin-top:6px">${J.map(x=>`<div class="it" style="align-items:flex-start"><span class="chip">${tglPendek(x.t)}</span><div class="small" style="flex:1">${esc(x.teks)}</div></div>`).join('')}</div></div>`:'<div class="small muted" style="margin-top:10px">Belum ada catatan. Bagian terakhir sesi harian mengisinya.</div></div>';
   return h}
 function jurnalPrompt(){const from=addDays(today(),-6);const J=S.jurnal.filter(x=>x.t>=from);
   return`Ulas Jurnal Nalar-ku minggu ini. Untuk setiap catatan: (1) sebutkan klaim dan alasannya, (2) nilai apakah alasannya cukup, (3) sebut jebakan nalar yang mungkin terjadi dengan kode J1–J13 (${Object.entries(TRAPS).map(([k,v])=>k+' '+v).join('; ')}), (4) beri satu pertanyaan lanjutan yang membuat penalarannya lebih tajam. Tutup dengan pola yang paling sering muncul dan satu fokus untuk minggu depan. Singkat dan langsung.\n\n`+(J.length?J.map(x=>`- ${x.t}: ${x.teks}`).join('\n'):'(belum ada catatan minggu ini)')}
@@ -1310,16 +1304,16 @@ function jurnalPrompt(){const from=addDays(today(),-6);const J=S.jurnal.filter(x
 /* ================= PAKET ================= */
 function vPaket(){const ids=Object.keys(S.paket).filter(k=>/^\d/.test(k)).sort();const unused=ids.filter(k=>!S.paket[k].dipakai),used=ids.length-unused.length;
   const start=nextStart();
-  let h=`<div class="row" style="margin:0 2px 10px"><button class="btn sm" data-act="nav" data-v="hari-ini">‹ Hari ini</button><b style="margin-left:4px">Paket</b></div>`;
-  h+=`<div class="glass card"><div class="lbl">1 · Buat prompt</div><p class="small muted">Prompt disusun dari tahap tiap keterampilan, konteks yang belum dipakai 10 hari terakhir, dan jebakan terlemahmu. Jalankan di proyek Claude “Nalar Harian”.</p>
+  let h=`<div class="row sp" style="margin:0 2px 18px"><button class="btn sm" data-act="nav" data-v="hari-ini">‹ Hari ini</button>${tl('Paket kasus','var(--blue)',1)}<span style="width:76px"></span></div>`;
+  h+=`<div class="glass card has-st">${studs(3)}${tl('1 · Buat prompt')}<p class="small muted">Prompt disusun dari tahap tiap keterampilan, konteks yang belum dipakai 10 hari terakhir, dan jebakan terlemahmu. Jalankan di proyek Claude “Nalar Harian”.</p>
    <div class="row" style="margin-top:8px"><select id="pdays" style="flex:1">${[1,3,7,14,30].map(n=>`<option value="${n}" ${n===7?'selected':''}>${n} hari</option>`).join('')}</select><input type="date" id="pstart" value="${start}" style="flex:1.3"></div>
    <button class="btn p w" style="margin-top:8px" data-act="copyPrompt">Salin prompt</button>
    <details><summary>Lihat rencana</summary><div id="pplan"></div></details></div>`;
-  h+=`<div class="glass card"><div class="lbl">2 · Tempel JSON dari Claude</div><textarea id="pjson" placeholder='{"versi":1,"paket":[ … ]}'></textarea><button class="btn p w" style="margin-top:8px" data-act="savePaket">Cek & simpan</button><div id="pmsg"></div></div>`;
-  h+=`<div class="glass card"><div class="row sp"><div class="lbl" style="margin:0">3 · Stok</div><span class="tiny muted">${unused.length} siap · ${used} terpakai</span></div>`;
+  h+=`<div class="glass card has-st">${studs(3)}${tl('2 · Tempel JSON dari Claude')}<textarea id="pjson" placeholder='{"versi":1,"paket":[ … ]}'></textarea><button class="btn p w" style="margin-top:8px" data-act="savePaket">Cek & simpan</button><div id="pmsg"></div></div>`;
+  h+=`<div class="glass card has-st">${studs(3)}<div class="row sp">${tl('3 · Stok',0,1)}<span class="tiny muted">${unused.length} siap · ${used} terpakai</span></div>`;
   h+=unused.length?`<div class="list" style="margin-top:6px">${unused.map(k=>{const p=S.paket[k];return`<div class="it"><span class="chip">${tglPendek(k)}</span><div style="flex:1;min-width:0" class="small"><b>${p.kasus.keterampilan}</b> · ${esc(p.kasus.judul||'')}<div class="tiny muted">T${p.kasus.tahap||'?'} · ${esc(p.kasus.konteks||'')}</div></div><button class="btn sm" data-act="delPaket" data-v="${k}">Hapus</button></div>`}).join('')}</div>`:'<div class="small muted" style="margin-top:6px">Stok kosong. Untuk bulan tanpa langganan, buat paket 30 hari sekaligus.</div>';
   h+='</div>';
-  h+=`<h3>Data</h3><div class="glass card small"><p class="muted">Semua data tersimpan di peramban ini. Salin cadangan sesekali dan simpan di tempat aman.</p>
+  h+=`<div class="glass card has-st small">${studs(3,'var(--sky)')}${tl('4 · Data cadangan','var(--sky)')}<p class="muted">Semua data tersimpan di peramban ini. Salin cadangan sesekali dan simpan di tempat aman.</p>
    <div class="row wrapf" style="margin-top:8px"><button class="btn sm" data-act="backup">Salin cadangan</button><button class="btn sm" data-act="restoreOpen">Pulihkan dari cadangan</button></div><div class="row wrapf" style="margin-top:8px"><button class="btn sm" data-act="askResetToday">Reset progres hari ini</button><button class="btn sm" style="color:var(--red)" data-act="askResetAll">Reset semua progres</button></div></div>`;
   after(()=>{const upd=()=>{const n=+$('#pdays').value,st=$('#pstart').value||today();$('#pplan').innerHTML=`<table class="t">${buildPlan(n,st).map(p=>`<tr><td>${tglPendek(p.tgl)}</td><td><b>${p.sk}</b></td><td>T${p.tahap}</td><td>${p.konteks}</td></tr>`).join('')}</table>`};
     $('#pdays').onchange=upd;$('#pstart').onchange=upd;upd()});
