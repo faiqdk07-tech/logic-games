@@ -202,7 +202,7 @@ details summary{cursor:pointer;font-size:13px;font-weight:600;margin-top:10px}
 pre.pv{white-space:pre-wrap;font-size:11.5px;line-height:1.4;max-height:220px;overflow:auto;margin-top:6px;padding:8px;border-radius:9px;background:var(--base);border:2px solid var(--line)}
 .days{display:flex;gap:6px;margin-top:6px}
 .days>div{flex:1;text-align:center}
-.days .b{width:100%;height:18px;margin-top:6px}
+.days .b{display:block;width:100%;height:18px;margin-top:6px}
 .days .b::before{left:20%}.days .b::after{right:20%}
 
 /* tepi berwarna: balok memakai bayangan dari warnanya sendiri */
@@ -1114,7 +1114,7 @@ function vHari(){
   const b=s.pem.b+s.kas.b+s.jem.b,n=s.pem.n+s.kas.n+s.jem.n;
   let h=`<div class="glass card has-st">${studs(4,'var(--plate)')}${studs(2,'var(--plate)',1)}
     <div class="row sp"><span class="lbl">Menara hari ini</span></div>
-    ${n?tower(s):`<div class="tower" style="align-items:center;justify-content:center"><span class="tiny" style="color:color-mix(in srgb,var(--green) 55%,#1c2a22);font-weight:700">Belum ada balok. Mulai sesi untuk membangun.</span></div>`}
+    ${n?tower(s):`<div class="tower" style="align-items:center;align-content:center;justify-content:center"><span class="tiny" style="color:color-mix(in srgb,var(--green) 55%,#1c2a22);font-weight:700">Belum ada balok. Mulai sesi untuk membangun.</span></div>`}
     <div class="row tiny muted" style="gap:12px;margin-top:8px;font-weight:600"><span class="row" style="gap:4px"><span class="b" style="--c:var(--yellow);width:16px;height:9px"></span>pemanasan</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--red);width:16px;height:9px"></span>kasus</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--blue);width:16px;height:9px"></span>jembatan</span><span class="row" style="gap:4px"><span class="b x" style="width:16px;height:9px"></span>salah</span></div></div>`;
   if(s.selesai){
     h+=`<div class="glass card has-st">${studs(3,'var(--green)')}<span class="lbl w" style="--lc:var(--green)">Sesi selesai</span><h2>Menara hari ini berdiri.</h2>
@@ -1267,15 +1267,16 @@ function vPeta(){let h=`<p class="intro" style="margin-bottom:22px">Tiap bulatan
 function vRekap(){const w=weekLog(7);const tr=topTraps(w.filter(x=>x.src!=='game'));
   const ka=w.filter(x=>x.src==='kasus'),je=w.filter(x=>x.src==='jembatan'),pe=w.filter(x=>x.src==='pemanasan');
   const pc=a=>a.length?Math.round(a.filter(x=>x.ok).length/a.length*100):null;
+  const pv=a=>a.length?`<b>${pc(a)}% <span class="tiny muted">(${a.length} butir)</span></b>`:'<span class="tiny muted" style="align-self:center">belum ada data</span>';
   const pk=pc(ka),pj=pc(je);let interp='Data minggu ini belum cukup untuk dibandingkan.';
   if(ka.length>=3&&je.length>=3){if(pk-pj>=15)interp='Kasus nyata lebih baik daripada jembatan: masalahnya kemungkinan di membaca bentuk soal UTBK.';else if(pj-pk>=15)interp='Jembatan lebih baik daripada kasus nyata: masalahnya kemungkinan di menerapkan logika di luar soal.';else interp='Kasus nyata dan jembatan seimbang. Bagus, logikamu terbawa ke dua arah.'}
   const days=[...Array(7)].map((_,i)=>addDays(today(),i-6));
   let h=`<div class="glass card has-st">${studs(4)}<span class="lbl w" style="--lc:var(--green)">7 hari terakhir</span><div class="days">${days.map(d=>{const s=S.sesi[d];const on=s&&s.selesai;return`<div><span class="b${on?'':' x'}" style="--c:${on?'var(--green)':s&&s.fase>0?'var(--yellow)':'var(--gray)'}"></span><div class="tiny muted" style="margin-top:4px;font-weight:600">${HARI[new Date(d+'T12:00:00').getDay()].slice(0,3)}</div></div>`}).join('')}</div></div>`;
   h+=`<div class="glass card"><div class="cap">Jebakan terbanyak</div>${tr.length?tr.map(([k,c],i)=>`<div class="kv"><span>${i+1}. <b>${k}</b> ${TRAPS[k]}</span><span class="muted">${c}x</span></div>`).join(''):'<div class="small muted">Belum ada jebakan yang menjeratmu minggu ini.</div>'}</div>`;
   h+=`<div class="glass card"><div class="cap">Kasus nyata vs jembatan UTBK</div>
-   <div class="kv"><span class="muted">Pemanasan</span><b>${pc(pe)??'–'}${pe.length?'%':''} <span class="tiny muted">(${pe.length})</span></b></div>
-   <div class="kv"><span class="muted">Kasus nyata</span><b>${pk??'–'}${ka.length?'%':''} <span class="tiny muted">(${ka.length})</span></b></div>
-   <div class="kv"><span class="muted">Jembatan UTBK</span><b>${pj??'–'}${je.length?'%':''} <span class="tiny muted">(${je.length})</span></b></div>
+   <div class="kv"><span class="muted">Pemanasan</span>${pv(pe)}</div>
+   <div class="kv"><span class="muted">Kasus nyata</span>${pv(ka)}</div>
+   <div class="kv"><span class="muted">Jembatan UTBK</span>${pv(je)}</div>
    <div class="small" style="margin-top:6px">${interp}</div></div>`;
   h+=`<div class="glass card"><div class="cap">Tahap keterampilan</div><div class="row wrapf" style="gap:6px;margin-top:4px">${Object.keys(SKILLS).map(k=>`<span class="chip" style="background:${SKCOL[k]};color:${yk(SKCOL[k])?'#2f333d':'#fff'}">${k} · T${S.skills[k].tahap}</span>`).join('')}</div></div>`;
   const sal=S.salah.filter(x=>!x.tuntas).slice(-12).reverse();
@@ -1421,7 +1422,7 @@ function rkTap(id){if(G.phase!=='build'||G.used.has(id))return;const c=G.cur,t=c
   if(rkEq(t.b,c.goal)){G.phase='open';G.score+=2;setTimeout(()=>{if(G&&G.id==='geser'&&G.phase==='open'){G.phase='close';render()}},900)}
   render()}
 function vRantai(){const c=G.cur,A=c.A,st=rkState();const hearts=[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('');
-  let h=gHead(`<span class="row" style="gap:2px">${hearts}</span>`)+`<div class="glass card has-st">${gst()}
+  let h=gHead(gHud())+`<div class="glass card has-st">${gst()}
   <div class="row sp"><div class="cap" style="margin:0">Ronde ${G.round}/${G.n} · Level ${G.lv}${G.tgn?' · tantangan':''}</div><span class="tiny muted">Skor ${G.score}</span></div>
   <div class="row wrapf" style="gap:5px;margin-top:6px">${bchip(RK_FORM[c.form])}${bchip('soal '+RK_Q[c.qt])}</div>
   <div class="cap" style="margin-top:8px">Aturan</div>${c.ru.map((r,i)=>`<div class="vline"><span class="rkn">${i+1}</span><span>${esc(r)}</span></div>`).join('')}
@@ -1561,7 +1562,7 @@ function bandaraQ(r){const t=G.ax&&G.ax[1]?'kecuali':gVar(['setara','ingkaran','
   if(t==='ingkaran')return Object.assign({perintah:`Ingkaran dari aturan “${at}” adalah …`},mkOpts([{t:`${C(r.p)} dan ${r.nq}.`,ok:1},{t:`Jika ${r.np}, maka ${r.nq}.`,j:'J2'},{t:`Jika ${r.q}, maka ${r.p}.`,j:'J1'},{t:`${C(r.np)} dan ${r.q}.`,j:'J3'},{t:`${C(r.np)} atau ${r.q}.`,j:'J3'}]));
   return Object.assign({perintah:`Aturan: “${at}” Diketahui: ${r.nq}. Simpulan yang pasti benar adalah …`},mkOpts([{t:`${C(r.np)}.`,ok:1},{t:`${C(r.p)}.`,j:'J6'},{t:`${C(r.q)}.`,j:'J5'},{t:'Tidak dapat disimpulkan apa pun tentang koper itu.',j:'J13'},{t:`${C(r.np)} dan ${r.q}.`,j:'J3'}]))}
 function vBandara(){const r=G.rule;const hearts=[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('');
-  let h=gHead(`<span class="row" style="gap:2px">${hearts}</span>`)+`<div class="glass card has-st">${gst()}
+  let h=gHead(gHud())+`<div class="glass card has-st">${gst()}
   <div class="row sp"><div class="cap" style="margin:0">Level ${G.lv}/3${G.tgn?' · tantangan':''}</div><span class="tiny muted">Skor ${G.score}</span></div>
   ${G.form&&G.form!=='jika'?`<div class="rule" style="margin-top:8px">${esc(G.ruleTxt)}</div><div class="tiny muted" style="margin-top:6px">Artinya sama dengan:</div>`:''}
   ${bdRuleBox(r)}`;
@@ -1707,7 +1708,7 @@ function vCek(){const q=G.cur,r=vCheckDraw(q,G.mk);G.tries++;G.pst=vPremOk(q,G.m
   G.errs=new Set([...r.errs].filter(x=>G.mk[x]));const bad=G.pst.map((ok,i)=>ok?null:i+1).filter(Boolean);
   G.msg=`<div class="fb small"><b style="color:var(--bad)">Belum tepat.</b> ${bad.length?`Kalimat ${bad.join(' dan ')} belum tergambar dengan benar. `:''}${G.errs.size?'Tanda di daerah merah keliru.':''}${G.tries>=2?' <button class="btn sm" style="margin-left:4px" data-act="vShow">Lihat gambar benar</button>':''}</div>`;render()}
 function vVenn(){const q=G.cur,N=q.N,hearts=[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('');
-  let h=gHead(`<span class="row" style="gap:2px">${hearts}</span>`)+`<div class="glass card has-st">${gst()}
+  let h=gHead(gHud())+`<div class="glass card has-st">${gst()}
   <div class="row sp"><div class="cap" style="margin:0">Ronde ${G.round}/${G.n}${q.tantangan?' · tantangan':''}</div><span class="tiny muted">Skor ${G.score}</span></div>
   <div class="vleg">${BIT.map((b,i)=>`<span><b style="color:${VCOL[b]}">${'ABC'[i]}</b> ${esc(N[i])}</span>`).join('')}</div>
   <div class="vprem">${q.pre.map((s,i)=>{const st=G.pst?(G.pst[i]?'done':'bad'):'';return`<div class="vp ${st}"><span class="vpn">${st==='done'?'✓':st==='bad'?'✗':i+1}</span><span>${vTextH(s,N)}</span></div>`}).join('')}</div>`;
@@ -1773,7 +1774,7 @@ function vLampu(){
   const q=G.cur,run=G.phase==='done',V='pqrs',step=.45,reach=i=>q.st[i]!=='?';
   const dl=i=>i===q.fi?0:reach(i)?Math.abs(i-q.fi)*step+.3:q.k*step+.2,last=Math.max(...[...Array(q.k).keys()].map(dl));
   if(!run)after(bindLamp);
-  let h=gHead(gHud(`<span class="chip">${G.i+1}/${G.n}${G.tgn?' ⚡':''}</span>`))+`<div class="glass card has-st">${gst()}<div class="lstory">${esc(q.story)}</div><div class="lboard">`;
+  let h=gHead(gHud())+`<div class="glass card has-st">${gst()}${gCap(G.i+1,G.n,G.tgn)}<div class="lstory">${esc(q.story)}</div><div class="lboard">`;
   for(let i=0;i<q.k;i++){const fact=i===q.fi,s=run?q.st[i]:fact?(q.fv?'on':'off'):(G.pred[i]||'none'),wrong=run&&!fact&&G.pred[i]!==q.st[i];
     h+=`<div class="lnode ${run?'run':''} ${wrong?'wrong':''} ${fact?'fact':''}" style="--d:${dl(i)}s" data-node="${i}" ${!run&&!fact?`data-act="lpPut" data-v="${i}"`:''}>
       <div class="lbulb">${bulb(s)}${fact?'<span class="lsrc">⚡</span>':''}</div>
@@ -1816,7 +1817,7 @@ function chatView(r){const ppl=[...new Set(r.pesan.map(x=>x[0]))];const col=n=>A
   ${r.pesan.map(([w,t],i)=>{let c='';if(lock){if(i===r.pengalih)c='ok';else if(i===G.pick)c='bad'}const prev=i>0&&r.pesan[i-1][0]===w;
     return`<div class="wam${prev?' cont':''}">${prev?'<span class="wav sp"></span>':`<span class="wav" style="background:${col(w)}">${esc(w[0])}</span>`}<button class="wbub ${c}" data-act="dMsg" data-v="${i}" ${lock?'disabled':''}>${prev?'':`<span class="who" style="color:${col(w)}">${esc(w)}</span>`}${esc(t)}<span class="wt">07.${String(10+i*3).padStart(2,'0')}</span></button></div>`}).join('')}</div></div>`}
 function vDetektif(){const r=G.rounds[G.i],O=['Pasti benar','Belum tentu','Pasti salah'];
-  let h=gHead(gHud(`<span class="chip">${G.i+1}/${G.rounds.length}${r.tgn?' ⚡':''}</span>`))+`<div class="glass card has-st">${gst()}${chatView(r)}`;
+  let h=gHead(gHud())+`<div class="glass card has-st">${gst()}${gCap(G.i+1,G.rounds.length,r.tgn)}${chatView(r)}`;
   if(G.step===0){h+=`<div class="small" style="margin-top:12px;font-weight:600">Mana pesan pengalihnya?</div>`;
     if(G.pick!==null)h+=`<div class="fb">${G.pick===r.pengalih?'<b style="color:var(--ok)">Tepat.</b> Pesan itu tidak menyangkut simpulan.':'<b style="color:var(--bad)">Belum tepat.</b> Pesan yang kamu pilih ikut membangun simpulan. Pengalihnya ditandai hijau.'}</div>${G.lives>0?'<button class="btn p w" style="margin-top:10px" data-act="dStep">Lanjut</button>':'<button class="btn p w" style="margin-top:10px" data-act="dNext">Lihat skor</button>'}`}
   else{const cek=r.mode==='cek',OO=cek?r.cq.opsi:O,key=cek?r.cq.kunci:r.v;
@@ -1848,8 +1849,9 @@ function answerKasir(i){if(G.ans!==null)return;clearInterval(gTimer);G.ans=i;con
 
 /* --- nyawa & kombo (Hakim, Detektif, Tren) --- */
 function gHit(ok){if(ok){G.combo=(G.combo||0)+1;G.bonus1=G.combo>=3?1:0;G.score+=1+G.bonus1}else{G.combo=0;G.bonus1=0;G.lives--}}
+function gCap(i,n,tgn){return`<div class="row sp" style="margin-bottom:10px"><div class="cap" style="margin:0">Ronde ${i}/${n}${tgn?' · tantangan':''}</div><span class="tiny muted">Skor ${G.score||0}</span></div>`}
 function gHud(extra){G._hud=true;return extra||''}
-function gHudRow(){return`<div class="row sp" style="margin:-6px 4px 16px"><span class="row" style="gap:1px">${[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('')}</span>${G.combo>=2?`<span class="chip y combo">Kombo ×${G.combo}</span>`:''}</div>`}
+function gHudRow(){return`<div class="row sp" style="margin:-8px 4px 22px;min-height:22px"><span class="row" style="gap:1px">${[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('')}</span>${G.combo>=2?`<span class="chip y combo">Kombo ×${G.combo}</span>`:''}</div>`}
 const gBonusTxt=()=>G.bonus1?' <span class="chip y">Kombo! +1 bonus</span>':'';
 const gLanjut=(more)=>more&&G.lives>0;
 /* --- Hakim Simpulan --- */
@@ -2004,7 +2006,7 @@ function kState(c){const inv=[c.a].concat(c.b!=null?[c.b]:[]);if(inv.some(x=>!G.
 function vKursi(){const q=G.cur,N=q.N;if(G.ans==null&&!G.valid)after(bindKursi);
   const st=q.cons.map(kState);const full=!G.place.includes(null);const ok=full&&st.every(x=>x==='on');
   if(ok&&!G.valid){G.valid=true;G.score+=1}
-  let h=gHead(`<span class="chip">${G.i+1}/${G.n}${G.tgn?' ⚡':''}</span>`)+`<div class="glass card has-st">${gst()}
+  let h=gHead()+`<div class="glass card has-st">${gst()}${gCap(G.i+1,G.n,G.tgn)}
   <div class="row wrapf" style="gap:5px;margin-bottom:8px">${bchip(KLAY[q.L||'meja'].chip)}${bchip('soal '+KQ[q.qt||'pasti'])}</div>
   <div class="kcards">${q.cons.map((c,i)=>{const [ic,tx]=kCard(c,N,q.L);return`<div class="kcard ${st[i]}"><div class="kci">${ic}</div><div class="kct">${esc(N[c.a])} ${tx}${c.b!=null?' '+esc(N[c.b]):''}</div></div>`}).join('')}</div>
   <div class="meja"><div class="tbl">${KLAY[q.L||'meja'].judul}</div><div class="chairs">${G.place.map((x,k)=>`<button class="seat chair ${x!==null?'f':''}" data-act="kuSeat" data-v="${k}" ${G.valid?'disabled':''}><span class="back"></span>${x!==null?`${kAv(x,N)}<span class="cn2">${esc(N[x])}</span>`:`<span class="cnum"${q.L==='jadwal'?' style="font-size:14px"':''}>${KLAY[q.L||'meja'].slot(k)}</span>`}</button>`).join('')}</div></div>`;
@@ -2034,7 +2036,7 @@ function genTren(){const B=roundLv('tren',G.i||0,G.n||8);G.tgn=B.tantangan;const
 function vTren(){const q=G.cur;const stones=q.gap?q.show.map((x,i)=>i===q.idx?null:x):q.show.concat([null]);
   if(G.ans==null)after(bindBatu);
   const ok=G.ans!=null&&G.ans===q.kunci;
-  let h=gHead(gHud(`<span class="chip">${G.i+1}/${G.n}${G.tgn?' ⚡':''}</span>`))+`<div class="glass card has-st">${gst()}
+  let h=gHead(gHud())+`<div class="glass card has-st">${gst()}${gCap(G.i+1,G.n,G.tgn)}
   <div class="river ${ok?'cross':''}"><div class="bank l"></div><div class="bank r"></div>
     <div class="hopper"><svg viewBox="0 0 40 40"><rect x="9" y="4" width="8" height="6" rx="2.5" fill="#ffd24f" stroke="#c9971a" stroke-width="1.6"/><rect x="23" y="4" width="8" height="6" rx="2.5" fill="#ffd24f" stroke="#c9971a" stroke-width="1.6"/><rect x="5" y="9" width="30" height="22" rx="6" fill="#ffd24f" stroke="#c9971a" stroke-width="1.8"/><circle cx="15" cy="19" r="3.4" fill="#fff" stroke="#26304b" stroke-width="1.2"/><circle cx="25" cy="19" r="3.4" fill="#fff" stroke="#26304b" stroke-width="1.2"/><circle cx="15.6" cy="19.6" r="1.7" fill="#26304b"/><circle cx="25.6" cy="19.6" r="1.7" fill="#26304b"/><path d="M16 25q4 3 8 0" stroke="#26304b" stroke-width="1.5" fill="none" stroke-linecap="round"/><rect x="11" y="31" width="7" height="6" rx="2" fill="#4b8ae8"/><rect x="22" y="31" width="7" height="6" rx="2" fill="#4b8ae8"/></svg></div>
     <div class="stones">${stones.map((x,i)=>x===null?`<span class="stone slot ${G.ans!=null?(ok?'filled':'miss'):''}" data-slot="1">${G.ans!=null?(ok?q.ans:'?'):'?'}</span>`:`<span class="stone">${x}</span>`).join('')}</div></div>
@@ -2191,8 +2193,8 @@ window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h
 <style>
 .blk{position:fixed;z-index:60;top:0;left:0;width:0;height:0;font-family:"Rubik",system-ui,-apple-system,sans-serif}
 .blk-dot{position:fixed;top:var(--blk-y,60vh);width:58px;height:58px;margin-top:-29px;border:0;padding:0;background:transparent;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;transition:right .32s cubic-bezier(.2,1.2,.4,1),left .32s cubic-bezier(.2,1.2,.4,1)}
-.blk[data-side="right"] .blk-dot{right:calc(-18px + env(safe-area-inset-right,0px))}
-.blk[data-side="left"] .blk-dot{left:calc(-18px + env(safe-area-inset-left,0px))}
+.blk[data-side="right"] .blk-dot{right:calc(-34px + env(safe-area-inset-right,0px))}
+.blk[data-side="left"] .blk-dot{left:calc(-34px + env(safe-area-inset-left,0px))}
 .blk.open[data-side="right"] .blk-dot,.blk.tp[data-side="right"] .blk-dot,.blk[data-side="right"] .blk-dot:focus-visible{right:calc(8px + env(safe-area-inset-right,0px))}
 .blk.open[data-side="left"] .blk-dot,.blk.tp[data-side="left"] .blk-dot,.blk[data-side="left"] .blk-dot:focus-visible{left:calc(8px + env(safe-area-inset-left,0px))}
 .blk-dot:focus-visible{outline:3px solid #ffd24f;outline-offset:2px;border-radius:12px}
@@ -2298,7 +2300,7 @@ window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h
     if(window.self===window.top&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey){ e.preventDefault(); setTimeout(function(){ location.href=a.href; },750); }
     else setTimeout(function(){ hf.classList.remove('tp'); },1000); });
   /* sembunyi saat mengerjakan soal supaya tidak menutupi jawaban */
-  var HIDE='.sheet:not(.hidden),.opt,.belt,.vprem,.lboard,.bkgrid,.roles,.vboard,.wa,.kcards,.rkgoal,.river,.shelf,.swipe,.bsrow,.intro2,#kal';
+  var HIDE='.sheet:not(.hidden),.opt,.belt,.vprem,.lboard,.bkgrid,.roles,.vboard,.wa,.kcards,.rkgoal,.river,.shelf,.swipe,.bsrow,.intro2,.clues,.ansrow,#kal';
   function inSession(){ try{ return !!(document.body.classList.contains('sess')||document.querySelector(HIDE)); }catch(_){ return false; } }
   function check(){ var off=inSession(); if(off&&pid===null) close(); if(pid===null) hf.classList.toggle('blk-off',off); }
   check(); setInterval(check,400); window.addEventListener('hashchange',function(){ setTimeout(check,0); });
