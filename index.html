@@ -1052,6 +1052,8 @@ function buildPrompt(n,start){
   L.push('\n## Aturan isi');
   L.push('- Bahasa Indonesia. Kasus terasa sehari-hari; soal jembatan bergaya UTBK.');
   L.push('- Semua nama orang, sekolah, toko, dan lembaga fiktif. Jangan memakai tokoh, merek, atau kutipan nyata.');
+  L.push('- Teks kasus, jembatan, dan Detektif terasa ditulis orang sungguhan, bukan AI: isi spesifik (angka, jam, tempat, nama lembaga fiktif), panjang kalimat bervariasi, gaya bahasa sesuai wadahnya (chat santai, pengumuman resmi, laporan ringkas). Hindari "Di era modern ini", "memainkan peran penting", "tidak dapat dimungkiri", kalimat yang terus dibuka "Selain itu" atau "Oleh karena itu", dan penutup yang menasihati.');
+  L.push('- Jangan memberi nomor kalimat (1), (2), … pada stimulus jembatan; soal PU UTBK memakai paragraf atau cerita biasa.');
   L.push('- Kasus: 3–7 kalimat pendek di "kalimat". Tepat 3 langkah: (1) Bongkar, (2) Nilai, (3) Putuskan.');
   L.push('  - Langkah 1: "tandai" ("peran" sepanjang "kalimat"; nilai "klaim", "alasan", "contoh", "pengalih"; minimal satu "klaim") atau "bentuk".');
   L.push('  - Langkah 2: "sah", "celah", "kalibrasi", atau "baca_angka".');
