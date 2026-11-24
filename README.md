@@ -12,6 +12,12 @@ Latihan logika PU 15 menit sehari: situasi nyata dulu, soal UTBK kemudian. Satu 
   - Paket versi 3 per hari: 1 kasus, 3 jembatan, 4 kartu `pemanasan`, 1 ronde `detektif`. Dua bagian terakhir opsional; paket lama tetap terbaca.
   - Prompt memberi target huruf kunci per soal, aturan anti-tebak, dan daftar kerangka yang sudah dipakai. Saat menyimpan, aplikasi memperingatkan pola yang mudah ditebak (kunci selalu terpanjang, huruf kunci menumpuk).
 
+## Paket mini game mingguan
+- Bank kata Lampu Berantai, Rantai Kunci, Inspektur Bandara, Arsir Venn, Hakim Simpulan, dan Beli Petunjuk diganti tiap minggu (Senin–Minggu).
+- Halaman Main → "Paket mingguan" (atau `#mingguan`): salin prompt mingguan → jalankan di proyek Claude "Nalar Harian" → tempel JSON → Cek & simpan. Paket minggu depan bisa disiapkan lebih awal.
+- Pengingat: mulai Jumat muncul kartu "Saatnya ganti paket mini game" bila paket minggu depan belum ada; mulai Senin tanpa paket muncul "Paket mini game terlambat" dan game memakai bank bawaan.
+- Status ditulis ke kunci `paketMingguan:nalar-harian` (`{"app","nama","minggu":["YYYY-MM-DD" hari Senin, ...],"diperbarui"}`) supaya Progres Harian ikut mengingatkan.
+
 ## Pasang di GitHub Pages
 1. Unggah `index.html` dan `README.md` ke repo `logic-games` (nama ini dipakai menu teleport Bloki untuk menandai app yang sedang dibuka).
 2. Settings → Pages → Branch `main`, folder `/ (root)` → Save.

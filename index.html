@@ -1139,9 +1139,10 @@ let route='hari-ini';
 function nav(r){clearInterval(gTimer);if(r==='hari-ini'&&route==='hari-ini'){const s=S.sesi[today()];if(s&&s.fase>=1&&s.fase<=4&&!s.selesai){leavePart();return}}route=r;try{history.replaceState(null,'','#'+r)}catch(e){location.hash=r}G=null;render();window.scrollTo(0,0)}
 function renderTabs(){$('#tabs').innerHTML=TABS.map(([k,l,p])=>`<button class="${route===k?'on':''} ${yk(TABC[k])}" style="--c:${TABC[k]}" data-act="nav" data-v="${k}">${svg(p)}<span>${l}</span></button>`).join('')}
 function render(){
+  wkApply();
   $('#sub').textContent=tglPanjang(today());
   renderTabs();
-  const V={'hari-ini':vHari,main:vMain,peta:vPeta,rekap:vRekap,jurnal:vJurnal,paket:vPaket}[route]||vHari;
+  const V={'hari-ini':vHari,main:vMain,peta:vPeta,rekap:vRekap,jurnal:vJurnal,paket:vPaket,mingguan:vMingguan}[route]||vHari;
   const hr=hero();$('#view').innerHTML=(hr||'<div class="gap-top"></div>')+V();afterRender();
 }
 let afterFns=[];function after(f){afterFns.push(f)}function afterRender(){const f=afterFns;afterFns=[];f.forEach(x=>x())}
@@ -1212,6 +1213,7 @@ function vHari(){
       <div class="row wrapf" style="margin-top:10px"><button class="btn sm" data-act="copyPrompt" data-v="1">Salin prompt 1 hari</button><button class="btn sm" data-act="nav" data-v="paket">Buka Paket</button></div></div>`}
   h+=`<button class="glass card row sp" style="width:100%;text-align:left" data-act="nav" data-v="main"><span class="row"><span class="pn" style="width:30px;height:26px;border-radius:6px;background:var(--red);border:2px solid var(--line);display:grid;place-items:center;color:#fff">${svg(TABS[1][2]).replace('<svg','<svg width="16" height="16"')}</span><span><span style="font-weight:600;display:block">Mini game pendamping</span><span class="tiny muted">Untuk waktu luang. Tidak menggantikan sesi.</span></span></span><span style="font-weight:700">›</span></button>`;
   const sx=S.sesi[today()];if(sx&&(sx.fase>0||sx.selesai||Object.keys(sx.done||{}).length||sx.pem.n||sx.kas.n||sx.jem.n))h+=`<div style="text-align:center;margin:4px 0 8px"><button class="btn sm" data-act="askResetToday">↺ Reset progres hari ini</button></div>`;
+  h+=wkBanner('hari');
   return h}
 
 /* ================= PENGENALAN MODE ================= */
@@ -1405,6 +1407,92 @@ function savePaket(){const m=$('#pmsg');let o;try{o=parsePaste($('#pjson').value
   toast(n+' paket tersimpan');render();if(skip)setTimeout(()=>toast(skip+' dilewati: tanggalnya sudah terpakai'),2300);
   if(W.length){const m2=$('#pmsg');if(m2)m2.innerHTML=`<div class="fb" style="border-color:var(--warn)"><b>Tersimpan, tetapi ada pola yang mudah ditebak:</b><br>${W.slice(0,6).map(esc).join('<br>')}<br><span class="muted">Minta Claude memperbaiki hari tersebut, lalu tempel ulang (tanggal yang sama akan ditimpa).</span></div>`}}
 
+/* ================= PAKET MINI GAME MINGGUAN =================
+   Bank kata beberapa mini game diganti tiap minggu (Senin–Minggu) lewat prompt → JSON dari proyek Claude.
+   Tanpa paket minggu ini, game memakai bank bawaan. Status juga ditulis ke kunci bersama
+   "paketMingguan:nalar-harian" supaya Progres Harian bisa mengingatkan. */
+const WK_SHARE='paketMingguan:nalar-harian';
+const WK_BANK={rantai:()=>RANTAI,pengalih:()=>L_PENGALIH,bandara:()=>BANDARA,venn:()=>VENN_SET,hakim:()=>HAKIM_SET,luar:()=>LUAR,ukuran:()=>CUKUP_UKURAN};
+const WK_MIN={rantai:6,pengalih:4,bandara:4,venn:6,hakim:6,luar:5,ukuran:3};
+const WK_GAME=['Lampu Berantai','Rantai Kunci','Inspektur Bandara','Arsir Venn','Hakim Simpulan','Beli Petunjuk'];
+let WK_BASE=null,WK_ON='';
+function wkMon(t){const d=new Date(t+'T12:00:00');d.setDate(d.getDate()-(d.getDay()+6)%7);return ymd(d)}
+function wkInfo(){const t=today(),cur=wkMon(t),nxt=addDays(cur,7),dow=(new Date(t+'T12:00:00').getDay()+6)%7,W=S.wk||{};
+  const has=k=>!!W[k],status=!has(cur)?'telat':has(nxt)?'siap':dow>=4?'segera':'aman';
+  return{t,cur,nxt,akhir:addDays(cur,6),status,target:has(cur)?nxt:cur,has}}
+function wkApply(){const I=wkInfo(),key=I.cur+'|'+Object.keys(S.wk||{}).join();if(key===WK_ON)return;WK_ON=key;
+  if(!WK_BASE){WK_BASE={};for(const k in WK_BANK)WK_BASE[k]=WK_BANK[k]().slice()}
+  const p=(S.wk||{})[I.cur];
+  for(const k in WK_BANK){const B=WK_BANK[k](),src=p&&Array.isArray(p.isi[k])&&p.isi[k].length?p.isi[k]:WK_BASE[k];B.splice(0,B.length,...JSON.parse(JSON.stringify(src)))}
+  /* buang paket yang sudah lewat lebih dari 2 minggu */
+  let ch=false;for(const k in (S.wk||{}))if(k<addDays(I.cur,-14)){delete S.wk[k];ch=true}if(ch)save();
+  try{localStorage.setItem(WK_SHARE,JSON.stringify({app:'nalar-harian',nama:'Nalar Harian',minggu:Object.keys(S.wk||{}).sort(),diperbarui:I.t}))}catch(e){}}
+function wkBanner(where){const I=wkInfo();
+  if(I.status==='siap'||I.status==='aman'){if(where!=='main')return'';
+    return`<p class="tiny muted" style="margin:-6px 2px 12px">Paket mini game minggu ini terpasang · ${I.status==='siap'?'stok minggu depan siap':'ganti paket paling lambat '+tglPanjang(I.akhir)} · <a href="#mingguan" data-act="nav" data-v="mingguan">kelola</a></p>`}
+  const telat=I.status==='telat',c=telat?'var(--red)':'var(--orange)';
+  return`<div class="glass card has-st">${studs(3,c)}${tl(telat?'Paket mini game terlambat':'Saatnya ganti paket mini game',c)}
+    <p class="small" style="margin-top:4px">${telat?'Paket minggu ini ('+tglPendek(I.cur)+'–'+tglPendek(I.akhir)+') belum ada, jadi mini game memakai soal bawaan.':'Paket minggu depan (mulai '+tglPanjang(I.nxt)+') belum ada. Siapkan paling lambat '+tglPanjang(I.akhir)+'.'}</p>
+    <button class="btn sm p" style="margin-top:8px" data-act="nav" data-v="mingguan">Buat paket mingguan</button></div>`}
+function wkUsed(){const out={};Object.keys(S.wk||{}).sort().slice(-2).forEach(k=>{const p=S.wk[k].isi;
+  (out.rantai=out.rantai||[]).push(...(p.rantai||[]).map(a=>a[0][0]+' → '+a[3][0]));(out.bandara=out.bandara||[]).push(...(p.bandara||[]).map(b=>b.aturan));
+  (out.venn=out.venn||[]).push(...(p.venn||[]).map(v=>v.join(' / ')));(out.hakim=out.hakim||[]).push(...(p.hakim||[]).map(h=>h.g1+' / '+h.g2))});return out}
+function wkPrompt(target){const U=wkUsed(),L=[];
+  L.push(`PAKET MINI GAME MINGGUAN · Nalar Harian · minggu ${tglPanjang(target)} sampai ${tglPanjang(addDays(target,6))}`);
+  L.push('','Tugas: tulis bank kata baru untuk mini game logika PU (pejuang UTBK-SNBT 2027). Konteks kehidupan siswa SMA dan warga sehari-hari di Indonesia, beragam (sekolah, rumah, pasar, transportasi, organisasi, olahraga, daring). Jangan memakai merek atau tokoh terkenal.');
+  L.push('','Balas HANYA dengan satu objek JSON (boleh di dalam blok ```json). Bentuknya:');
+  L.push(`{"versi":1,"jenis":"mini-mingguan","minggu":"${target}",`);
+  L.push(' "rantai":[ 8 rantai, tiap rantai = 4 kejadian berurutan sebab-akibat, tiap kejadian = ["kejadian","ingkarannya"] ],');
+  L.push(' "pengalih":[ 5 kalimat lengkap yang tidak berhubungan dengan sebab-akibat apa pun, diakhiri titik ],');
+  L.push(' "bandara":[ 6 aturan koper bandara {"aturan","p","np","q","nq","P":[],"NP":[],"Q":[],"NQ":[]} ],');
+  L.push(' "venn":[ 8 trio kelompok ["kelompok A","kelompok B","kelompok C"] ],');
+  L.push(' "hakim":[ 7 set {"g1","g2","g3","g4"} ],');
+  L.push(' "luar":[ 6 sifat orang yang tidak berhubungan dengan kelompok mana pun ],');
+  L.push(' "ukuran":[ 4 jenis nilai/skor yang bisa diurutkan ] }');
+  L.push('','Aturan per bagian:');
+  L.push('- rantai: huruf kecil di awal (kecuali nama orang/tempat), tanpa titik. Harus terbaca wajar sebagai "Jika <kejadian 1>, maka <kejadian 2>." dan juga "<Kejadian 1> hanya jika <kejadian 2>." Ingkaran memakai "tidak"/"belum"/"bukan" yang tepat (contoh: ["listrik padam","listrik tidak padam"]). Tiap rantai satu cerita dengan tokoh/tempat sendiri; urutan sebab-akibat masuk akal tetapi tidak wajib benar di dunia nyata.');
+  L.push('- bandara: "aturan" = "Jika <p>, maka <q>." p, np, q, nq huruf kecil tanpa titik, diawali "koper …" atau keterangan koper; np ingkaran p, nq ingkaran q. P/NP/Q/NQ = label singkat yang tertera di koper ("Tujuan: Bali", "Stiker: merah"); P memenuhi p, NP tidak memenuhi p, Q memenuhi q, NQ tidak memenuhi q. NP minimal 2 label. Label tidak boleh ambigu.');
+  L.push('- venn: kata benda jamak tanpa awalan "semua", huruf kecil, terbaca wajar dalam "Semua <A> adalah <B>." dan "Sebagian <B> bukan <C>." Ketiga kelompok boleh beririsan di dunia nyata.');
+  L.push('- hakim: terbaca wajar sebagai "Semua <g1> adalah <g2>.", "Sebagian <g2> <g3>.", "Tidak ada <g2> yang <g4>." g1 dan g2 kelompok orang (kata benda), g3 dan g4 kegiatan/keadaan (diawali kata kerja/sifat). Huruf kecil, tanpa titik.');
+  L.push('- luar: terbaca wajar sebagai "<Nama> <sifat>." (contoh: "suka makan bakso"). Huruf kecil, tanpa titik.');
+  L.push('- ukuran: terbaca wajar sebagai "<Ukuran> Rani lebih tinggi daripada <ukuran> Bayu." dan "Rani mendapat <ukuran> tertinggi." (contoh: "skor kuis"). Huruf kecil.');
+  L.push('- Jangan ada kunci jawaban, penjelasan, atau kalimat lain di luar JSON.');
+  const av=[['rantai','rantai'],['bandara','aturan bandara'],['venn','trio venn'],['hakim','set hakim']].filter(([k])=>U[k]&&U[k].length);
+  if(av.length){L.push('','Sudah dipakai 2 minggu terakhir, jangan diulang atau dimirip-miripkan:');av.forEach(([k,n])=>L.push(`- ${n}: ${U[k].slice(0,12).join('; ')}`))}
+  return L.join('\n')}
+function wkValidate(o){const E=[],str=x=>typeof x==='string'&&x.trim().length>0,arr=Array.isArray;
+  if(!o||typeof o!=='object')return['Bukan objek JSON.'];
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(o.minggu||'')||wkMon(o.minggu)!==o.minggu)E.push('"minggu" harus tanggal hari Senin (YYYY-MM-DD).');
+  for(const k in WK_MIN)if(!arr(o[k])||o[k].length<WK_MIN[k])E.push(`"${k}" minimal ${WK_MIN[k]} butir.`);
+  if(E.length)return E;
+  o.rantai.forEach((r,i)=>{if(!arr(r)||r.length!==4||!r.every(e=>arr(e)&&e.length===2&&str(e[0])&&str(e[1])&&e[0].trim()!==e[1].trim()))E.push(`rantai ${i+1}: harus 4 pasang ["kejadian","ingkaran"] yang berbeda.`)});
+  o.pengalih.forEach((s,i)=>{if(!str(s)||!/[.!]$/.test(s.trim()))E.push(`pengalih ${i+1}: kalimat lengkap diakhiri titik.`)});
+  o.bandara.forEach((b,i)=>{if(!b||!['aturan','p','np','q','nq'].every(f=>str(b[f]))||!['P','NP','Q','NQ'].every(f=>arr(b[f])&&b[f].length&&b[f].every(str)))E.push(`bandara ${i+1}: kolom aturan, p, np, q, nq, P, NP, Q, NQ wajib terisi.`);else if(!/^Jika /.test(b.aturan))E.push(`bandara ${i+1}: "aturan" diawali "Jika".`)});
+  o.venn.forEach((v,i)=>{if(!arr(v)||v.length!==3||!v.every(str)||new Set(v).size<3)E.push(`venn ${i+1}: harus 3 kelompok berbeda.`)});
+  o.hakim.forEach((h,i)=>{if(!h||!['g1','g2','g3','g4'].every(f=>str(h[f])))E.push(`hakim ${i+1}: g1, g2, g3, g4 wajib terisi.`)});
+  ['luar','ukuran'].forEach(k=>o[k].forEach((s,i)=>{if(!str(s))E.push(`${k} ${i+1}: kosong.`)}));
+  return E}
+function wkClean(o){const t=s=>s.trim().replace(/\s+/g,' '),lo=s=>t(s).replace(/[.]$/,'');const isi={};
+  isi.rantai=o.rantai.map(r=>r.map(e=>[lo(e[0]),lo(e[1])]));isi.pengalih=o.pengalih.map(t);
+  isi.bandara=o.bandara.map(b=>({aturan:t(b.aturan),p:lo(b.p),np:lo(b.np),q:lo(b.q),nq:lo(b.nq),P:b.P.map(t),NP:b.NP.map(t),Q:b.Q.map(t),NQ:b.NQ.map(t)}));
+  isi.venn=o.venn.map(v=>v.map(lo));isi.hakim=o.hakim.map(h=>({g1:lo(h.g1),g2:lo(h.g2),g3:lo(h.g3),g4:lo(h.g4)}));isi.luar=o.luar.map(lo);isi.ukuran=o.ukuran.map(lo);return isi}
+function wkSave(){const m=$('#wkmsg');let o;try{o=parsePaste($('#wkjson').value)}catch(e){m.innerHTML=`<div class="fb" style="border-color:var(--bad)"><b>JSON tidak terbaca.</b> ${esc(e.message)}</div>`;return}
+  const E=wkValidate(o);if(E.length){m.innerHTML=`<div class="fb" style="border-color:var(--bad)"><b>${E.length} masalah:</b><br>${E.slice(0,8).map(esc).join('<br>')}</div>`;return}
+  const I=wkInfo();if(o.minggu<I.cur){m.innerHTML=`<div class="fb" style="border-color:var(--bad)"><b>Minggu ${esc(o.minggu)} sudah lewat.</b> Salin prompt baru dari atas.</div>`;return}
+  S.wk=S.wk||{};const ada=!!S.wk[o.minggu];S.wk[o.minggu]={dibuat:I.t,isi:wkClean(o)};save();WK_ON='';wkApply();
+  toast(`Paket minggu ${tglPendek(o.minggu)} ${ada?'diganti':'tersimpan'}`);render()}
+function vMingguan(){const I=wkInfo(),W=S.wk||{},ks=Object.keys(W).filter(k=>k>=I.cur).sort();
+  let h=`<div class="row sp" style="margin:0 2px 18px"><button class="btn sm" data-act="nav" data-v="main">‹ Main</button>${tl('Paket mingguan','var(--purple)',1)}<span style="width:76px"></span></div>`;
+  h+=wkBanner('page');
+  h+=`<div class="glass card has-st">${studs(3)}${tl('Jadwal ganti')}<p class="small muted">Satu paket berlaku Senin–Minggu untuk ${WK_GAME.join(', ')}. Ganti paling lambat hari Minggu; mulai Jumat app mengingatkan bila paket minggu depan belum ada.</p>
+    <div class="kv"><span class="muted">Minggu ini (${tglPendek(I.cur)}–${tglPendek(I.akhir)})</span><b>${I.has(I.cur)?'terpasang':'bank bawaan'}</b></div>
+    <div class="kv"><span class="muted">Minggu depan (mulai ${tglPendek(I.nxt)})</span><b>${I.has(I.nxt)?'siap':'belum ada'}</b></div></div>`;
+  h+=`<div class="glass card has-st">${studs(3)}${tl('1 · Salin prompt')}<p class="small muted">Untuk minggu ${tglPendek(I.target)}–${tglPendek(addDays(I.target,6))}. Jalankan di proyek Claude “Nalar Harian”.</p>
+    <button class="btn p w" style="margin-top:8px" data-act="wkCopy" data-v="${I.target}">Salin prompt mingguan</button>${I.target!==I.cur?`<button class="btn sm" style="margin-top:8px" data-act="wkCopy" data-v="${I.cur}">Ganti paket minggu ini</button>`:''}</div>`;
+  h+=`<div class="glass card has-st">${studs(3)}${tl('2 · Tempel JSON dari Claude')}<textarea id="wkjson" placeholder='{"versi":1,"jenis":"mini-mingguan","minggu":"${I.target}", … }'></textarea><button class="btn p w" style="margin-top:8px" data-act="wkSave">Cek & simpan</button><div id="wkmsg"></div></div>`;
+  if(ks.length)h+=`<div class="glass card has-st">${studs(3)}${tl('Tersimpan')}<div class="list" style="margin-top:6px">${ks.map(k=>`<div class="it"><span class="chip">${tglPendek(k)}</span><div style="flex:1;min-width:0" class="small">${W[k].isi.rantai.length} rantai · ${W[k].isi.bandara.length} aturan · ${W[k].isi.venn.length} venn · ${W[k].isi.hakim.length} hakim<div class="tiny muted">dibuat ${tglPendek(W[k].dibuat)}</div></div><button class="btn sm" data-act="wkDel" data-v="${k}">Hapus</button></div>`).join('')}</div></div>`;
+  return h}
+
 /* ================= MINI GAME ================= */
 let G=null,gTimer=null;
 const GAMES=[
@@ -1420,7 +1508,7 @@ const GAMES=[
  {id:'kursi',c:'var(--lime)',nama:'Kursi Rapat',sk:'N4 · N2',desc:'Dudukkan lima orang di meja sampai semua kartu syarat menyala.',ic:'<rect x="2.5" y="9" width="5" height="6" rx="1"/><rect x="9.5" y="9" width="5" height="6" rx="1"/><rect x="16.5" y="9" width="5" height="6" rx="1"/><path d="M3 19h18"/>'},
  {id:'tren',c:'var(--purple)',nama:'Lompat Batu',sk:'N8',desc:'Seberangi sungai: temukan batu angka yang hilang.',ic:'<path d="M3 17l5-6 4 4 4-7 5 5"/>'}];
 function vMain(){if(G)return vGame();
-  return`<p class="intro">Pendamping waktu luang. Bentuk soal berganti tiap ronde.</p>
+  return`<p class="intro">Pendamping waktu luang. Bentuk soal berganti tiap ronde.</p>${wkBanner('main')}
   <div class="grid2">${GAMES.map(g=>`<button class="tile ${yk(g.c)}" style="--c:${g.c}" data-act="gStart" data-v="${g.id}">${studs(3,g.c)}<span class="ic">${svg(g.ic)}</span><b>${g.nama}</b><span class="tiny">${g.desc}</span><span class="best">${g.sk} · terbaik ${S.games[g.id]?S.games[g.id].best:0}</span></button>`).join('')}</div>`}
 function gDone(score,max,field){clearInterval(gTimer);const r=S.games[G.id]||(S.games[G.id]={best:0,main:0});r.main++;const f=field||'best';const nb=score>(r[f]||0);if(nb)r[f]=score;save();G.over={score,max,nb,field:f};render()}
 const gc=()=>GAMES.find(x=>x.id===G.id).c;
@@ -1981,8 +2069,9 @@ const PERMS4=(()=>{const out=[];const go=(a,r)=>{if(!r.length){out.push(a);retur
 function cEval(p,c){const r=k=>p.indexOf(k);return{gt:()=>r(c.a)<r(c.b),top:()=>r(c.a)===0,bottom:()=>r(c.a)===3,notTop:()=>r(c.a)!==0,notBottom:()=>r(c.a)!==3}[c.f]()}
 function cText(c,N,K){const a=N[c.a],b=N[c.b];return{gt:`${cap(K)} ${a} lebih tinggi daripada ${K} ${b}.`,top:`${a} mendapat ${K} tertinggi.`,bottom:`${a} mendapat ${K} terendah.`,notTop:`${a} tidak mendapat ${K} tertinggi.`,notBottom:`${a} tidak mendapat ${K} terendah.`}[c.f]}
 const CK_Q={low:'lebih rendah',third:'urutan ketiga',cmp:'membandingkan dua orang',top:'siapa tertinggi',bottom:'siapa terendah',second:'siapa urutan kedua'};
+const CUKUP_UKURAN=['nilai try out','skor kuis','poin lomba'];
 function genCukup(qt){qt=qt||'cmp';const target=ri(0,4);let last=null;
-  for(let t=0;t<800;t++){const N=shuffle(NAMA).slice(0,4),K=rnd(['nilai try out','skor kuis','poin lomba']);
+  for(let t=0;t<800;t++){const N=shuffle(NAMA).slice(0,4),K=rnd(CUKUP_UKURAN);
     const q={t:qt};if(qt==='cmp'||qt==='low'){q.x=ri(0,3);do{q.y=ri(0,3)}while(q.y===q.x)}
     const mk=()=>{const f=rnd(['gt','gt','top','bottom','notTop','notBottom']);const c={f,a:ri(0,3)};if(f==='gt'){do{c.b=ri(0,3)}while(c.b===c.a)}return c};
     const st=()=>{const n=Math.random()<.45?2:1;const a=[];for(let i=0;i<n;i++)a.push(mk());return a};
@@ -2154,11 +2243,11 @@ function resetHariIni(){const t=today();
     Object.assign(r,{tgl:t,selesai:false,lengkap:false,butir:0,benar:0,akurasi:0,beruntun:streak(),diperbarui:new Date().toISOString()});localStorage.setItem(KEY_RING,JSON.stringify(r))}catch(e){}
   closeSheet();nav('hari-ini');toast('Progres hari ini direset')}
 function resetSemua(){const keep={};for(const k in S.paket){if(/^\d/.test(k)&&!S.paket[k].dipakai)keep[k]=S.paket[k]}
-  const jur=S.jurnal,cf=S.set;S=blank();S.paket=keep;S.jurnal=jur;if(cf)S.set=cf;clearInterval(pemTimer);PEM=KAS=JEM=null;LT=-1;save();
+  const jur=S.jurnal,cf=S.set,wk=S.wk;S=blank();S.paket=keep;if(wk)S.wk=wk;S.jurnal=jur;if(cf)S.set=cf;clearInterval(pemTimer);PEM=KAS=JEM=null;LT=-1;save();
   try{localStorage.removeItem(KEY_RING)}catch(e){}
   closeSheet();nav('hari-ini');toast('Semua progres direset')}
 function askReset(all){openSheet(`<h2>${all?'Reset semua progres?':'Reset progres hari ini?'}</h2>
-  <p class="small muted" style="margin-top:4px">${all?'Tahap N1–N8, riwayat sesi, rekap, butir salah, dan skor mini game kembali ke awal. Stok paket yang belum dipakai dan Jurnal Nalar tetap disimpan.':'Sesi hari ini kembali ke awal: menara, jawaban, tahap keterampilan, dan rekap hari ini dikembalikan seperti sebelum kamu mulai. Paket yang terpakai hari ini kembali ke stok. Catatan jurnal tetap disimpan.'}</p>
+  <p class="small muted" style="margin-top:4px">${all?'Tahap N1–N8, riwayat sesi, rekap, butir salah, dan skor mini game kembali ke awal. Stok paket yang belum dipakai, paket mini game mingguan, dan Jurnal Nalar tetap disimpan.':'Sesi hari ini kembali ke awal: menara, jawaban, tahap keterampilan, dan rekap hari ini dikembalikan seperti sebelum kamu mulai. Paket yang terpakai hari ini kembali ke stok. Catatan jurnal tetap disimpan.'}</p>
   <div class="row" style="margin-top:14px"><button class="btn" style="flex:1" data-act="closeSheet">Batal</button><button class="btn" style="flex:1;background:var(--red);color:#fff;border-color:color-mix(in srgb,var(--red) 62%,#1f2a4d)" data-act="${all?'resetAll':'resetToday'}">Reset</button></div>`)}
 
 /* ================= EVENT ================= */
@@ -2205,6 +2294,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'jCopy':copyText(jurnalPrompt(),'Jurnal tersalin');break;
   case'savePaket':savePaket();break;
   case'delPaket':delete S.paket[v];save();render();break;
+  case'wkCopy':copyText(wkPrompt(v),'Prompt mingguan tersalin');break;
+  case'wkSave':wkSave();break;
+  case'wkDel':if(S.wk){delete S.wk[v];save();WK_ON='';render()}break;
   case'backup':copyText(JSON.stringify(S),'Cadangan tersalin');break;
   case'restoreOpen':openSheet(`<h2>Pulihkan dari cadangan</h2><p class="small muted">Tempel teks cadangan. Data sekarang di peramban ini akan diganti.</p><textarea id="rtext" style="min-height:160px;margin-top:8px"></textarea><div class="row" style="margin-top:10px"><button class="btn" style="flex:1" data-act="closeSheet">Batal</button><button class="btn p" style="flex:1" data-act="restore">Pulihkan</button></div>`);break;
   case'askResetToday':askReset(false);break;
@@ -2273,8 +2365,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
 });
 document.addEventListener('keydown',e=>{if(G&&G.id==='geser'&&G.mode==='cepat'&&!G.over){if(e.key==='ArrowRight')answerGeser(true);if(e.key==='ArrowLeft')answerGeser(false)}});
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
-window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==route&&['hari-ini','main','peta','rekap','jurnal','paket'].includes(h)){route=h;G=null;render()}});
-(function init(){applyCfg();$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','jurnal','paket'].includes(h))route=h;
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==route&&['hari-ini','main','peta','rekap','jurnal','paket','mingguan'].includes(h)){route=h;G=null;render()}});
+(function init(){applyCfg();$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','jurnal','paket','mingguan'].includes(h))route=h;
   const s=S.sesi[today()];if(s&&!s.selesai&&s.fase>=1&&s.fase<=4){sesi(today());s.fase=0} /* muat ulang: kembali ke daftar misi */
   render();if(s&&s.selesai)writeRingkasan()})();
 </script>
