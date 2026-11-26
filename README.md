@@ -7,10 +7,10 @@ Latihan logika PU 15 menit sehari: situasi nyata dulu, soal UTBK kemudian. Satu 
 - **Main** – 11 mini game pendamping: Arsir Venn, Lampu Berantai, Rantai Kunci, Inspektur Bandara, Satu Bukti, Detektif Chat, Belanja Hemat, Hakim Simpulan, Beli Petunjuk, Kursi Rapat, Lompat Batu. Tidak menggantikan sesi harian dan tidak mengubah tahap.
 - **Peta** – N1–N8, tahap (Terang, Tersembunyi, Berantakan), akurasi 10 butir terakhir. Naik tahap bila ≥80%.
 - **Rekap** – jebakan terbanyak (J1–J13), kasus nyata vs jembatan, ringkasan Error Book.
-- **Error Book** (`#eb`) – butir salah dari kasus dan jembatan masuk otomatis beserta jawabanmu dan jebakan yang menjerat (J1–J13). Tiga langkah:
-  1. *Diagnosis*: pilih apa yang terjadi di kepalamu (belum paham aturannya, kata kunci terlewat, pakai pengetahuan luar, terpancing opsi, simpulan kelewat jauh, terburu-buru, menebak), lalu tulis aturan "Kalau …, aku …". Aturan yang terlalu umum diberi peringatan.
-  2. *Ulang berjarak tanpa kunci*: mulai besok, lalu 3, 7, 14 hari (paling banyak 10 butir per putaran, urutan diacak). Aturanmu baru ditampilkan setelah menjawab.
-  3. *Lulus* setelah benar 4 kali berjarak; salah lagi berarti mulai dari awal dan diagnosis diperbarui.
+- **Error Book** (`#eb`) – butir salah dari kasus dan jembatan masuk otomatis ke antrean *Kerjakan*, beserta jebakan yang menjerat (J1–J13). Halamannya berupa daftar ringkas dengan tab Kerjakan · Terjadwal · Lulus.
+  1. *Coba lagi tanpa kunci*: butir dikerjakan ulang satu per satu (yang baru salah didahulukan, paling banyak 10 per putaran). Pembahasan baru tampil setelah menjawab.
+  2. *Diagnosis tepat sesudah pembahasan*: pilih apa yang terjadi di kepalamu (belum paham aturannya, kata kunci terlewat, pakai pengetahuan luar, terpancing opsi, simpulan kelewat jauh, terburu-buru, menebak) dan tulis aturan "Kalau …, aku …". Wajib diisi sebelum lanjut.
+  3. *Ulang berjarak*: butir muncul lagi 1, 3, 7, dan 14 hari kemudian. *Lulus* setelah benar 4 kali berjarak; salah lagi berarti mulai dari awal dan diagnosis diperbarui.
   - *Pola 30 hari*: penyebab, jebakan, dan keterampilan yang paling sering salah, fokus minggu ini, dan prompt analisis pola untuk Claude. Kartu pengingat muncul di halaman Hari ini.
 - **Jurnal** – kalimat nalar harian; bisa disalin untuk diulas Claude.
 - **Paket** (tombol "Paket" di kartu Sesi pada halaman Hari ini) – salin prompt ke proyek Claude "Nalar Harian", tempel JSON, cek format, stok, cadangan data.
