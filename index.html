@@ -617,6 +617,26 @@ html[data-theme="dark"] .sw i{background:#e4e7ee}
 .vp.done .vpn{background:var(--green);color:#fff}.vp.bad .vpn{background:var(--red);color:#fff}.vp{color:var(--text)}
 .vtl{display:inline-flex;align-items:center;gap:4px;font-weight:800;margin-right:6px;padding:1px 7px;border-radius:6px;background:#fff;border:1.5px solid #cdd7ea}
 html[data-theme="dark"] .rule2 .rc,html[data-theme="dark"] .vtl{background:#283146;color:var(--text)}
+/* Error Book */
+.tabs{gap:5px;padding-left:6px;padding-right:6px}.tabs button span{white-space:nowrap;font-size:10.5px;letter-spacing:.1px}
+.tabs button i.bdg{position:absolute;top:-7px;right:-4px;font-style:normal;font-family:"Rubik",sans-serif;font-weight:700;font-size:10.5px;background:#fff;color:var(--red);border:2px solid var(--red);border-radius:8px;padding:0 4px;line-height:14px;z-index:2}
+.ebsum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.ebsum.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ebsum>div{text-align:center;border:2px solid color-mix(in srgb,var(--c) 60%,#1f2a4d);background:color-mix(in srgb,var(--c) 14%,var(--plate));border-radius:9px;box-shadow:0 3px 0 color-mix(in srgb,var(--c) 30%,transparent);padding:7px 2px 6px}
+.ebsum b{display:block;font:400 22px/1.1 "Lilita One","Rubik",sans-serif}.ebsum .tiny{display:block;line-height:1.25;margin-top:2px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ebdots{display:inline-flex;gap:3px;align-items:center;flex:none}.ebdots i{width:9px;height:9px;border-radius:3px;border:1.5px solid var(--line);background:var(--plate)}.ebdots i.on{background:var(--green);border-color:color-mix(in srgb,var(--green) 60%,#1f2a4d)}
+.ebwhen{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);white-space:nowrap}.ebwhen b{font-weight:600}.ebwhen.due b{color:var(--bad);font-weight:700}
+.ebit{padding:12px 0;border-top:2px dashed var(--edge)}.ebit:first-child{border-top:0;padding-top:4px}
+.ebsnip{margin-top:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ebrule{margin-top:8px;padding:7px 10px;border-left:4px solid var(--yellow);background:#fff8dc;border-radius:0 8px 8px 0;font-size:13.5px;color:#3b3a2c}
+.ebtrap{margin-top:12px;padding:7px 10px;border-radius:8px;background:var(--bad-soft);border:2px solid var(--red);font-size:13px;color:#a3302c}
+.ebstep{margin:16px 0 8px;padding-top:14px;border-top:2px dashed var(--edge)}.ebstep>b{display:block;font:400 16px "Lilita One","Rubik",sans-serif;letter-spacing:.2px;margin-bottom:2px}
+.ebsb{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0}.ebsb .chip{cursor:pointer;font-size:12.5px;padding:5px 10px;box-shadow:0 2px 0 var(--sh)}
+.ebfix{background:var(--accent-soft);border:1.5px solid color-mix(in srgb,var(--blue) 35%,transparent);border-radius:8px;padding:8px 10px;margin:8px 0 0}
+.card.eb textarea{margin-top:6px}
+.ebmore summary{cursor:pointer;font-weight:600;font-size:13px;margin-top:12px;color:var(--blue)}
+.ebfold summary{list-style:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer}.ebfold summary::-webkit-details-marker{display:none}
+.ebchev{font-weight:700;font-size:18px;transition:transform .2s}.ebfold[open] .ebchev{transform:rotate(90deg)}
+html[data-theme="dark"] .ebrule{background:#3d3824;color:#f3ecd0}html[data-theme="dark"] .ebtrap{color:#ffd9d6}
 </style>
 </head>
 <body>
@@ -701,7 +721,7 @@ function record(src,sk,ok,j,q){
   if(S.snapDay!==today()){S.snapDay=today();S.snapSkills=JSON.parse(JSON.stringify(S.skills))}
   S.log.push({t:today(),src,sk,ok:ok?1:0,j:ok?null:(j||null)});
   if(S.log.length>3000)S.log=S.log.slice(-3000);
-  if(!ok&&q){S.salah.push(Object.assign({id:Date.now()+''+Math.random().toString(36).slice(2,6),t:today(),src,sk,tuntas:false},q));if(S.salah.length>80)S.salah=S.salah.slice(-80)}
+  if(!ok&&q){S.salah.push(Object.assign({id:Date.now()+''+Math.random().toString(36).slice(2,6),t:today(),src,sk,tuntas:false,j:j||null,box:0,log:[],salah:1,perlu:true,due:addDays(today(),1)},q));ebTrim()}
   if((src==='kasus'||src==='jembatan')&&S.skills[sk]){
     const st=S.skills[sk];st.r.push(ok?1:0);if(st.r.length>10)st.r=st.r.slice(-10);
     if(st.r.length>=10&&st.r.reduce((a,b)=>a+b,0)>=8&&st.tahap<3){st.tahap++;st.r=[];setTimeout(()=>toast(sk+' naik ke Tahap '+st.tahap+' · '+TAHAP[st.tahap]),400)}
@@ -1117,7 +1137,7 @@ const HERO={
   rekap:()=>['trophy','Lihat jebakan yang paling sering menjeratmu minggu ini.','L tilt'],
   jurnal:()=>['pencil','Klaim apa yang kamu dengar hari ini? Tulis di sini.','L peek'],
   paket:()=>['box','Aku simpan stok kasus untuk hari-hari berikutnya.','R tilt flip']};
-function hero(){if(route==='main'&&G)return'';if(['peta','rekap','jurnal'].includes(route))return'';const s=sesi(today());if(route==='hari-ini'&&s.fase>=1&&s.fase<=4)return'';
+function hero(){if(route==='main'&&G)return'';if(['peta','rekap','eb','jurnal'].includes(route))return'';const s=sesi(today());if(route==='hari-ini'&&s.fase>=1&&s.fase<=4)return'';
   const f=HERO[route]||HERO['hari-ini'];const[p,t,lay]=f(s);
   return`<div class="hero ${lay||'R'}"><div class="bubble">${esc(t)}</div><span class="mw">${mascot(p)}</span></div>`}
 function sceneHTML(){
@@ -1128,21 +1148,23 @@ function sceneHTML(){
   `<svg class="hills" viewBox="0 0 400 140" preserveAspectRatio="none"><path d="M0 70 Q60 20 130 58 T260 50 T400 40 V140 H0z" fill="#c6ebd1"/><path d="M0 100 Q90 60 190 92 T400 78 V140 H0z" fill="#a6dcb6"/></svg>`}
 
 /* ================= NAVIGASI ================= */
-const TABC={'hari-ini':'var(--yellow)',main:'var(--red)',peta:'var(--blue)',rekap:'var(--green)',jurnal:'var(--orange)'};
+const TABC={'hari-ini':'var(--yellow)',main:'var(--red)',peta:'var(--blue)',rekap:'var(--green)',eb:'var(--purple)',jurnal:'var(--orange)'};
+const EB_IC='<path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 8l4 4M13 8l-4 4"/>';
 const TABS=[['hari-ini','Hari ini','<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'],
  ['main','Main','<rect x="2" y="7" width="20" height="11" rx="4"/><path d="M7 11v3M5.5 12.5h3"/><circle cx="16" cy="11.5" r=".8"/><circle cx="17.8" cy="14" r=".8"/>'],
  ['peta','Peta','<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>'],
  ['rekap','Rekap','<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'],
+ ['eb','Error Book',EB_IC],
  ['jurnal','Jurnal','<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/>']];
 const svg=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 let route='hari-ini';
-function nav(r){clearInterval(gTimer);if(r==='hari-ini'&&route==='hari-ini'){const s=S.sesi[today()];if(s&&s.fase>=1&&s.fase<=4&&!s.selesai){leavePart();return}}route=r;try{history.replaceState(null,'','#'+r)}catch(e){location.hash=r}G=null;render();window.scrollTo(0,0)}
-function renderTabs(){$('#tabs').innerHTML=TABS.map(([k,l,p])=>`<button class="${route===k?'on':''} ${yk(TABC[k])}" style="--c:${TABC[k]}" data-act="nav" data-v="${k}">${svg(p)}<span>${l}</span></button>`).join('')}
+function nav(r){clearInterval(gTimer);if(r==='hari-ini'&&route==='hari-ini'){const s=S.sesi[today()];if(s&&s.fase>=1&&s.fase<=4&&!s.selesai){leavePart();return}}if(r!=='eb')EBR=null;route=r;try{history.replaceState(null,'','#'+r)}catch(e){location.hash=r}G=null;render();window.scrollTo(0,0)}
+function renderTabs(){$('#tabs').innerHTML=TABS.map(([k,l,p])=>`<button class="${route===k?'on':''} ${yk(TABC[k])}" style="--c:${TABC[k]}" data-act="nav" data-v="${k}">${svg(p)}<span>${l}</span>${k==='eb'&&ebBadge()?`<i class="bdg">${ebBadge()}</i>`:''}</button>`).join('')}
 function render(){
   wkApply();
   $('#sub').textContent=tglPanjang(today());
   renderTabs();
-  const V={'hari-ini':vHari,main:vMain,peta:vPeta,rekap:vRekap,jurnal:vJurnal,paket:vPaket,mingguan:vMingguan}[route]||vHari;
+  const V={'hari-ini':vHari,main:vMain,peta:vPeta,rekap:vRekap,eb:vEb,jurnal:vJurnal,paket:vPaket,mingguan:vMingguan}[route]||vHari;
   const hr=hero();$('#view').innerHTML=(hr||'<div class="gap-top"></div>')+V();afterRender();
 }
 let afterFns=[];function after(f){afterFns.push(f)}function afterRender(){const f=afterFns;afterFns=[];f.forEach(x=>x())}
@@ -1211,6 +1233,7 @@ function vHari(){
     <button class="btn p w" style="margin-top:10px" data-act="mulai">${[1,2,3,4].some(i=>s.done[i])?'Lanjut: '+PART_NAMA[nextPart(s)]:'Mulai berurutan'}</button></div>`;
     if(!pk)h+=`<div class="glass card small"><b>Belum ada paket kasus.</b> <span class="muted">Pemanasan tetap bisa jalan. Buat paket dengan menyalin prompt ke proyek Claude “Nalar Harian”, lalu tempel JSON-nya di halaman Paket.</span>
       <div class="row wrapf" style="margin-top:10px"><button class="btn sm" data-act="copyPrompt" data-v="1">Salin prompt 1 hari</button><button class="btn sm" data-act="nav" data-v="paket">Buka Paket</button></div></div>`}
+  h+=ebKartuHari();
   h+=`<button class="glass card row sp" style="width:100%;text-align:left" data-act="nav" data-v="main"><span class="row"><span class="pn" style="width:30px;height:26px;border-radius:6px;background:var(--red);border:2px solid var(--line);display:grid;place-items:center;color:#fff">${svg(TABS[1][2]).replace('<svg','<svg width="16" height="16"')}</span><span><span style="font-weight:600;display:block">Mini game pendamping</span><span class="tiny muted">Untuk waktu luang. Tidak menggantikan sesi.</span></span></span><span style="font-weight:700">›</span></button>`;
   const sx=S.sesi[today()];if(sx&&(sx.fase>0||sx.selesai||Object.keys(sx.done||{}).length||sx.pem.n||sx.kas.n||sx.jem.n))h+=`<div style="text-align:center;margin:4px 0 8px"><button class="btn sm" data-act="askResetToday">↺ Reset progres hari ini</button></div>`;
   h+=wkBanner('hari');
@@ -1339,6 +1362,111 @@ function vPeta(){let h=`<p class="intro" style="margin-bottom:22px">Tiap bulatan
       <div class="tiny" style="margin-top:6px;font-weight:600">Tahap ${st.tahap} · ${TAHAP[st.tahap]} <span class="muted" style="font-weight:400">· ${n?`${b}/${n} benar`:'belum ada butir'}</span></div></div></div></div>`}
   return h}
 
+/* ================= ERROR BOOK =================
+   Butir salah dari kasus dan jembatan masuk otomatis. Supaya tidak jadi daftar formalitas:
+   1) diagnosis: jebakan (J1–J13) terdeteksi dari opsi yang dipilih, lalu kamu pilih penyebab di kepalamu
+      dan tulis aturan "Kalau …, aku …" dengan kata sendiri;
+   2) ulang berjarak tanpa kunci: besok, lalu 3, 7, 14 hari (kotak Leitner), tidak bisa di hari yang sama;
+   3) lulus setelah 4 kali benar berjarak; salah lagi = mulai dari awal dan diagnosis diperbarui;
+   4) pola penyebab dan jebakan 30 hari menjadi fokus latihan. */
+const EB_SEBAB=[
+ ['aturan','Belum paham aturannya','Kontraposisi, ingkaran, atau kuantor belum benar-benar paham.','Tulis ulang aturan logikanya dengan contoh buatanmu sendiri, lalu main satu mini game untuk keterampilan ini.'],
+ ['kunci','Kata kunci terlewat','"hanya jika", "semua", "beberapa", "tidak", atau "pasti" terlewat.','Lingkari kata penghubung dan kuantor sebelum membaca opsi.'],
+ ['luar','Pakai pengetahuan luar','Menilai dari akal sehat atau pengalaman, bukan dari teks.','Tanya: "Apakah ini tertulis atau pasti dari premis?" Kalau tidak, jangan dipakai.'],
+ ['opsi','Terpancing opsi','Opsi yang "terdengar benar" dipilih tanpa diuji.','Uji tiap opsi: cari satu keadaan yang membuat opsi itu salah.'],
+ ['kuat','Simpulan kelewat jauh','Memilih yang lebih kuat dari yang dijamin premis.','Bedakan "pasti", "mungkin", dan "tidak dapat dinilai" sebelum memilih.'],
+ ['buru','Terburu-buru','Sebenarnya tahu, tapi tidak dicek.','Sebelum mengunci jawaban, baca ulang pertanyaan dan opsi pilihanmu sekali lagi.'],
+ ['tebak','Menebak','Tidak tahu harus mulai dari mana.','Pelajari pembahasannya, lalu jelaskan ulang dengan kata sendiri di Jurnal.']];
+const EBS=Object.fromEntries(EB_SEBAB.map(x=>[x[0],x[1]]));
+/* jebakan → penyebab yang paling mungkin (hanya saran, kamu yang memutuskan) */
+const EB_JS={J1:'aturan',J2:'aturan',J3:'aturan',J4:'kunci',J5:'opsi',J6:'kuat',J7:'kuat',J8:'kuat',J9:'kuat',J10:'kuat',J11:'luar',J12:'kunci',J13:'kuat'};
+const EB_INT=[1,3,7,14],EB_MAX=10;
+let EBV={sel:{},txt:{},err:{},warn:{},edit:null,del:null,n:5},EBR=null;
+function ebNorm(x){if(x.box==null){x.box=0;x.log=[];x.salah=x.salah||1;if(x.tuntas)x.lulus=x.t||today();else{x.perlu=true;x.due=today()}}return x}
+function ebAll(){return S.salah.map(ebNorm)}
+function ebAktif(){return ebAll().filter(x=>!x.lulus)}
+function ebPerlu(){return ebAktif().filter(x=>x.perlu).reverse()}
+function ebDue(){const t=today();return ebAktif().filter(x=>!x.perlu&&x.due<=t).sort((a,b)=>a.due<b.due?-1:a.due>b.due?1:a.box-b.box)}
+function ebBadge(){return ebPerlu().length+ebDue().length}
+function ebKapan(d){if(!d)return'-';const t=today();if(d<=t)return'hari ini';const n=Math.round((new Date(d+'T12:00:00')-new Date(t+'T12:00:00'))/864e5);return n===1?'besok':n+' hari lagi'}
+function ebTrim(){if(S.salah.length<=150)return;let cut=S.salah.length-150;S.salah=S.salah.filter(x=>{if(cut>0&&(x.lulus||x.tuntas)){cut--;return false}return true});if(S.salah.length>150)S.salah=S.salah.slice(-150)}
+function ebKabur(t){t=String(t||'').trim().toLowerCase();if(t.length<12)return'Aturan terlalu pendek. Tulis kapan berlaku dan apa yang akan kamu lakukan.';
+  if(t.length<45&&/(teliti|hati-hati|hati hati|fokus|cermat|konsentrasi|belajar lagi|lebih rajin|jangan ceroboh)/.test(t)&&!/(kalau|jika|bila|saat|sebelum|setelah|ketika|tiap)/.test(t))return'Aturan ini masih umum. Tambahkan pemicunya: "Kalau/Saat …, aku …".';return''}
+function ebDiag(id){const x=S.salah.find(y=>y.id===id);if(!x)return;const sb=EBV.sel[id]||x.sebab,at=(EBV.txt[id]!=null?EBV.txt[id]:x.aturan||'').trim();
+  if(!sb){EBV.err[id]='Pilih dulu penyebab utamanya.';render();return}
+  const w=ebKabur(at);if(at.length<12){EBV.err[id]=w;render();return}
+  if(w&&EBV.warn[id]!==at){EBV.err[id]=w+' Tekan Simpan lagi bila tetap ingin memakai aturan ini.';EBV.warn[id]=at;render();return}
+  const baru=x.perlu;x.sebab=sb;x.aturan=at;x.perlu=false;delete x.ulang;if(baru){x.dt=today();if(!x.due||x.due<=today())x.due=addDays(today(),1)}
+  delete EBV.sel[id];delete EBV.txt[id];delete EBV.err[id];delete EBV.warn[id];if(EBV.edit===id)EBV.edit=null;save();toast('Diagnosis tersimpan · diulang '+ebKapan(x.due));render()}
+function ebStart(){const L=ebDue();if(!L.length){toast('Belum ada butir yang jatuh tempo');return}
+  const ids=L.slice(0,EB_MAX).map(x=>x.id);for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]}
+  EBR={ids,i:0,sel:{},chosen:null,answered:false,ok:false,res:{}};render();window.scrollTo(0,0)}
+function ebAnswer(ok){const x=S.salah.find(y=>y.id===EBR.ids[EBR.i]);EBR.answered=true;EBR.ok=ok;const b0=x.box;x.log.push({t:today(),ok:ok?1:0,box:b0});
+  S.log.push({t:today(),src:'ulang',sk:x.sk,ok:ok?1:0,j:ok?null:(x.j||null)});
+  if(ok){x.box=b0+1;if(x.box>=EB_INT.length){x.lulus=today();x.tuntas=true;x.due=''}else x.due=addDays(today(),EB_INT[x.box])}
+  else{x.box=0;x.due=addDays(today(),1);x.perlu=true;x.ulang=1;x.salah=(x.salah||1)+1;x.jw=x.jenis==='bs'?Object.assign({},EBR.sel):EBR.chosen}
+  EBR.res[x.id]={ok,lulus:!!x.lulus};save();render()}
+function ebOptsStatic(x){if(x.jenis==='bs'){const sel=x.jw&&typeof x.jw==='object'?x.jw:{};return bsRows(x,sel,true,'noop')}
+  return`<div class="opts">${(x.opsi||[]).map((o,i)=>`<button class="opt ${i===x.kunci?'ok':i===x.jw?'bad':'dim'}" disabled><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`).join('')}</div>`}
+function ebKartu(x,lab){const sb=EBV.sel[x.id]||x.sebab,at=EBV.txt[x.id]!=null?EBV.txt[x.id]:(x.aturan||''),f=EB_SEBAB.find(y=>y[0]===sb),sr=x.j&&EB_JS[x.j];
+  return`<div class="glass card has-st eb" id="eb-${esc(x.id)}">${studs(3,'var(--red)')}${tl(lab||'Diagnosis','var(--red)')}<div class="row wrapf" style="gap:6px"><span class="chip a">${esc(x.sk||'-')}</span><span class="tiny muted">${tglPendek(x.t)} · ${x.src}</span>${x.ulang?'<span class="chip bad">salah lagi</span>':''}${(x.salah||1)>1?`<span class="tiny muted">salah ${x.salah}×</span>`:''}</div>
+  ${stimBox(x.teks,10)}<div class="qask">${esc(x.perintah||'')}</div>${ebOptsStatic(x)}
+  ${x.jw==null&&x.jenis!=='bs'?'<div class="tiny muted" style="margin-top:6px">Jawabanmu dulu tidak tercatat (butir lama).</div>':''}
+  ${x.j&&TRAPS[x.j]?`<div class="ebtrap"><b>Jebakan yang menjeratmu: ${x.j} · ${esc(TRAPS[x.j])}</b></div>`:''}
+  ${x.pembahasan?`<details class="ebmore"><summary>Pembahasan</summary><div class="small">${esc(x.pembahasan)}</div></details>`:''}
+  <div class="ebstep"><b>1 · Kenapa aku memilih itu?</b><div class="tiny muted">Bukan jebakannya, tapi apa yang terjadi di kepalamu.${sr?` Untuk ${x.j}, biasanya: <b>${esc(EBS[sr])}</b>.`:''}</div></div>
+  <div class="ebsb">${EB_SEBAB.map(y=>`<button class="chip ${sb===y[0]?'a':''}" data-act="ebSebab" data-v="${esc(x.id)}|${y[0]}" title="${esc(y[2])}">${esc(y[1])}</button>`).join('')}</div>
+  ${f?`<div class="ebfix small"><b>${esc(f[1])}:</b> ${esc(f[2])} <b>Perbaikan:</b> ${esc(f[3])}</div>`:''}
+  <div class="ebstep"><b>2 · Aturan untukku</b><div class="tiny muted">Satu kalimat dengan kata sendiri yang akan kamu ingat saat bertemu soal mirip.</div></div>
+  <textarea data-eb="${esc(x.id)}" style="min-height:64px" placeholder="Kalau …, aku … (bukan …)">${esc(at)}</textarea>
+  ${x.ulang&&x.aturan?'<div class="tiny muted" style="margin-top:4px">Aturan lama belum cukup menolongmu. Perbaiki atau ganti.</div>':''}
+  ${EBV.err[x.id]?`<div class="fb" style="border-color:var(--bad);color:var(--bad)">${esc(EBV.err[x.id])}</div>`:''}
+  <div class="row wrapf" style="margin-top:10px;gap:8px"><button class="btn p" style="flex:1" data-act="ebSimpan" data-v="${esc(x.id)}">Simpan diagnosis</button>${EBV.edit===x.id?`<button class="btn" data-act="ebBatal" data-v="${esc(x.id)}">Batal</button>`:''}<button class="btn sm" data-act="ebHapus" data-v="${esc(x.id)}">Soal keliru, hapus</button></div></div>`}
+function ebPola(hari){const t0=addDays(today(),-hari),L=ebAll().filter(x=>x.t>=t0||x.log.some(l=>l.t>=t0&&!l.ok));
+  const by={},tj={},sk={};L.forEach(x=>{const w=x.salah||1;if(x.sebab)by[x.sebab]=(by[x.sebab]||0)+w;if(x.j)tj[x.j]=(tj[x.j]||0)+w;if(x.sk)sk[x.sk]=(sk[x.sk]||0)+w});
+  const tot=Object.values(by).reduce((a,b)=>a+b,0);
+  return{n:L.filter(x=>x.sebab).length,tot,sb:Object.entries(by).sort((a,b)=>b[1]-a[1]),tj:Object.entries(tj).sort((a,b)=>b[1]-a[1]).slice(0,3),sk:Object.entries(sk).sort((a,b)=>b[1]-a[1]).slice(0,3)}}
+function ebPrompt(){const L=ebAll().filter(x=>x.sebab).sort((a,b)=>(b.salah||1)-(a.salah||1)).slice(0,30);
+  return'Ini catatan Error Book latihan penalaran logis (PU UTBK) dari aplikasi Nalar Harian. Bantu aku menemukan pola dan memperbaiki cara berpikirku. Jawab ringkas dalam bahasa Indonesia.\n\nFORMAT: keterampilan | jebakan | penyebab menurutku | aturan yang kutulis | berapa kali salah | kotak ulang (0–4)\n'+
+  L.map(x=>`- ${x.sk||'-'} | ${x.j?x.j+' '+(TRAPS[x.j]||''):'-'} | ${EBS[x.sebab]||'-'} | ${x.aturan||'-'} | ${x.salah||1}x | ${x.lulus?'lulus':x.box}\n  soal: ${String(x.perintah||'').slice(0,160)}`).join('\n')+
+  '\n\nTUGAS\n1. Sebutkan 3 pola kesalahan paling penting (gabungkan yang mirip), urut dari yang paling merugikan.\n2. Nilai aturanku: mana yang kabur atau tidak bisa dipakai saat ujian? Tulis ulang menjadi "Kalau …, aku …" yang spesifik.\n3. Untuk tiap pola, beri satu cek ≤10 detik yang bisa kupakai saat mengerjakan.\n4. Buat 3 soal latihan pendek (dengan kunci di akhir) yang menyasar pola nomor 1.'}
+function ebRun(){const n=EBR.ids.length;
+  if(EBR.i>=n){const R=Object.values(EBR.res),up=R.filter(r=>r.ok&&!r.lulus).length,lu=R.filter(r=>r.lulus).length,dn=R.filter(r=>!r.ok).length;
+    return`<div class="glass card has-st">${studs(4,'var(--purple)')}${tl('Putaran selesai','var(--purple)')}<div class="ebsum c3">${[['Naik kotak',up,'var(--blue)'],['Lulus',lu,'var(--green)'],['Mulai lagi',dn,'var(--red)']].map(y=>`<div style="--c:${y[2]}"><b>${y[1]}</b><span class="tiny muted">${y[0]}</span></div>`).join('')}</div>
+    ${dn?`<div class="small" style="margin-top:10px">${dn} butir salah lagi. Perbarui diagnosisnya sekarang selagi kamu masih ingat apa yang membuatmu keliru.</div>`:'<div class="small" style="margin-top:10px">Bagus. Butir yang naik kotak muncul lagi beberapa hari lagi.</div>'}
+    <button class="btn p w" style="margin-top:12px" data-act="ebSelesai">Kembali ke Error Book</button></div>`}
+  const x=S.salah.find(y=>y.id===EBR.ids[EBR.i]),bs=x.jenis==='bs';
+  let h=`<div class="row sp" style="margin:0 2px 12px"><button class="btn sm" data-act="ebSelesai">‹ Berhenti</button><span class="tiny muted" style="font-weight:600">Ulang ${EBR.i+1}/${n} · ${esc(x.sk||'')}</span></div>
+  <div class="glass card has-st">${studs(4,'var(--purple)')}<div class="row sp" style="margin-bottom:4px">${tl('Tanpa melihat kunci','var(--purple)',1)}${ebDots(x,EBR.answered)}</div>${stimBox(x.teks,10)}<div class="qask">${esc(x.perintah||'')}</div>`;
+  if(bs){h+=bsRows(x,EBR.sel,EBR.answered,'ebBs');if(!EBR.answered)h+=`<button class="btn p w" style="margin-top:12px" data-act="ebBsCek" ${Object.keys(EBR.sel).length<x.pernyataan.length?'disabled':''}>Periksa</button>`}
+  else h+=`<div class="opts" style="--c:var(--purple)">${x.opsi.map((o,i)=>{let c='';if(EBR.answered)c=i===x.kunci?'ok':i===EBR.chosen?'bad':'dim';return`<button class="opt ${c}" data-act="ebOpt" data-v="${i}" ${EBR.answered?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
+  if(EBR.answered){const r=EBR.res[x.id];h+=`<div class="fb">${EBR.ok?`<b style="color:var(--ok)">${r.lulus?'Tepat, lulus dari Error Book!':'Tepat · benar berjarak '+x.box+' dari 4 · diulang '+ebKapan(x.due)}</b>`:'<b style="color:var(--bad)">Masih belum tepat · mulai lagi dari awal, diulang besok.</b>'} ${esc(x.pembahasan||'')}</div>
+    ${x.aturan?`<div class="tiny muted" style="margin-top:12px;font-weight:600">Aturanmu</div><div class="ebrule" style="margin-top:4px">${esc(x.aturan)}</div>`:''}${EBR.ok?'':'<div class="tiny muted" style="margin-top:6px">Aturan ini belum menolong. Setelah putaran ini, perbarui diagnosisnya.</div>'}
+    <button class="btn p w" style="margin-top:12px" data-act="ebNext">${EBR.i<n-1?'Butir berikutnya':'Lihat hasil'}</button>`}
+  return h+'</div>'}
+function ebDots(x,after){const b=x.lulus?4:x.box;return`<span class="ebdots" title="Benar berjarak ${b} dari 4">${EB_INT.map((_,i)=>`<i class="${i<b?'on':''}"></i>`).join('')}</span>`}
+function vEb(){if(EBR)return ebRun();
+  const P=ebPerlu(),D=ebDue(),A=ebAktif(),J=A.filter(x=>!x.perlu&&!D.includes(x)).sort((a,b)=>a.due<b.due?-1:1),Lu=ebAll().filter(x=>x.lulus).reverse(),po=ebPola(30);
+  let h=`<p class="intro" style="margin-bottom:22px">Butir yang salah di kasus dan jembatan masuk ke sini. <b>Diagnosis</b> kenapa kamu memilih itu dan tulis aturan untuk dirimu, <b>ulang</b> tanpa melihat kunci mulai besok, lalu <b>lulus</b> setelah benar 4 kali berjarak (1, 3, 7, 14 hari). Salah lagi berarti mulai dari awal.</p>
+  <div class="glass card has-st">${studs(4,'var(--purple)')}${tl('Status','var(--purple)')}<div class="ebsum">${[['Diagnosis',P.length,'var(--red)'],['Jatuh tempo',D.length,'var(--blue)'],['Terjadwal',J.length,'var(--orange)'],['Lulus',Lu.length,'var(--green)']].map(y=>`<div style="--c:${y[2]}"><b>${y[1]}</b><span class="tiny muted">${y[0]}</span></div>`).join('')}</div>
+  ${D.length?`<button class="btn p w" style="margin-top:12px" data-act="ebStart">Ulang ${Math.min(D.length,EB_MAX)} butir jatuh tempo</button>${D.length>EB_MAX?`<div class="tiny muted" style="margin-top:8px">Paling banyak ${EB_MAX} per putaran. Sisanya bisa diulang setelah ini.</div>`:''}`:P.length?'<div class="small muted" style="margin-top:12px">Diagnosis dulu butir di bawah. Butirnya mulai diulang besok.</div>':A.length?`<div class="small muted" style="margin-top:12px">Tidak ada yang perlu dikerjakan sekarang. Ulangan berikutnya ${ebKapan((J[0]||{}).due)}. Mengulang lebih cepat tidak membantu ingatan jangka panjang.</div>`:''}</div>`;
+  if(po.n>=3){const t=po.sb[0],f=EB_SEBAB.find(y=>y[0]===t[0]);
+    h+=`<div class="glass card has-st">${studs(3,'var(--red)')}${tl('Pola 30 hari','var(--red)')}<div class="small">Penyebab terbanyak: <b>${esc(f[1])}</b> (${Math.round(t[1]/po.tot*100)}% dari kesalahan yang sudah didiagnosis).</div><div class="ebfix small"><b>Fokus minggu ini:</b> ${esc(f[3])}</div>
+    ${po.sb.map(([k,c])=>`<div class="kv"><span>${esc(EBS[k])}</span><span class="muted">${c}x</span></div>`).join('')}
+    ${po.tj.length?`<div class="tiny muted" style="margin-top:8px">Jebakan terbanyak: ${po.tj.map(([k,c])=>`<b>${k}</b> ${esc(TRAPS[k]||'')} (${c}×)`).join(' · ')}</div>`:''}
+    ${po.sk.length?`<div class="tiny muted" style="margin-top:4px">Keterampilan paling sering salah: ${po.sk.map(([k,c])=>`<b>${esc(k)}</b> (${c}×)`).join(' · ')}</div>`:''}
+    <button class="btn sm" style="margin-top:10px" data-act="ebPrompt">Salin prompt analisis pola untuk Claude</button></div>`}
+  else if(ebAll().length)h+='<div class="tiny muted" style="margin:-6px 4px 18px">Pola penyebab muncul setelah minimal 3 butir didiagnosis.</div>';
+  if(P.length)h+=P.slice(0,EBV.n).map((x,i)=>ebKartu(x,'Diagnosis '+(i+1)+' dari '+P.length)).join('')+(P.length>EBV.n?`<div style="text-align:center;margin-bottom:16px"><button class="btn sm" data-act="ebMore">Tampilkan ${Math.min(5,P.length-EBV.n)} lagi</button></div>`:'');
+  const list=D.concat(J);
+  if(list.length){h+=`<div class="glass card has-st">${studs(3,'var(--blue)')}${tl('Jadwal ulang ('+list.length+')','var(--blue)')}<div class="list">`+list.map(x=>EBV.edit===x.id?`</div></div>${ebKartu(x,'Ubah diagnosis')}<div class="glass card"><div class="list">`:`<div class="ebit"><div class="row" style="gap:6px;flex-wrap:wrap"><span class="chip a">${esc(x.sk||'-')}</span><span class="chip">${esc(EBS[x.sebab]||'-')}</span><span class="ebwhen${D.includes(x)?' due':''}">${ebDots(x)}<b>${D.includes(x)?'jatuh tempo':esc(ebKapan(x.due))}</b></span></div>
+    <div class="small ebsnip">${esc(x.perintah||x.teks||'')}</div><div class="ebrule">${esc(x.aturan||'')}</div><button class="btn sm" style="margin-top:10px" data-act="ebEdit" data-v="${esc(x.id)}">Ubah diagnosis</button></div>`).join('')+'</div></div>'}
+  if(Lu.length)h+=`<details class="glass card has-st ebfold">${studs(3,'var(--green)')}<summary><span>${tl('Lulus ('+Lu.length+')','var(--green)',1)} <span class="tiny muted">benar 4 kali berjarak</span></span><span class="ebchev">›</span></summary><div class="list" style="margin-top:8px">${Lu.slice(0,30).map(x=>`<div class="it" style="align-items:flex-start"><span class="chip a">${esc(x.sk||'-')}</span><div class="small" style="flex:1">${esc(x.aturan||x.perintah||'')}</div><span class="muted tiny">${x.lulus&&x.lulus.length===10?tglPendek(x.lulus):''}</span></div>`).join('')}</div></details>`;
+  if(!ebAll().length)h+=`<div class="glass card has-st">${studs(3,'var(--purple)')}${tl('Masih kosong','var(--purple)')}<div class="small muted">Butir yang salah di kasus dan jembatan UTBK otomatis masuk ke sini.</div></div>`;
+  return h}
+function ebKartuHari(){const p=ebPerlu().length,d=ebDue().length;if(!p&&!d)return'';
+  return`<button class="glass card row sp" style="width:100%;text-align:left" data-act="nav" data-v="eb"><span class="row"><span class="pn" style="width:30px;height:26px;border-radius:6px;background:var(--purple);border:2px solid var(--line);display:grid;place-items:center;color:#fff">${svg(EB_IC).replace('<svg','<svg width="16" height="16"')}</span><span><span style="font-weight:600;display:block">Error Book</span><span class="tiny muted">${[p?p+' perlu diagnosis':'',d?d+' jatuh tempo diulang':''].filter(Boolean).join(' · ')}</span></span></span><span style="font-weight:700">›</span></button>`}
+
 /* ================= REKAP ================= */
 function vRekap(){const w=weekLog(7);const tr=topTraps(w.filter(x=>x.src!=='game'));
   const ka=w.filter(x=>x.src==='kasus'),je=w.filter(x=>x.src==='jembatan'),pe=w.filter(x=>x.src==='pemanasan');
@@ -1355,9 +1483,8 @@ function vRekap(){const w=weekLog(7);const tr=topTraps(w.filter(x=>x.src!=='game
    <div class="kv"><span class="muted">Jembatan UTBK</span>${pv(je)}</div>
    <div class="small" style="margin-top:6px">${interp}</div></div>`;
   h+=`<div class="glass card has-st">${studs(3,'var(--yellow)')}${tl('Tahap keterampilan')}<div class="row wrapf" style="gap:6px">${Object.keys(SKILLS).map(k=>`<span class="chip" style="background:${SKCOL[k]};color:${yk(SKCOL[k])?'#2f333d':'#fff'}">${k} · T${S.skills[k].tahap}</span>`).join('')}</div></div>`;
-  const sal=S.salah.filter(x=>!x.tuntas).slice(-12).reverse();
-  h+=`<div class="glass card has-st">${studs(3,'var(--orange)')}<div class="row sp">${tl('Butir salah untuk diulang','var(--orange)',1)}${sal.length?`<span class="tiny muted">${sal.length} butir</span>`:''}</div>`;
-  h+=sal.length?`<div class="list" style="margin-top:6px">${sal.map(x=>`<div class="it"><div style="flex:1;min-width:0"><div class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.perintah||x.teks||'')}</div><div class="tiny muted">${tglPendek(x.t)} · ${x.src} · ${x.sk}</div></div><button class="btn sm" data-act="ulang" data-v="${x.id}">Ulang</button></div>`).join('')}</div></div>`:'<div class="small muted" style="margin-top:10px">Belum ada butir salah. Butir yang salah di sesi harian akan muncul di sini.</div></div>';
+  {const p=ebPerlu().length,d=ebDue().length,a=ebAktif().length,lu=ebAll().filter(x=>x.lulus).length;
+  h+=`<div class="glass card has-st">${studs(3,'var(--purple)')}<div class="row sp">${tl('Error Book','var(--purple)',1)}<span class="tiny muted">${a} aktif · ${lu} lulus</span></div><div class="small" style="margin-top:8px">${p||d?[p?p+' butir perlu diagnosis':'',d?d+' jatuh tempo diulang':''].filter(Boolean).join(' · '):'Tidak ada yang menunggu hari ini.'}</div><button class="btn sm" style="margin-top:10px" data-act="nav" data-v="eb">Buka Error Book</button></div>`}
   const g=S.games;h+=`<div class="glass card has-st">${studs(3,'var(--purple)')}${tl('Mini game pendamping','var(--purple)')}${GAMES.map(x=>`<div class="kv"><span>${x.nama}</span><span class="muted">terbaik ${g[x.id]?g[x.id].best:0} · ${g[x.id]?g[x.id].main:0}x main</span></div>`).join('')}</div>`;
   return h}
 let UB=null;
@@ -2276,19 +2403,32 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'role':KAS.roles[+b.dataset.i]=v;render();break;
   case'cekTandai':{const l=S.paket[KAS.pid].kasus.langkah[KAS.step];const ok=l.peran.every((r,i)=>KAS.roles[i]===r);kasAnswer(ok,null);break}
   case'kasOpt':{const k=S.paket[KAS.pid].kasus,l=k.langkah[KAS.step],i=+v;KAS.chosen=i;const ok=i===l.kunci;
-    kasAnswer(ok,{teks:k.kalimat.join(' '),perintah:l.perintah,opsi:l.opsi,kunci:l.kunci,pembahasan:l.pembahasan||k.pembahasan||''});break}
+    kasAnswer(ok,{teks:k.kalimat.join(' '),perintah:l.perintah,opsi:l.opsi,kunci:l.kunci,jw:i,pembahasan:l.pembahasan||k.pembahasan||''});break}
   case'kasNext':{const L=S.paket[KAS.pid].kasus.langkah;if(KAS.step<L.length-1){KAS.step++;KAS.answered=false;KAS.chosen=null}else{KAS.done=true;S.paket[KAS.pid].dipakai=today();save()}render();window.scrollTo(0,0);break}
   case'toJem':s.done[2]=true;s.fase=3;JEM=null;save();render();window.scrollTo(0,0);break;
   case'jemOpt':{const p=S.paket[s.paketId],q=p.jembatan[JEM.i],i=+v;JEM.chosen=i;JEM.answered=true;JEM.ok=i===q.kunci;s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
-    record('jembatan',q.keterampilan&&SKILLS[q.keterampilan]?q.keterampilan:p.kasus.keterampilan,JEM.ok,(q.jebakan_opsi||[])[i],{teks:q.teks,perintah:q.perintah,opsi:q.opsi,kunci:q.kunci,pembahasan:q.pembahasan});render();break}
+    record('jembatan',q.keterampilan&&SKILLS[q.keterampilan]?q.keterampilan:p.kasus.keterampilan,JEM.ok,(q.jebakan_opsi||[])[i],{teks:q.teks,perintah:q.perintah,opsi:q.opsi,kunci:q.kunci,jw:i,pembahasan:q.pembahasan});render();break}
   case'bsPick':if(!JEM.answered){JEM.bs[+b.dataset.i]=v==='1';render()}break;
   case'bsCek':{const p=S.paket[s.paketId],q=p.jembatan[JEM.i];JEM.answered=true;JEM.ok=q.pernyataan.every((_,i)=>JEM.bs[i]===q.kunci[i]);s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
-    record('jembatan',q.keterampilan&&SKILLS[q.keterampilan]?q.keterampilan:p.kasus.keterampilan,JEM.ok,q.jebakan,{jenis:'bs',teks:q.teks,perintah:q.perintah,pernyataan:q.pernyataan,kunci:q.kunci,label_b:q.label_b,label_s:q.label_s,pembahasan:q.pembahasan});render();break}
+    record('jembatan',q.keterampilan&&SKILLS[q.keterampilan]?q.keterampilan:p.kasus.keterampilan,JEM.ok,q.jebakan,{jenis:'bs',teks:q.teks,perintah:q.perintah,pernyataan:q.pernyataan,kunci:q.kunci,label_b:q.label_b,label_s:q.label_s,jw:Object.assign({},JEM.bs),pembahasan:q.pembahasan});render();break}
   case'ubsPick':if(UB&&!UB.answered){UB.sel[+b.dataset.i]=v==='1';renderUlangBS()}break;
   case'ubsCek':{const x=S.salah.find(y=>y.id===UB.id);UB.answered=true;UB.ok=x.pernyataan.every((_,i)=>UB.sel[i]===x.kunci[i]);S.log.push({t:today(),src:'ulang',sk:x.sk,ok:UB.ok?1:0,j:null});if(UB.ok)x.tuntas=true;save();renderUlangBS();if(UB.ok&&route==='rekap')render();break}
   case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<p.jembatan.length-1){JEM={i:JEM.i+1,answered:false,bs:{}}}else{JEM=null;if(!p.dipakai)p.dipakai=today();donePart(3);break}render();window.scrollTo(0,0);break}
   case'finish':finishSesi(v==='1');break;
   case'ulang':openUlang(v);break;
+  case'ebSebab':{const[id,sb]=v.split('|');EBV.sel[id]=sb;delete EBV.err[id];render();break}
+  case'ebSimpan':ebDiag(v);break;
+  case'ebEdit':EBV.edit=v;render();{const el=document.getElementById('eb-'+v);if(el)el.scrollIntoView({block:'start'})}break;
+  case'ebBatal':EBV.edit=null;delete EBV.sel[v];delete EBV.txt[v];delete EBV.err[v];render();break;
+  case'ebHapus':if(EBV.del===v){S.salah=S.salah.filter(x=>x.id!==v);EBV.del=null;save();toast('Dihapus dari Error Book');render()}else{EBV.del=v;toast('Tekan sekali lagi untuk menghapus')}break;
+  case'ebMore':EBV.n+=5;render();break;
+  case'ebPrompt':copyText(ebPrompt(),'Prompt analisis tersalin');break;
+  case'ebStart':ebStart();break;
+  case'ebOpt':if(EBR&&!EBR.answered){const x=S.salah.find(y=>y.id===EBR.ids[EBR.i]);EBR.chosen=+v;ebAnswer(+v===x.kunci)}break;
+  case'ebBs':if(EBR&&!EBR.answered){EBR.sel[+b.dataset.i]=v==='1';render()}break;
+  case'ebBsCek':if(EBR&&!EBR.answered){const x=S.salah.find(y=>y.id===EBR.ids[EBR.i]);ebAnswer(x.pernyataan.every((_,i)=>EBR.sel[i]===x.kunci[i]))}break;
+  case'ebNext':EBR.i++;EBR.sel={};EBR.chosen=null;EBR.answered=false;render();window.scrollTo(0,0);break;
+  case'ebSelesai':EBR=null;render();window.scrollTo(0,0);break;
   case'ulangOpt':answerUlang(b.dataset.id,+v);break;
   case'jAdd':{const t=$('#jnew').value.trim();if(t){S.jurnal.push({t:today(),teks:t});save();toast('Catatan tersimpan');render()}break}
   case'jCopy':copyText(jurnalPrompt(),'Jurnal tersalin');break;
@@ -2363,10 +2503,11 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'kNext':if(G.i<G.n-1){G.i++;newKasir();render()}else gDone(G.score,G.n);break;
   }
 });
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.eb)EBV.txt[t.dataset.eb]=t.value});
 document.addEventListener('keydown',e=>{if(G&&G.id==='geser'&&G.mode==='cepat'&&!G.over){if(e.key==='ArrowRight')answerGeser(true);if(e.key==='ArrowLeft')answerGeser(false)}});
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
-window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==route&&['hari-ini','main','peta','rekap','jurnal','paket','mingguan'].includes(h)){route=h;G=null;render()}});
-(function init(){applyCfg();$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','jurnal','paket','mingguan'].includes(h))route=h;
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==route&&['hari-ini','main','peta','rekap','eb','jurnal','paket','mingguan'].includes(h)){route=h;G=null;render()}});
+(function init(){applyCfg();$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','eb','jurnal','paket','mingguan'].includes(h))route=h;
   const s=S.sesi[today()];if(s&&!s.selesai&&s.fase>=1&&s.fase<=4){sesi(today());s.fase=0} /* muat ulang: kembali ke daftar misi */
   render();if(s&&s.selesai)writeRingkasan()})();
 </script>
@@ -2677,6 +2818,7 @@ window.SFX=(function(){
   wrap('answerPem',o=>function(i){const live=PEM&&!PEM.locked,c=live&&PEM.cards[PEM.i];o.apply(this,arguments);if(live)res(i===c.kunci,'pem')});
   wrap('endPem',o=>function(){const tout=PEM&&Date.now()>=PEM.end;o.apply(this,arguments);P(tout?'timeup':'segDone')});
   wrap('kasAnswer',o=>function(ok){o.apply(this,arguments);res(ok,'kas')});
+  wrap('ebAnswer',o=>function(ok){o.apply(this,arguments);res(ok,'kas')});
   wrap('answerUlang',o=>function(id,i){const x=S.salah.find(y=>y.id===id);o.apply(this,arguments);if(x)res(i===x.kunci,'kas')});
 
   /* --- mini game --- */
