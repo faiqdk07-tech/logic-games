@@ -15,7 +15,7 @@ Latihan logika PU 15 menit sehari: situasi nyata dulu, soal UTBK kemudian. Satu 
 - **Jurnal** – kalimat nalar harian; bisa disalin untuk diulas Claude.
 - **Paket** (tombol "Paket" di kartu Sesi pada halaman Hari ini) – salin prompt ke proyek Claude "Nalar Harian", tempel JSON, cek format, stok, cadangan data.
   - Paket versi 3 per hari: 1 kasus, 3 jembatan, 4 kartu `pemanasan`, 1 ronde `detektif`. Dua bagian terakhir opsional; paket lama tetap terbaca.
-  - Prompt memberi target huruf kunci per soal, aturan anti-tebak, dan daftar kerangka yang sudah dipakai. Saat menyimpan, aplikasi memperingatkan pola yang mudah ditebak (kunci selalu terpanjang, huruf kunci menumpuk).
+  - Prompt memberi target huruf kunci per soal, aturan anti-tebak, dan daftar kerangka yang sudah dipakai. Saat menyimpan, aplikasi menolak paket dengan pelanggaran berat: kunci menjadi opsi terpanjang di lebih dari 1 dari 5 soal, pengecoh tanpa label jebakan, opsi kembar, opsi baku yang diubah atau diacak, "tepat dua" yang dilanggar, nomor/huruf kalimat di stimulus, atau stimulus lebih dari 8 kalimat. Pelanggaran ringan cukup diberi peringatan: selisih kata opsi lebih dari 30%, kunci satu-satunya yang berhati-hati, stimulus 7–8 kalimat atau kurang dari 2, frasa khas tulisan AI, dan huruf kunci yang menumpuk.
 
 ## Paket mini game mingguan
 - Bank kata Lampu Berantai, Rantai Kunci, Inspektur Bandara, Arsir Venn, Hakim Simpulan, dan Beli Petunjuk diganti tiap minggu (Senin–Minggu).
