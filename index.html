@@ -1183,6 +1183,154 @@ function buildPrompt(n,start){
 const CUKUP_OPSI=['Pernyataan (i) SAJA cukup untuk menjawab pertanyaan, tetapi pernyataan (ii) SAJA tidak cukup.','Pernyataan (ii) SAJA cukup untuk menjawab pertanyaan, tetapi pernyataan (i) SAJA tidak cukup.','DUA pernyataan BERSAMA-SAMA cukup untuk menjawab pertanyaan, tetapi SATU pernyataan SAJA tidak cukup.','SALAH SATU pernyataan SAJA cukup untuk menjawab pertanyaan.','Pernyataan (i) dan pernyataan (ii) TIDAK CUKUP untuk menjawab pertanyaan.'];
 const KS_OPSI=['Simpulan tersebut pasti benar.','Simpulan tersebut mungkin benar.','Simpulan tersebut pasti salah.','Simpulan tidak relevan dengan informasi yang diberikan.','Simpulan tidak dapat dinilai karena informasi tidak cukup.'];
 
+/* ================= RENCANA V4: 20 SOAL DARI KODE KEMAMPUAN =================
+   Sumber: Brief "Kunci Pola Soal UTBK-SNBT" (kode kemampuan dan bentuk) dan kesiapan-2027.md v1.3
+   (jenis L/G/B/M, format J1–J7, pagar, sumber M). Deduktif 10 + Induktif 10, tiap bagian 3 L / 4 G / 2 B / 1 M.
+   Semua kemampuan muncul setiap hari, jadi rencana tidak bisa terkunci di dua keterampilan (perbaikan R8).
+   Aturan tindak lanjut per kemampuan (±20 soal terakhir): akurasi L < 70% → L saja (Mode Dasar);
+   Indeks Kesiapan (akurasi B+M ÷ akurasi L) < 0,75 → porsi B dan M naik. Sebelum datanya cukup: komposisi dasar. */
+const KEMAMPUAN={
+ 'PU-DED-1':'menurunkan akibat dari aturan bersyarat, termasuk aturan berantai',
+ 'PU-DED-2':'menyangkal aturan gabungan ("dan", "atau") dan menarik akibatnya',
+ 'PU-DED-3':'bernalar dengan "semua", "sebagian", "tidak ada"',
+ 'PU-DED-4':'membedakan yang pasti, yang mungkin, dan yang tidak dapat disimpulkan',
+ 'PU-DED-5':'memilah informasi yang relevan dari yang hanya latar',
+ 'PU-IND-1':'menilai apa yang menguatkan atau melemahkan klaim sebab-akibat',
+ 'PU-IND-2':'mencari penjelasan terbaik untuk hasil yang berbeda atau tak terduga',
+ 'PU-IND-3':'menilai apakah sebuah perbandingan adil (kelompok pembanding, kondisi awal)',
+ 'PU-IND-4':'memahami hubungan faktor, indikator, dan hal yang memperkuat atau memperlemah pengaruh',
+ 'PU-IND-5':'mencocokkan kasus dengan definisi dan menemukan inti bersama dua definisi',
+ 'PU-IND-6':'memilih tindakan yang mengatasi penyebab masalah di dalam kendala yang ada'};
+const KM_DED=Object.keys(KEMAMPUAN).filter(k=>k.includes('-DED-')),KM_IND=Object.keys(KEMAMPUAN).filter(k=>k.includes('-IND-'));
+/* bentuk lama di lampiran Brief yang paling dekat dengan tiap kemampuan (pemetaan app, bukan dari Brief) */
+const BENTUK_DEKAT={'PU-DED-1':['PU-D1','PU-D4','PU-D6a','PU-D6d'],'PU-DED-2':['PU-D3','PU-D6b','PU-D6c','PU-D6'],'PU-DED-3':['PU-D2'],'PU-DED-4':['PU-D5'],'PU-DED-5':['PU-D6'],
+ 'PU-IND-1':['PU-I1','PU-I2','PU-I3','PU-I12'],'PU-IND-2':['PU-I4','PU-I11'],'PU-IND-3':['PU-I6','PU-I6a'],'PU-IND-4':['PU-I5','PU-I7'],'PU-IND-5':['PU-I8','PU-I9'],'PU-IND-6':['PU-I10']};
+/* G yang mengganti stimulus memakai wadah umum; B memakai kolom "Arah geser" Brief yang cocok dengan kemampuannya */
+const GESER_STIM={DED:['aturan lomba','syarat pendaftaran','jadwal','percakapan pesan','pengumuman dengan catatan kecil'],
+ IND:['laporan singkat','percakapan pesan','pengumuman','tabel kecil','artikel berita singkat']};
+const ARAH_B={'PU-DED-1':'stimulus bukan cerita (aturan lomba, syarat pendaftaran, jadwal, atau percakapan) dengan tiga aturan berantai',
+ 'PU-DED-2':'tiga aturan sekaligus dalam syarat pendaftaran atau jadwal; ditanya pernyataan yang setara atau simpulan yang TIDAK sah',
+ 'PU-DED-3':'kuantor di dalam aturan lomba atau percakapan; ditanya simpulan yang TIDAK sah',
+ 'PU-DED-4':'beberapa simpulan dinilai sekaligus dari jadwal atau aturan (pasti, mungkin, tidak dapat disimpulkan)',
+ 'PU-DED-5':'percakapan atau pengumuman dengan beberapa informasi latar; ditanya informasi yang tidak memengaruhi simpulan',
+ 'PU-IND-1':'dua tokoh menafsirkan data yang sama',
+ 'PU-IND-2':'dua tokoh menafsirkan data yang sama; ditanya penjelasan yang PALING mungkin',
+ 'PU-IND-3':'penelitian dengan kelemahan lain (sampel kecil, alat ukur berbeda)',
+ 'PU-IND-4':'faktor dan indikatornya disajikan dalam tabel kecil; ditanya pengaruh pada kasus tertentu',
+ 'PU-IND-5':'definisi dengan dua syarat dan contoh yang hampir memenuhi',
+ 'PU-IND-6':'strategi dengan dua kendala'};
+const NYATA_WADAH=['aturan lomba','syarat pendaftaran','percakapan pesan','pengumuman','jadwal'];
+const BIDANG=['sekolah','UMKM','kesehatan','lingkungan','pariwisata','pertanian'];
+const isV4=p=>!!(p&&Array.isArray(p.soal));
+/* soal v4 dari paket tersimpan dalam beberapa hari terakhir */
+function soalTerakhir(start,hari){return Object.keys(S.paket).filter(k=>/^\d/.test(k)&&k<start&&k>=addDays(start,-hari)&&isV4(S.paket[k])).flatMap(k=>S.paket[k].soal)}
+/* status satu kemampuan dari ±20 soal terakhir (log berisi k = kemampuan, jp = jenis L/G/B/M) */
+function kmStat(k){const L=S.log.filter(x=>x.k===k&&x.src==='jembatan').slice(-20),f=a=>a.length?a.filter(x=>x.ok).length/a.length:null;
+  const l=L.filter(x=>x.jp==='L'),bm=L.filter(x=>x.jp==='B'||x.jp==='M'),aL=f(l),aBM=f(bm);
+  const dasar=l.length>=5&&aL<.7,indeks=l.length>=5&&bm.length>=4&&aL>0?aBM/aL:null;
+  return{n:L.length,nL:l.length,nBM:bm.length,aL,aBM,indeks,dasar,naik:!dasar&&indeks!=null&&indeks<.75}}
+function planBagian(bag,start,r){const KM=bag==='DED'?KM_DED:KM_IND,d=dayNum(start);
+  let km;
+  if(bag==='DED')km=KM.flatMap(k=>[k,k]);
+  else{/* 6 kemampuan, 10 soal: 4 kemampuan yang paling jarang muncul 3 hari terakhir dapat 2 soal */
+    const pakai={};soalTerakhir(start,3).forEach(q=>{pakai[q.kemampuan]=(pakai[q.kemampuan]||0)+1});
+    km=shuffleR(KM,r).sort((a,b)=>(pakai[a]||0)-(pakai[b]||0)).flatMap((k,i)=>i<4?[k,k]:[k])}
+  const st=Object.fromEntries(KM.map(k=>[k,kmStat(k)])),naik=KM.some(k=>st[k].naik);
+  const T=naik?{L:3,G:3,B:3,M:1}:{L:3,G:4,B:2,M:1};
+  const S2=km.map(k=>({bagian:bag,kemampuan:k,jp:null}));
+  const pick=f=>shuffleR(S2.filter(s=>!s.jp&&f(s)),r)[0];
+  S2.forEach(s=>{if(st[s.kemampuan].dasar)s.jp='L'});
+  /* M: Deduktif = tabel benar/salah; Induktif = thread (PU-IND-1) atau teks dengan data (PU-IND-2), bergantian */
+  if(bag==='DED'){const s=pick(()=>true);if(s){s.jp='M';s.m='tabel benar/salah (pindahan dari Literasi, PK, dan PM)'}}
+  else{const urut=d%2?['PU-IND-2','PU-IND-1']:['PU-IND-1','PU-IND-2'];let s=null;for(const k of urut){s=pick(x=>x.kemampuan===k);if(s)break}
+    if(s){s.jp='M';s.m=s.kemampuan==='PU-IND-1'?'thread forum (pindahan dari Literasi Inggris)':'teks pendek dengan tabel kecil (pindahan dari LBE-16)'}}
+  for(let i=0;i<T.B;i++){const s=pick(x=>st[x.kemampuan].naik)||pick(()=>true);if(s)s.jp='B'}
+  const adaL=()=>S2.filter(s=>s.jp==='L').length;
+  while(adaL()<T.L){const s=pick(x=>!(BENTUK_DEKAT[x.kemampuan].length===1&&S2.some(y=>y!==x&&y.kemampuan===x.kemampuan&&y.jp==='L')))||pick(()=>true);if(!s)break;s.jp='L'}
+  S2.forEach(s=>{if(!s.jp)s.jp='G'});
+  /* bentuk dekat: dua soal satu kemampuan memakai bentuk berbeda bila ada */
+  const ke={};S2.forEach(s=>{if(s.jp==='L'||s.jp==='G'){const B=BENTUK_DEKAT[s.kemampuan],i=(d+(ke[s.kemampuan]=(ke[s.kemampuan]||0)+1)-1)%B.length;s.bd=B[i]}});
+  /* G: ganti satu atau dua unsur; format J1 kecuali unsur yang diganti adalah format */
+  S2.forEach(s=>{s.f='J1';
+    if(s.jp==='G'){const u=shuffleR(['stimulus','arah tanya','format'],r).slice(0,r()<.35?2:1);s.ubah=u;if(u.includes('stimulus'))s.wadah=rnd2(GESER_STIM[bag],r);if(u.includes('format'))s.f='J2'}
+    if(s.jp==='M'&&bag==='DED')s.f='J2';
+    if(s.jp==='B')s.f=r()<.5?'J2':'J1'});
+  /* dua soal G satu kemampuan dengan bentuk dekat yang sama wajib mengganti unsur yang berbeda */
+  S2.forEach((s,i)=>{if(s.jp!=='G')return;const a=S2.slice(0,i).find(y=>y.jp==='G'&&y.kemampuan===s.kemampuan&&y.bd===s.bd);
+    if(a&&a.ubah.join()===s.ubah.join()){const lain=['stimulus','arah tanya','format'].filter(u=>!a.ubah.includes(u));s.ubah=[rnd2(lain,r)];s.f='J1';delete s.wadah;
+      if(s.ubah[0]==='stimulus')s.wadah=rnd2(GESER_STIM[bag],r);if(s.ubah[0]==='format')s.f='J2'}});
+  /* minimal 2 soal di luar J1 per bagian; paling banyak 1 J5 (ditulis sebagai J2) */
+  while(S2.filter(s=>s.f!=='J1').length<2){const s=shuffleR(S2.filter(x=>x.f==='J1'&&x.jp!=='L'&&x.jp!=='M'),r)[0];if(!s)break;s.f='J2';if(s.jp==='G'&&!s.ubah.includes('format'))s.ubah=s.ubah.slice(0,1).concat('format')}
+  const j2=S2.filter(s=>s.f==='J2'&&s.jp!=='M');if(j2.length&&r()<.5)rnd2(j2,r).f='J5';
+  /* tidak ada dua soal satu kemampuan berdampingan */
+  let best=S2;for(let t=0;t<60;t++){const o=shuffleR(S2,r);if(o.every((s,i)=>!i||o[i-1].kemampuan!==s.kemampuan)){best=o;break}}
+  return{soal:best,status:st,naik}}
+const rnd2=(a,r)=>a[Math.floor(r()*a.length)];
+function buildPlanV4(start,salt){const r=seedRng('v4'+start+'#'+(salt||0)),d=dayNum(start);
+  const ded=planBagian('DED',start,r),ind=planBagian('IND',start,r),all=ded.soal.concat(ind.soal);
+  all.forEach((s,i)=>{s.no=i+1});
+  /* satu soal kasus nyata per hari: bergantian Deduktif/Induktif, pada soal G atau B */
+  const bagN=d%2?'IND':'DED',c=shuffleR(all.filter(s=>s.bagian===bagN&&(s.jp==='G'||s.jp==='B')),r)[0]||shuffleR(all.filter(s=>s.jp==='G'||s.jp==='B'),r)[0];
+  if(c){c.nyata=NYATA_WADAH[d%NYATA_WADAH.length];if(c.ubah&&c.ubah.includes('stimulus'))c.wadah=c.nyata}
+  /* bidang: enam bidang Brief tersebar rata */
+  let bd=[];while(bd.length<all.length)bd=bd.concat(shuffleR(BIDANG,r));all.forEach((s,i)=>{s.bidang=bd[i]});
+  /* huruf kunci soal pilihan ganda: rata, tanpa tiga huruf sama berurutan */
+  const pg=all.filter(s=>s.f==='J1');let dk;for(let t=0;t<50;t++){dk=[];while(dk.length<pg.length)dk=dk.concat(shuffleR([0,1,2,3,4],r));dk=dk.slice(0,pg.length);if(dk.every((x,i)=>i<2||!(x===dk[i-1]&&x===dk[i-2])))break}
+  pg.forEach((s,i)=>{s.kunci=dk[i]});
+  return{tgl:start,soal:all,status:Object.assign({},ded.status,ind.status),naik:{DED:ded.naik,IND:ind.naik}}}
+const fmtLabel=f=>f==='J5'?'J5 (ditulis sebagai J2)':f;
+function barisRencana(s){const b=[`${s.no}. ${s.kemampuan} · ${s.jp}`];
+  if(s.jp==='L')b.push(`bentuk ${s.bd}`);
+  if(s.jp==='G')b.push(`dekat ${s.bd} · ubah: ${s.ubah.map(u=>u==='stimulus'?`stimulus → ${s.wadah}`:u==='format'?'format':'arah tanya dibalik').join(' + ')}`);
+  if(s.jp==='B')b.push(`bentuk baru, arah: ${ARAH_B[s.kemampuan]}`);
+  if(s.jp==='M')b.push(s.m);
+  if(s.nyata)b.push(`NYATA: ${s.nyata}`);
+  b.push(fmtLabel(s.f),`bidang ${s.bidang}`);if(s.kunci!=null)b.push(`kunci ${HURUF(s.kunci)}`);return b.join(' · ')}
+function statusTeks(plan){const L=[];Object.entries(plan.status).forEach(([k,s])=>{if(s.dasar)L.push(`${k}: Mode Dasar (akurasi L ${Math.round(s.aL*100)}%), semua soalnya L`);
+  else if(s.naik)L.push(`${k}: Indeks Kesiapan ${s.indeks.toFixed(2).replace('.',',')}, porsi B dan M dinaikkan`)});
+  return L.length?L:['Data per kemampuan belum cukup atau semua dalam batas: komposisi dasar 3 L / 4 G / 2 B / 1 M per bagian']}
+function buildPromptV4(start,salt){const plan=buildPlanV4(start,salt),L=[],P=x=>L.push(x);
+  P('Kamu adalah pembuat paket latihan untuk aplikasi "Nalar Harian": latihan Penalaran Umum (PU) UTBK-SNBT 2027 bagian Deduktif dan Induktif, 20 soal sehari, waktu resmi 60 detik per soal.');
+  P('Ikuti file di Project Files: Brief "Kunci Pola Soal UTBK-SNBT" (kode kemampuan, kode bentuk, lampiran bentuk lama, arah geser), "kesiapan-2027.md" v1.3 (jenis L/G/B/M, format J1–J7, lima pagar, sumber soal M), dan "aturan-opsi-setara.md". Rencana di bawah adalah perintah utama; bila bertentangan dengan file, ikuti rencana.');
+  P('Balas HANYA dengan satu blok kode json yang valid berisi paket 1 hari (20 soal), tanpa teks lain. Jika balasan terpotong, Faiq mengetik "lanjutkan": teruskan tepat dari karakter terakhir yang terkirim, tanpa mengulang apa pun.');
+  P(`\n## Rencana ${plan.tgl} · 20 soal`);
+  P('Bagian Deduktif (soal 1–10, 10 menit)');plan.soal.slice(0,10).forEach(s=>P(barisRencana(s)));
+  P('Bagian Induktif (soal 11–20, 10 menit)');plan.soal.slice(10).forEach(s=>P(barisRencana(s)));
+  P('Status kemampuan (±20 soal terakhir): '+statusTeks(plan).join('; ')+'.');
+  P('\n## Arti baris rencana');
+  ['L: kerangka persis bentuk lampiran Brief yang disebut (Mode Dasar).',
+   'G: mulai dari bentuk dekat, lalu ganti unsur yang disebut "ubah"; unsur lain tetap. "Stimulus → …" berarti stimulus berupa wadah itu; "arah tanya dibalik" berarti yang ditanya ditukar (misalnya PASTI SALAH, yang TIDAK sah, KECUALI, yang TIDAK memperlemah); "format" berarti format jawaban mengikuti kode format di baris itu.',
+   'B: bentuk yang belum ada di lampiran Brief, tetap menguji kemampuan itu; ambil arah dari kolom "Arah geser" Brief untuk PU deduktif atau induktif. Wajib lolos lima pagar kesiapan-2027 §4.',
+   'M: bentuk dari subtes lain (kesiapan-2027 §5). Tabel benar/salah: beberapa pernyataan dinilai sekaligus. Thread forum: 4–6 unggahan, satu kalimat per unggahan, tiap baris "Nama (jam): isi"; unggahan pertama adalah klaim pembuka; tanyakan balasan mana yang PALING memperkuat atau PALING memperlemah klaim itu. Teks dengan tabel kecil: isi "tabel", tanyakan inferensi yang PALING menjelaskan pola datanya.',
+   'NYATA: soal dibungkus situasi nyata sehari-hari siswa (wadah yang disebut), tetap berbentuk soal UTBK, dan jawabannya terbukti hanya dari stimulus.',
+   'Format: J1 = pilihan ganda 5 opsi ("tipe":"pg"). J2 = tabel benar/salah ("tipe":"bs"). "J5 (ditulis sebagai J2)" = pilih semua yang benar, ditulis sebagai tabel benar/salah per opsi, 2–3 benar.',
+   'Kunci: huruf target soal pilihan ganda (A = indeks 0). Pada opsi baku, atur stimulus atau simpulannya, bukan urutan opsinya.',
+   'Bidang: latar soal. Pakai nama generik (Kota X, PT X, Ahli A) atau nama fiktif.'].forEach(x=>P('- '+x));
+  P('\n## Aturan soal');
+  ['Stimulus 2–6 kalimat; cerita bertokoh PU-D6 sampai 8 kalimat; thread 4–6 unggahan. Tanpa nomor atau huruf kalimat seperti (1), 1., (a). Jawaban terbukti hanya dari stimulus; pengetahuan luar adalah pengecoh.',
+   'Opsi setara: struktur sejajar, selisih jumlah kata opsi terpanjang dan terpendek paling banyak 30%, kunci menjadi opsi terpanjang paling banyak 1 dari 5 soal, kata hati-hati dan kata mutlak tersebar di kunci dan pengecoh. Tutup stimulus: bila kunci bisa ditebak dari bentuk opsinya, tulis ulang.',
+   'Setiap pengecoh mewakili satu kesalahan nalar dan diberi label di "jebakan_opsi" (kode di bagian Label jebakan); null hanya pada kunci.',
+   'Opsi baku disalin persis dan tidak diacak. Kualitas simpulan: '+KS_OPSI.map((o,i)=>HURUF(i)+'. '+o).join(' ')+' Dua pendapat dan satu temuan (urutan Brief PU-I2): A. Memperkuat pernyataan X. B. Memperkuat pernyataan Y. C. Memperlemah pernyataan X. D. Memperlemah pernyataan Y. E. Tidak relevan dengan pernyataan X dan Y. (X dan Y diganti nama tokoh, misalnya Ahli A.)',
+   'Tabel benar/salah: 4–5 pernyataan, 2–3 benar, urutan acak, pernyataan benar dan salah sama panjang dan sama gayanya.',
+   'Teks terasa ditulis manusia: isi spesifik (angka, jam, lembaga fiktif), panjang kalimat bervariasi, pembuka langsung ke isi. Hindari "Di era modern ini", "Dalam kehidupan sehari-hari", "Seiring perkembangan zaman", "memainkan peran penting", "tidak dapat dimungkiri", "penting untuk dicatat", "hal ini menunjukkan bahwa", kalimat beruntun yang dibuka "Selain itu", "Oleh karena itu", atau "Dengan demikian", tanda pisah panjang berlebihan, dan penutup yang menasihati.',
+   'Kata tanya negatif (TIDAK, KECUALI, PALING) ditulis kapital.',
+   'Dua puluh soal memakai tokoh, angka, dan cerita yang berbeda. Dua soal satu kemampuan tidak boleh memakai bentuk yang sama.'].forEach(x=>P('- '+x));
+  P('\n## Pembahasan (ringkas supaya balasan tidak terpotong)');
+  P('- Satu kalimat langkah penyelesaian, lalu satu kalimat per pengecoh yang menyebut huruf dan NAMA kesalahannya (misalnya "B salah karena membalik implikasi: …"). Jangan menulis kode J1–J13 di pembahasan.');
+  P('- Baris terakhir pembahasan adalah label: "Kemampuan: PU-DED-2 · Jenis: G · Format: J1" (Jenis = L/G/B/M; Format = kode di rencana, termasuk keterangan "ditulis sebagai").');
+  P('\n## Label jebakan untuk "jebakan_opsi" dan "jebakan" (kode hanya untuk data)');
+  P('- '+Object.keys(TRAPS).map(k=>`${k} ${TRAPS[k]}`).join(' · '));
+  P('\n## Cek sebelum mengirim');
+  ['Setiap soal sesuai barisnya di rencana: kemampuan, jenis, bentuk, unsur yang diubah, format, bidang, dan huruf kunci.','Tepat satu opsi yang bisa dibela; untuk deduktif, uji setiap opsi dengan tabel kebenaran atau diagram Venn.','Soal G, B, dan M lolos lima pagar kesiapan-2027 §4 dan bisa dikerjakan dalam 60 detik.','Opsi setara dan opsi baku persis.','Label jebakan sesuai kesalahan yang diwakili tiap pengecoh.','Pembahasan memakai nama kesalahan, bukan kodenya, dan diakhiri baris label.'].forEach((x,i)=>P(`${i+1}. ${x}`));
+  P('\n## Bentuk JSON');
+  const s0=plan.soal[0];
+  P(JSON.stringify({versi:4,paket:[{tgl:plan.tgl,soal:[
+    {no:1,bagian:'DED',kemampuan:'PU-DED-2',jenis_pola:'L',bentuk_dekat:'PU-D6b',format:'J1',nyata:false,bidang:'UMKM',tipe:'pg',teks:'…',perintah:'…',opsi:['…','…','…','…','…'],kunci:2,jebakan_opsi:['J3','J5',null,'J6','J11'],pembahasan:'… A salah karena … B salah karena … D salah karena … E salah karena …\nKemampuan: PU-DED-2 · Jenis: L · Format: J1'},
+    {no:4,bagian:'DED',kemampuan:'PU-DED-3',jenis_pola:'M',bentuk_dekat:'tabel benar/salah',format:'J2',nyata:false,bidang:'pertanian',tipe:'bs',teks:'…',perintah:'…',pernyataan:['…','…','…','…','…'],kunci:[true,false,false,true,false],label_b:'BENAR',label_s:'SALAH',jebakan:'J4',pembahasan:'…\nKemampuan: PU-DED-3 · Jenis: M · Format: J2'},
+    {no:15,bagian:'IND',kemampuan:'PU-IND-2',jenis_pola:'M',bentuk_dekat:'teks dengan data (LBE-16)',format:'J1',nyata:false,bidang:'lingkungan',tipe:'pg',teks:'…',tabel:{kolom:['…','…'],baris:[['…','…']]},perintah:'…',opsi:['…','…','…','…','…'],kunci:0,jebakan_opsi:[null,'J8','J7','J11','J6'],pembahasan:'…\nKemampuan: PU-IND-2 · Jenis: M · Format: J1'}]}]}));
+  P('(Contoh hanya menunjukkan bentuk JSON. "soal" berisi tepat 20 soal, urut nomor 1–20 sesuai rencana. "tabel" hanya bila perlu. Untuk "J5 (ditulis sebagai J2)", isi "format":"J5" dan "tipe":"bs".)');
+  return{teks:L.join('\n'),plan}}
+
 /* ================= MASKOT "BLOKI" & LATAR ================= */
 function mascot(pose){
   const c='#ffd24f',d='#c9971a',ink='#26304b',arm=(x1,y1,x2,y2)=>`<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${d}" stroke-width="13" stroke-linecap="round"/><path d="M${x1} ${y1} L${x2} ${y2}" stroke="${c}" stroke-width="8" stroke-linecap="round"/><circle cx="${x2}" cy="${y2}" r="7.5" fill="${c}" stroke="${d}" stroke-width="2.5"/>`;
