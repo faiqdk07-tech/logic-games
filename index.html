@@ -1448,7 +1448,7 @@ function mascot(pose){
 const HERO={
   'hari-ini':s=>s.selesai?['trophy','Menaramu sudah berdiri hari ini. Sampai besok, ya!','R']:(s.done&&Object.keys(s.done).length)?['wave','Pilih misi berikutnya. Tinggal sedikit lagi!','R']:['wave','Hai, aku Bloki! Yuk bangun menara nalar hari ini.','R'],
   main:()=>['jump','Main sebentar, otak tetap jalan. Pilih satu!','L'],
-  peta:()=>['map','Ini peta delapan keterampilanmu. Isi bulatannya satu per satu.','R peek'],
+  peta:()=>['map','Ini peta 11 kemampuan PU-mu. Tiap bulatan satu soal Set PU.','R peek'],
   rekap:()=>['trophy','Lihat jebakan yang paling sering menjeratmu minggu ini.','L tilt'],
   jurnal:()=>['pencil','Klaim apa yang kamu dengar hari ini? Tulis di sini.','L peek'],
   paket:()=>['box','Aku simpan stok kasus untuk hari-hari berikutnya.','R tilt flip']};
@@ -1723,13 +1723,22 @@ function vKalimat(s){return`<span class="lbl w" style="--lc:var(--green);margin-
 function finishSesi(simpan){const t=today();if(simpan){const v=($('#kal')||{}).value||'';if(v.trim())S.jurnal.push({t,teks:v.trim()})}donePart(4)}
 
 /* ================= PETA ================= */
-function vPeta(){let h=`<p class="intro" style="margin-bottom:22px">Tiap bulatan = satu butir kasus atau jembatan. Keterampilan naik tahap saat 10 butir terakhirnya benar 80% atau lebih.</p>`;
-  for(const k in SKILLS){const st=S.skills[k],n=st.r.length,b=st.r.reduce((a,x)=>a+x,0),c=SKCOL[k];
-    h+=`<div class="glass card has-st" style="--c:${c}">${studs(2,c)}<div class="row" style="gap:11px;align-items:flex-start"><span class="skb ${yk(c)}">${k}</span><div style="flex:1;min-width:0">
-      <div class="row sp"><b style="font-size:15px">${SKILLS[k]}</b><div class="tahap" title="Tahap ${st.tahap}">${[1,2,3].map(i=>`<i class="${i<=st.tahap?'on':''}"></i>`).join('')}</div></div>
-      <div class="tiny muted">${SKILL_DESC[k]}</div>
-      <div class="pips">${[...Array(10)].map((_,i)=>`<span class="pip ${i<n?(st.r[i]?'on':'off'):'none'}"></span>`).join('')}</div>
-      <div class="tiny" style="margin-top:6px;font-weight:600">Tahap ${st.tahap} · ${TAHAP[st.tahap]} <span class="muted" style="font-weight:400">· ${n?`${b}/${n} benar`:'belum ada butir'}</span></div></div></div></div>`}
+/* ================= REKAP KESIAPAN (kesiapan-2027 §2) =================
+   Dihitung dari log soal Set PU (src "jembatan" dengan kode kemampuan); varian Error Book tidak ikut.
+   Ambang data cukup sama dengan penyusun rencana: minimal 5 soal L, dan untuk indeks minimal 4 soal B/M. */
+const pct=a=>a.length?Math.round(a.filter(x=>x.ok).length/a.length*100):null;
+const rataD=a=>{const d=a.filter(x=>x.d!=null);return d.length?Math.round(d.reduce((t,x)=>t+x.d,0)/d.length):null};
+const desimal=(x,n)=>x.toFixed(n).replace('.',',');
+/* warna status: abu-abu pucat hanya untuk latar chip; teks di Peta memakai warna teks redup supaya terbaca */
+const ABU='color-mix(in srgb,var(--text) 55%,var(--gray))';
+function statusKm(st){if(!st.n)return['belum ada soal',ABU];if(st.dasar)return['Mode Dasar: hanya soal L','var(--red)'];
+  if(st.naik)return['porsi B dan M dinaikkan','var(--orange)'];if(st.indeks==null)return['data belum cukup',ABU];return[st.indeks>=.9?'dalam target':'di bawah target 0,90','var(--green)']}
+function vPeta(){let h=`<p class="intro" style="margin-bottom:22px">Sebelas kemampuan PU dari Brief. Tiap bulatan = satu soal Set PU (10 terakhir). Dari ±20 soal terakhir tiap kemampuan: akurasi soal L di bawah 70% berarti besok hanya soal L; Indeks Kesiapan di bawah 0,75 berarti porsi B dan M dinaikkan.</p>`;
+  Object.keys(KEMAMPUAN).forEach(k=>{const st=kmStat(k),L=S.log.filter(x=>x.k===k&&x.src==='jembatan'),r=L.slice(-10).map(x=>x.ok),c=k.includes('DED')?'var(--blue)':'var(--orange)',[stt,sc]=statusKm(st);
+    h+=`<div class="glass card has-st" style="--c:${c}">${studs(2,c)}<div class="row" style="gap:11px;align-items:flex-start"><span class="skb ${yk(c)}" style="min-width:58px">${k.replace('PU-','')}</span><div style="flex:1;min-width:0">
+      <div class="row sp"><b style="font-size:14.5px">${esc(cap(KEMAMPUAN[k]))}</b></div>
+      <div class="pips">${[...Array(10)].map((_,i)=>`<span class="pip ${i<r.length?(r[i]?'on':'off'):'none'}"></span>`).join('')}</div>
+      <div class="tiny" style="margin-top:6px;font-weight:600"><span style="color:${sc}">${stt}</span> <span class="muted" style="font-weight:400">· ${L.length} soal · L ${st.aL==null?'–':Math.round(st.aL*100)+'%'} · B+M ${st.aBM==null?'–':Math.round(st.aBM*100)+'%'}${st.indeks!=null?' · indeks '+desimal(st.indeks,2):''}</span></div></div></div></div>`});
   return h}
 
 /* ================= ERROR BOOK =================
@@ -1846,14 +1855,24 @@ function vRekap(){const w=weekLog(7);const tr=topTraps(w.filter(x=>x.src!=='game
   if(ka.length>=3&&je.length>=3){if(pk-pj>=15)interp='Kasus nyata lebih baik daripada jembatan: masalahnya kemungkinan di membaca bentuk soal UTBK.';else if(pj-pk>=15)interp='Jembatan lebih baik daripada kasus nyata: masalahnya kemungkinan di menerapkan logika di luar soal.';else interp='Kasus nyata dan jembatan seimbang. Bagus, logikamu terbawa ke dua arah.'}
   const days=[...Array(7)].map((_,i)=>addDays(today(),i-6));
   let h=`<div class="glass card has-st">${studs(4)}<span class="lbl w" style="--lc:var(--green)">7 hari terakhir</span><div class="days">${days.map(d=>{const s=S.sesi[d];const on=s&&s.selesai;return`<div><span class="b${on?'':' x'}" style="--c:${on?'var(--green)':s&&s.fase>0?'var(--yellow)':'var(--gray)'}"></span><div class="tiny muted" style="margin-top:4px;font-weight:600">${HARI[new Date(d+'T12:00:00').getDay()].slice(0,3)}</div></div>`}).join('')}</div></div>`;
+  {const P=w.filter(x=>x.src==='jembatan'&&x.k);
+  if(P.length){const by=j=>P.filter(x=>x.jp===j),L=by('L'),BM=P.filter(x=>x.jp==='B'||x.jp==='M'),aT=pct(P),aL=pct(L),aBM=pct(BM),dBM=rataD(BM);
+    const cukup=L.length>=5&&BM.length>=4,ind=cukup&&aL?aBM/aL:null,cek=(ok,teks)=>`<span style="color:var(${ok?'--ok':'--bad'});font-weight:600">${teks}</span>`;
+    h+=`<div class="glass card has-st">${studs(3,'var(--blue)')}${tl('Kesiapan 2027 · 7 hari','var(--blue)')}
+    <table class="t"><tr><th>Jenis</th><th>Benar/total</th><th>%</th><th>Waktu rata-rata</th></tr>${['L','G','B','M'].map(j=>{const a=by(j),d=rataD(a);return`<tr><td><b>${j}</b></td><td>${a.filter(x=>x.ok).length}/${a.length}</td><td>${a.length?pct(a)+'%':'–'}</td><td>${d==null?'–':d+' dtk'}</td></tr>`}).join('')}</table>
+    <div class="kv" style="margin-top:8px"><span class="muted">Akurasi total <span class="tiny">(target ≥ 80%)</span></span>${cek(aT>=80,aT+'%')}</div>
+    <div class="kv"><span class="muted">Indeks Kesiapan <span class="tiny">(B+M ÷ L, target ≥ 0,90)</span></span>${ind==null?'<span class="tiny muted" style="align-self:center">data belum cukup (minimal 5 soal L dan 4 soal B/M)</span>':cek(ind>=.9,desimal(ind,2))}</div>
+    <div class="kv"><span class="muted">Waktu bentuk baru <span class="tiny">(B+M ÷ 60 detik, target ≤ 1,25)</span></span>${dBM==null?'<span class="tiny muted" style="align-self:center">belum ada data waktu</span>':cek(dBM/60<=1.25,desimal(dBM/60,2))}</div>
+    <div class="tiny muted" style="margin-top:6px">Rencana harian memakai angka per kemampuan dari ±20 soal terakhir; rinciannya ada di halaman Peta.</div></div>`}}
   h+=`<div class="glass card has-st">${studs(3,'var(--red)')}${tl('Jebakan terbanyak','var(--red)')}${tr.length?tr.map(([k,c],i)=>`<div class="kv"><span>${i+1}. <b>${TRAPS[k]}</b></span><span class="muted">${c}x</span></div>`).join(''):'<div class="small muted">Belum ada jebakan yang menjeratmu minggu ini.</div>'}</div>`;
-  h+=`<div class="glass card has-st">${studs(3,'var(--blue)')}${tl('Kasus nyata vs jembatan UTBK','var(--blue)')}
-   ${pe.length?`<div class="kv"><span class="muted">Pemanasan</span>${pv(pe)}</div>`:''}
-   ${w.some(x=>x.src==='varian')?`<div class="kv"><span class="muted">Varian Error Book</span>${pv(w.filter(x=>x.src==='varian'))}</div>`:''}
-   <div class="kv"><span class="muted">Kasus nyata</span>${pv(ka)}</div>
-   <div class="kv"><span class="muted">Jembatan UTBK</span>${pv(je)}</div>
-   <div class="small" style="margin-top:6px">${interp}</div></div>`;
-  h+=`<div class="glass card has-st">${studs(3,'var(--yellow)')}${tl('Tahap keterampilan')}<div class="row wrapf" style="gap:6px">${Object.keys(SKILLS).map(k=>`<span class="chip" style="background:${SKCOL[k]};color:${yk(SKCOL[k])?'#2f333d':'#fff'}">${k} · T${S.skills[k].tahap}</span>`).join('')}</div></div>`;
+  {const v4=je.filter(x=>x.k),va=w.filter(x=>x.src==='varian');
+  h+=`<div class="glass card has-st">${studs(3,'var(--blue)')}${tl(v4.length?'Set PU per bagian':'Kasus nyata vs jembatan UTBK','var(--blue)')}
+   ${v4.length?`<div class="kv"><span class="muted">Deduktif</span>${pv(v4.filter(x=>x.k.includes('DED')))}</div><div class="kv"><span class="muted">Induktif</span>${pv(v4.filter(x=>x.k.includes('IND')))}</div>`:''}
+   ${va.length?`<div class="kv"><span class="muted">Varian Error Book</span>${pv(va)}</div>`:''}
+   ${pe.length?`<div class="kv"><span class="muted">Pemanasan (data lama)</span>${pv(pe)}</div>`:''}
+   ${ka.length||!v4.length?`<div class="kv"><span class="muted">Kasus nyata</span>${pv(ka)}</div><div class="kv"><span class="muted">Jembatan UTBK</span>${pv(je.filter(x=>!x.k))}</div><div class="small" style="margin-top:6px">${interp}</div>`:''}</div>`}
+  h+=`<div class="glass card has-st">${studs(3,'var(--yellow)')}${tl('Status kemampuan')}<div class="row wrapf" style="gap:6px">${Object.keys(KEMAMPUAN).map(k=>{const[t,c]=statusKm(kmStat(k));return`<span class="chip" title="${esc(t)}" style="background:${c};color:#fff">${k.replace('PU-','')}</span>`}).join('')}</div>
+  <div class="tiny muted" style="margin-top:8px"><span style="color:var(--green);font-weight:600">hijau</span> dalam target · <span style="color:var(--orange);font-weight:600">oranye</span> porsi B/M naik · <span style="color:var(--red);font-weight:600">merah</span> Mode Dasar · abu-abu data belum cukup</div></div>`;
   {const p=ebPerlu().length,d=ebDue().length,a=ebAktif().length,lu=ebAll().filter(x=>x.lulus).length;
   h+=`<div class="glass card has-st">${studs(3,'var(--purple)')}<div class="row sp">${tl('Error Book','var(--purple)',1)}<span class="tiny muted">${a} aktif · ${lu} lulus</span></div><div class="small" style="margin-top:8px">${p||d?[p?p+' butir perlu diagnosis':'',d?d+' jatuh tempo diulang':''].filter(Boolean).join(' · '):'Tidak ada yang menunggu hari ini.'}</div><button class="btn sm" style="margin-top:10px" data-act="nav" data-v="eb">Buka Error Book</button></div>`}
   const g=S.games;h+=`<div class="glass card has-st">${studs(3,'var(--purple)')}${tl('Mini game pendamping','var(--purple)')}${GAMES.map(x=>`<div class="kv"><span>${x.nama}</span><span class="muted">terbaik ${g[x.id]?g[x.id].best:0} · ${g[x.id]?g[x.id].main:0}x main</span></div>`).join('')}</div>`;
