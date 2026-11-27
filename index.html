@@ -23,7 +23,7 @@ body{font:14.5px/1.5 "Rubik",-apple-system,"Segoe UI",Roboto,sans-serif;color:va
   background-color:var(--base);
   background-image:radial-gradient(circle at 11px 10px,var(--stud-hi) 0 4.5px,transparent 5px),radial-gradient(circle at 12px 12px,var(--stud-lo) 0 6px,transparent 6.5px);
   background-size:24px 24px;background-attachment:fixed;
-  padding:calc(env(safe-area-inset-top) + 8px) 0 calc(env(safe-area-inset-bottom) + 104px)}
+  padding:calc(env(safe-area-inset-top) + 8px) 0 calc(env(safe-area-inset-bottom) + 128px)}
 .bg{display:none}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none;-webkit-tap-highlight-color:transparent}
@@ -231,11 +231,15 @@ pre.pv{white-space:pre-wrap;font-size:11.5px;line-height:1.4;max-height:220px;ov
 :root{color-scheme:light}
 body{background:linear-gradient(180deg,#dcecff 0%,#eaf4ff 45%,#f4f9ff 100%) fixed!important;background-image:none}
 body{background:linear-gradient(180deg,#dcecff 0%,#eaf4ff 45%,#f4f9ff 100%) fixed}
-.scene{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.scene{position:fixed;inset:0 0 -200px 0;z-index:-1;overflow:hidden;pointer-events:none}
+/* latar dipanjangkan 200px ke bawah layar + diberi tanah hijau, supaya saat toolbar Safari menyusut
+   atau halaman memantul tidak muncul pita kosong di bawah bukit */
+.scene::after{content:'';position:absolute;left:0;right:0;bottom:0;height:201px;background:#a6dcb6}
+html{overscroll-behavior-y:none}
 .scene .cloud{position:absolute;opacity:.9}
 .scene .fbrick{position:absolute;width:38px;opacity:.55;transform:rotate(var(--r));animation:float 7s ease-in-out infinite}
 @keyframes float{50%{transform:rotate(var(--r)) translateY(-10px)}}
-.scene .hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:150px}
+.scene .hills{position:absolute;left:0;right:0;bottom:200px;width:100%;height:150px}
 .hero{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:6px;min-height:168px;margin:-6px 0 10px}
 .hero .masc{width:178px;height:178px;flex:none;margin-right:-10px;animation:hop 3.2s ease-in-out infinite;transform-origin:50% 100%}
 @keyframes hop{0%,100%{transform:none}45%{transform:translateY(-6px) rotate(-1.5deg)}55%{transform:translateY(-6px) rotate(1.5deg)}}
