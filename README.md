@@ -36,4 +36,11 @@ Setelah sesi selesai, aplikasi menulis ke `localStorage` kunci `nalarHarian:ring
 
 Karena semua aplikasi ada di domain `github.io` yang sama, Progres Harian bisa membaca kunci ini untuk tugas "Nalar Harian".
 
-Data utama ada di kunci `nalarHarian.v1`. Salin cadangan dari halaman Paket sesekali.
+Data utama ada di kunci `nalarHarian.v1`.
+
+## Penyimpanan dan perampingan
+Semua app di `faiqdk07-tech.github.io` berbagi satu kuota localStorage (±5 MB). Pengaturan → Penyimpanan menampilkan pemakaian semua app dan app ini, daftar data yang bisa dirampingkan, serta tombol cadangan.
+- Perampingan baru aktif setelah cadangan pertama ("Salin cadangan dulu" atau "Unduh berkas cadangan"); setelah itu berjalan otomatis sekali sehari saat app dibuka, atau lewat "Rampingkan sekarang".
+- Aturan (data lebih dari 30 hari, key tidak berubah): paket soal dibuang; butir Error Book yang sudah lulus diringkas (butir aktif tetap utuh); riwayat jawaban tidak dihapus, hanya kolom kosong dibuang; sesi lama kehilangan data tampilan saja. Data 30 hari terakhir utuh.
+- Bila penyimpanan penuh, muncul tanda "Belum tersimpan" yang membuka Pengaturan.
+- Cadangan berbentuk `{"app","key","dibuat","data"}`; "Pulihkan dari cadangan" menerima bentuk ini dan bentuk lama.
