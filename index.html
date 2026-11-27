@@ -641,6 +641,15 @@ html[data-theme="dark"] .rule2 .rc,html[data-theme="dark"] .vtl{background:#2831
 .ebfold summary{list-style:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer}.ebfold summary::-webkit-details-marker{display:none}
 .ebchev{font-weight:700;font-size:18px;transition:transform .2s}.ebfold[open] .ebchev{transform:rotate(90deg)}
 html[data-theme="dark"] .ebrule{background:#3d3824;color:#f3ecd0}html[data-theme="dark"] .ebtrap{color:#ffd9d6}
+/* ===== mode waktu Set PU: Santai / Sprint / Survival ===== */
+.mw-seg{display:flex;gap:4px;padding:4px;border:2px solid var(--line);border-radius:12px;background:var(--plate)}
+.mw-seg button{flex:1;height:38px;border-radius:9px;font-weight:700;font-size:14px;color:var(--text);background:transparent;border:0;cursor:pointer}
+.mw-seg button.on{background:var(--mc);color:#fff}
+.mw-ban{display:flex;gap:12px;align-items:center;margin-top:10px;padding:13px 15px;border-radius:12px;color:#fff;background:linear-gradient(90deg,var(--m1),var(--m2))}
+.mw-ban .ic{font-size:26px;line-height:1;flex:none}.mw-ban b{display:block;font-size:16px}.mw-ban span{font-size:13px;opacity:.95}
+.mw-pills{display:flex;flex-wrap:wrap;gap:6px}.mw-pills button{flex:1;min-width:64px;height:36px;border-radius:9px;border:2px solid var(--line);background:var(--plate);color:var(--text);font-weight:700;font-size:13.5px;cursor:pointer}
+.mw-pills button.on{background:var(--mc);border-color:var(--mc);color:#fff}
+.mw-big{font-family:"Lilita One","Rubik",sans-serif;font-size:40px;line-height:1.1;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -1284,19 +1293,62 @@ function openCfg(){const c=cfg();
 
 /* ================= HARI INI ================= */
 let KAS=null,JEM=null;
-/* ===== pewaktu Set PU (R7) =====
-   10 menit per bagian (Deduktif, Induktif). Waktu tiap soal dicatat dalam detik dan berhenti selama pembahasan dibaca,
-   saat keluar dari misi, dan saat aplikasi tidak terlihat. Bila 10 menit habis, sisa soal tetap bisa dikerjakan tetapi
-   ditandai "lewat waktu". Posisi soal (s.jemI) dan waktu terpakai (s.wkt, s.wktCarry) disimpan di sesi hari itu,
-   supaya muat ulang tidak mengulang set dari soal 1. */
-const BATAS_BAGIAN=600000;let jemTimer=null;
-function wktPakai(s,b){const w=(s.wkt||{})[b]||0;return w+(JEM&&JEM.b===b&&!JEM.answered?(JEM.t0?Date.now()-JEM.t0:0)+(s.wktCarry||0):0)}
+/* ===== pewaktu Set PU =====
+   Sebelum mengerjakan, pilih mode waktu:
+   - Santai: tanpa hitung mundur; waktu tiap soal tetap dicatat.
+   - Sprint: pilih durasi (3/5/10/20 menit), kerjakan sebanyak mungkin. Saat waktu habis, run berhenti;
+     soal yang sedang tampil belum dihitung dan tetap menunggu.
+   - Survival: batas per soal 60 detik (resmi), 45, atau 30 detik. Satu jawaban salah atau waktu habis = run selesai.
+   Batas per soal tidak pernah lebih longgar dari waktu resmi; yang bisa dipendekkan hanya lama sesi.
+   Waktu berhenti selama pembahasan dibaca, saat keluar dari misi, dan saat aplikasi tidak terlihat.
+   Posisi soal (s.jemI) disimpan di sesi hari itu, jadi sisa soal bisa dilanjutkan di run berikutnya. */
+let jemTimer=null;
+const MW={santai:{nama:'Santai',c:'#4fa9f0',g:['#6fd3f8','#4fa9f0'],ic:'🌿',tag:'Waktu bebas, maksimalkan akurasi'},
+  sprint:{nama:'Sprint',c:'#e8894a',g:['#f0b26e','#e8894a'],ic:'⚡',tag:'Siap ngebut? Selesaikan sebanyak mungkin'},
+  survival:{nama:'Survival',c:'#d9534f',g:['#ef7d78','#d9534f'],ic:'🔥',tag:'Bertahan selama mungkin, raih streak terpanjang!'}};
+const MW_SPR=[3,5,10,20],MW_SV=[60,45,30];
+function mwPref(){const m=S.mw||{};return{m:MW[m.m]?m.m:'sprint',spr:MW_SPR.includes(m.spr)?m.spr:10,sv:MW_SV.includes(m.sv)?m.sv:60}}
+function mwSet(k,v){S.mw=Object.assign(mwPref(),{[k]:v});save();render()}
+function mwPicker(){const P=mwPref(),M=MW[P.m];
+  let h=`<div class="mw-seg">${Object.keys(MW).map(k=>`<button class="${k===P.m?'on':''}" style="--mc:${MW[k].c}" data-act="mwMode" data-v="${k}">${MW[k].nama}</button>`).join('')}</div>
+  <div class="mw-ban" style="--m1:${M.g[0]};--m2:${M.g[1]}"><span class="ic">${M.ic}</span><div><b>Mode ${M.nama}</b><span>${M.tag}</span></div></div>`;
+  if(P.m==='sprint')h+=`<div class="cap" style="margin-top:14px">Batas waktu</div><div class="mw-pills" style="--mc:${M.c}">${MW_SPR.map(x=>`<button class="${x===P.spr?'on':''}" data-act="mwSpr" data-v="${x}">${x} menit</button>`).join('')}</div>
+    <div class="tiny muted" style="margin-top:8px">Target ±${P.spr} soal (60 detik per soal). Waktu habis = run berhenti; sisa soal bisa dilanjutkan nanti.</div>`;
+  else if(P.m==='survival')h+=`<div class="cap" style="margin-top:14px">Timer per soal</div><div class="mw-pills" style="--mc:${M.c}">${MW_SV.map(x=>`<button class="${x===P.sv?'on':''}" data-act="mwSv" data-v="${x}">${x} detik${x===60?' · resmi':''}</button>`).join('')}</div>
+    <div class="tiny muted" style="margin-top:8px">Satu jawaban salah atau waktu habis, run selesai. Sisa soal bisa dilanjutkan nanti.</div>`;
+  else h+=`<div class="tiny muted" style="margin-top:10px">Tanpa hitung mundur. Waktu tiap soal tetap dicatat di rekap (waktu resmi 60 detik per soal).</div>`;
+  return h}
+function curMs(s){return JEM&&!JEM.answered?(JEM.t0?Date.now()-JEM.t0:0)+(s.wktCarry||0):0}
+function mwLim(R){return R.m==='sprint'?R.spr*60000-R.used:R.m==='survival'?R.sv*1000:0}
+function mwSisa(s){const R=JEM&&JEM.run;return R&&R.m!=='santai'?mwLim(R)-curMs(s):null}
+function mwEnd(s){const R=JEM&&JEM.run;return R&&R.m!=='santai'&&!R.over&&!JEM.answered&&JEM.t0?JEM.t0+mwLim(R)-(s.wktCarry||0):0}
 function fmtSisa(ms){const a=Math.abs(ms),m=Math.floor(a/60000),d=Math.floor(a/1000)%60;return m+':'+String(d).padStart(2,'0')}
-function tickJem(){const s=S.sesi[today()],el=$('#jtime');if(!el||!JEM||!s||!JEM.b)return;const sisa=BATAS_BAGIAN-wktPakai(s,JEM.b);
-  el.textContent=sisa>=0?'⏱ '+fmtSisa(sisa):'Lewat waktu +'+fmtSisa(sisa);el.classList.toggle('bad',sisa<0);el.classList.toggle('y',sisa>=0)}
+function tickJem(){const s=S.sesi[today()],el=$('#jtime');if(!el||!JEM||!s||!JEM.b||!JEM.run||JEM.run.over)return;const R=JEM.run;
+  if(R.m==='santai'){el.textContent='⏱ '+fmtSisa(JEM.answered?(JEM.d||0)*1000:curMs(s));return}
+  const sisa=Math.max(0,mwSisa(s)),low=sisa<(R.m==='sprint'?60000:10000);
+  el.textContent=R.m==='sprint'?'⚡ '+fmtSisa(sisa):'🔥 '+(JEM.answered?(JEM.habis?0:Math.max(0,R.sv-JEM.d)):Math.ceil(sisa/1000))+' dtk';el.classList.toggle('bad',low);el.classList.toggle('y',!low);
+  if(sisa<=0&&!JEM.answered&&JEM.t0)mwHabis(s)}
 function jemJeda(s){if(JEM&&JEM.t0){s.wktCarry=(s.wktCarry||0)+(Date.now()-JEM.t0);JEM.t0=null;save()}clearInterval(jemTimer)}
 function jemCatat(s,b){const ms=(JEM.t0?Date.now()-JEM.t0:0)+(s.wktCarry||0);JEM.t0=null;s.wktCarry=0;clearInterval(jemTimer);
-  s.wkt=s.wkt||{DED:0,IND:0};s.wkt[b]=(s.wkt[b]||0)+ms;return{d:Math.round(ms/1000),lw:s.wkt[b]>BATAS_BAGIAN?1:0}}
+  s.wkt=s.wkt||{DED:0,IND:0};s.wkt[b]=(s.wkt[b]||0)+ms;JEM.ms=ms;const R=JEM.run;return Object.assign({d:Math.round(ms/1000)},R?{mw:{santai:'a',sprint:'p',survival:'v'}[R.m]}:{})}
+/* catat hasil satu soal ke run yang sedang berjalan */
+function mwCatat(ok){const R=JEM.run;if(!R)return;R.n++;if(ok)R.b++;if(R.m==='sprint')R.used+=JEM.ms||0;
+  if(R.m==='survival'&&!ok){R.end=1;S.mwBest=Math.max(S.mwBest||0,R.b);save()}}
+/* waktu habis: sprint berhenti (soal yang tampil belum dihitung), survival dihitung salah */
+function mwHabis(s){const R=JEM.run;clearInterval(jemTimer);
+  if(R.m==='sprint'){JEM.t0=null;s.wktCarry=0;R.used=R.spr*60000;R.over=1;save();render();return}
+  const p=S.paket[s.paketId],q=soalPaket(p)[JEM.i],bs=(q.jenis||'pg')==='bs',tm=jemCatat(s,q.bagian);
+  JEM.d=tm.d;s.jemI=JEM.i+1;JEM.answered=true;JEM.ok=false;JEM.habis=true;JEM.chosen=-1;s.jem.n++;seqPush(s,'j0');mwCatat(false);
+  record('jembatan',skSoal(p,q),false,null,Object.assign(bs?{jenis:'bs',teks:q.teks,perintah:q.perintah,pernyataan:q.pernyataan,kunci:q.kunci,label_b:q.label_b,label_s:q.label_s,jw:{},pembahasan:q.pembahasan}
+    :{teks:q.teks,perintah:q.perintah,opsi:q.opsi,kunci:q.kunci,jw:-1,pembahasan:q.pembahasan},dataSoal(q),{detik:tm.d}),Object.assign({},logSoal(q),tm));render()}
+function mwHasil(s,Q){const R=JEM.run,M=MW[R.m],sisa=Q.length-(s.jemI||0);
+  const big=R.m==='survival'?`<div class="mw-big">${R.b}</div><div class="tiny muted">streak benar${(S.mwBest||0)>0?' · terbaik '+S.mwBest:''}${R.b>0&&R.b>=(S.mwBest||0)?' · rekor baru!':''}</div>`
+    :`<div class="mw-big">${R.b}/${R.n}</div><div class="tiny muted">benar dalam ${R.spr} menit${R.n?' · rata-rata '+Math.round(R.used/1000/R.n)+' dtk per soal':''}</div>`;
+  return`<div class="glass card has-st">${studs(4,M.c)}<div class="mw-ban" style="margin-top:0;--m1:${M.g[0]};--m2:${M.g[1]}"><span class="ic">${M.ic}</span><div><b>${R.m==='survival'?'Survival berakhir':'Waktu sprint habis'}</b><span>${R.m==='survival'?(JEM.habis?'Waktu soal terakhir habis.':'Satu jawaban salah mengakhiri run.'):'Bagus, kamu sudah melangkah.'}</span></div></div>
+  <div style="text-align:center;margin:16px 0 6px">${big}</div>
+  <div class="tiny muted" style="text-align:center">${sisa>0?`Sisa ${sisa} soal Set PU menunggu run berikutnya.`:'Semua soal Set PU sudah dikerjakan.'}</div>
+  ${sisa>0?`<button class="btn p w" style="margin-top:14px" data-act="mwLagi">Run lagi</button><button class="btn w" style="margin-top:10px" data-act="leavePart">Kembali ke misi</button>`
+    :`<button class="btn p w" style="margin-top:14px" data-act="jemSelesai">Selesai · kembali ke misi</button>`}</div>`}
 /* ringkasan waktu Set PU hari ini dari log */
 function ringkasWaktu(t){const L=S.log.filter(x=>x.t===t&&x.src==='jembatan'&&x.d!=null);if(!L.length)return null;
   return{n:L.length,rata:Math.round(L.reduce((a,x)=>a+x.d,0)/L.length),lebih60:L.filter(x=>x.d>60).length,lewat:L.filter(x=>x.lw).length}}
@@ -1328,7 +1380,7 @@ function vHari(){
     ${s.var&&s.var.n?`<div class="kv"><span class="muted">Varian Error Book</span><b>${s.var.b}/${s.var.n} <span class="tiny muted">(skor terpisah)</span></b></div>`:''}
     ${(()=>{const w=ringkasWaktu(t);if(!w)return'';const bg=s.wkt||{};return`<div class="kv"><span class="muted">Waktu per soal</span><b>rata-rata ${w.rata} dtk</b></div>
     <div class="kv"><span class="muted">Di atas 60 detik</span><b>${w.lebih60} dari ${w.n} soal</b></div>
-    <div class="kv"><span class="muted">Deduktif · Induktif</span><b>${fmtSisa(bg.DED||0)} · ${fmtSisa(bg.IND||0)} <span class="tiny muted">(batas 10:00)</span></b></div>${w.lewat?`<div class="kv"><span class="muted">Dikerjakan lewat batas</span><b>${w.lewat} soal</b></div>`:''}`})()}
+    <div class="kv"><span class="muted">Deduktif · Induktif</span><b>${fmtSisa(bg.DED||0)} · ${fmtSisa(bg.IND||0)}</b></div>${w.lewat?`<div class="kv"><span class="muted">Dikerjakan lewat batas</span><b>${w.lewat} soal</b></div>`:''}`})()}
     <div class="row" style="margin-top:12px"><button class="btn sm" data-act="nav" data-v="rekap">Lihat rekap</button><button class="btn sm" data-act="nav" data-v="main">Mini game</button></div></div>`}
   else{
     h+=`<div class="glass card has-st">${studs(3,'var(--plate)')}<div class="row sp"><span class="lbl">${v4?'Sesi ±30 menit':'Sesi ±15 menit'}</span><button class="btn sm" data-act="nav" data-v="paket">Paket · ${stok}</button></div>
@@ -1422,22 +1474,25 @@ function vJem(s){const p=s.paketId&&S.paket[s.paketId];if(!p)return`<div class="
     <p class="small muted">Soal jembatan diambil dari paket yang sama dengan kasus. Tempel paket di halaman Paket, atau lewati dulu.</p>
     <div class="opts"><button class="btn" data-act="nav" data-v="paket">Buka halaman Paket</button><button class="btn" data-act="skipJem">Lewati jembatan hari ini</button></div></div>`;
   const v4=isV4(p);
-  if(v4){if(!(s.intro&&s.intro[3])&&!(S.introLihat&&S.introLihat['v4']))return introCard('Set PU','var(--blue)',['20 soal: Deduktif 10, lalu Induktif 10.','Waktu resmi 60 detik per soal. Soal benar/salah: semua baris harus tepat.'],'sesiGo',3,'Mulai soal')}
-  else{const it=sesiIntro(s,3);if(it)return it}
+  if(!v4){const it=sesiIntro(s,3);if(it)return it}
   if(!JEM)JEM={i:v4?(s.jemI||0):0,answered:false,bs:{}};const Q=soalPaket(p);
+  if(v4&&JEM.i<Q.length&&(!JEM.run||JEM.run.over)){clearInterval(jemTimer);if(JEM.run)return mwHasil(s,Q);
+    return`<div class="glass card has-st">${studs(4,COL.jem)}<span class="lbl w" style="--lc:var(--blue)">Set PU</span>
+    <div class="tiny muted" style="margin:8px 0 12px">${JEM.i?`Sisa ${Q.length-JEM.i} dari ${Q.length} soal.`:`${Q.length} soal: Deduktif 10, lalu Induktif 10.`} Soal benar/salah: semua baris harus tepat.</div>
+    ${mwPicker()}<button class="btn p w" style="margin-top:16px" data-act="mwGo">Mulai ${MW[mwPref().m].nama}</button></div>`}
   if(v4&&JEM.i>=Q.length)return`<div class="glass card"><div class="lbl">Set PU</div><h2>Semua soal sudah dikerjakan</h2><button class="btn p w" style="margin-top:10px" data-act="jemSelesai">Selesai · kembali ke misi</button></div>`;
   const q=Q[JEM.i],bs=(q.jenis||'pg')==='bs';
   if(v4){JEM.b=q.bagian;clearInterval(jemTimer);if(!JEM.answered){if(!JEM.t0&&!document.hidden)JEM.t0=Date.now();jemTimer=setInterval(tickJem,500)}after(tickJem)}
   const ke=v4?Q.slice(0,JEM.i+1).filter(x=>x.bagian===q.bagian).length:0,nB=v4?Q.filter(x=>x.bagian===q.bagian).length:0;
   const judul=v4?`${q.bagian==='IND'?'Induktif':'Deduktif'} · ${ke}/${nB}`:`Jembatan UTBK · ${JEM.i+1}/${Q.length}`;
   const chip=v4?`<span class="chip a">${esc(q.kemampuan||'')}</span>${q.nyata?'<span class="chip">kasus nyata</span>':''}`:`<span class="chip a">${esc(q.keterampilan||(p.kasus&&p.kasus.keterampilan)||'')}</span>`;
-  let h=`${v4&&ke===1&&q.bagian==='IND'&&JEM.i>0?'<div class="tiny muted" style="margin:0 4px 8px;font-weight:600">Bagian Deduktif selesai. Lanjut ke bagian Induktif.</div>':''}<div class="row sp wrapf" style="margin:2px 2px 0"><span class="lbl w" style="--lc:var(--blue)">${judul}</span><div class="row" style="gap:6px">${v4?'<span class="chip y" id="jtime">⏱</span>':''}${chip}</div></div>
+  let h=`${v4&&ke===1&&q.bagian==='IND'&&JEM.i>0?'<div class="tiny muted" style="margin:0 4px 8px;font-weight:600">Bagian Deduktif selesai. Lanjut ke bagian Induktif.</div>':''}<div class="row sp wrapf" style="margin:2px 2px 0"><span class="lbl w" style="--lc:var(--blue)">${judul}</span><div class="row" style="gap:6px">${v4?'<span class="chip y" id="jtime" style="font-variant-numeric:tabular-nums">⏱</span>':''}${chip}</div></div>
   <div class="glass card has-st" style="margin-top:16px">${studs(4,COL.jem)}${stimBox(q.teks)}${tabelHTML(q.tabel)}<div class="qask"${q.teks?'':' style="margin-top:0"'}>${esc(q.perintah||'')}</div>`;
   if(bs){h+=bsRows(q,JEM.bs,JEM.answered,'bsPick');
     if(!JEM.answered)h+=`<button class="btn p w" style="margin-top:12px" data-act="bsCek" ${Object.keys(JEM.bs).length<q.pernyataan.length?'disabled':''}>Periksa</button>`}
   else h+=`<div class="opts" style="--c:var(--blue)">${q.opsi.map((o,i)=>{let c='';if(JEM.answered){c=i===q.kunci?'ok':i===JEM.chosen?'bad':'dim'}return`<button class="opt ${c}" data-act="jemOpt" data-v="${i}" ${JEM.answered?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
-  if(JEM.answered){const jj=bs?q.jebakan:(q.jebakan_opsi||[])[JEM.chosen];h+=`<div class="fb">${JEM.ok?'<b style="color:var(--ok)">Tepat.</b> ':`<b style="color:var(--bad)">Belum tepat.</b> ${bs?`<span class="muted">(${q.pernyataan.filter((_,i)=>JEM.bs[i]===q.kunci[i]).length}/${q.pernyataan.length} baris benar; semua baris harus tepat)</span> `:''}`}${pembahasanHTML(q.pembahasan)}${v4&&JEM.d!=null?`<div class="tiny ${JEM.d>60?'':'muted'}" style="margin-top:6px;${JEM.d>60?'color:var(--bad);font-weight:600':''}">Waktu: ${JEM.d} detik${JEM.d>60?' (di atas 60 detik)':''}${JEM.lw?' · lewat batas 10 menit bagian ini':''}</div>`:''}${!JEM.ok&&jj&&TRAPS[jj]?`<div style="margin-top:6px"><span class="chip bad">${bs?'Jebakan':'Jebakan pilihanmu'}: ${TRAPS[jj]}</span></div>`:''}</div>
-    <button class="btn p w" style="margin-top:10px" data-act="jemNext">${JEM.i<Q.length-1?'Soal berikutnya':'Lanjut'}</button>`}
+  if(JEM.answered){const jj=bs?q.jebakan:(q.jebakan_opsi||[])[JEM.chosen];h+=`<div class="fb">${JEM.ok?'<b style="color:var(--ok)">Tepat.</b> ':`<b style="color:var(--bad)">Belum tepat.</b> ${bs?`<span class="muted">(${q.pernyataan.filter((_,i)=>JEM.bs[i]===q.kunci[i]).length}/${q.pernyataan.length} baris benar; semua baris harus tepat)</span> `:''}`}${pembahasanHTML(q.pembahasan)}${v4&&JEM.d!=null?`<div class="tiny ${JEM.d>60||JEM.habis?'':'muted'}" style="margin-top:6px;${JEM.d>60||JEM.habis?'color:var(--bad);font-weight:600':''}">${JEM.habis?`Waktu habis (batas ${JEM.run.sv} detik).`:`Waktu: ${JEM.d} detik${JEM.d>60?' (di atas 60 detik)':''}`}${JEM.run&&JEM.run.end?' Run Survival selesai di soal ini.':''}</div>`:''}${!JEM.ok&&jj&&TRAPS[jj]?`<div style="margin-top:6px"><span class="chip bad">${bs?'Jebakan':'Jebakan pilihanmu'}: ${TRAPS[jj]}</span></div>`:''}</div>
+    <button class="btn p w" style="margin-top:10px" data-act="jemNext">${JEM.i>=Q.length-1?'Lanjut':JEM.run&&(JEM.run.end||(JEM.run.m==='sprint'&&mwLim(JEM.run)<=0))?'Lihat hasil':'Soal berikutnya'}</button>`}
   return h+'</div>'}
 
 /* kotak bacaan: teks panjang/bercerita tampil seperti cerita, teks pendek tetap polos */
@@ -2037,10 +2092,10 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
     kasAnswer(ok,{teks:k.kalimat.join(' '),perintah:l.perintah,opsi:l.opsi,kunci:l.kunci,jw:i,pembahasan:l.pembahasan||k.pembahasan||''});break}
   case'kasNext':{const L=S.paket[KAS.pid].kasus.langkah;if(KAS.step<L.length-1){KAS.step++;KAS.answered=false;KAS.chosen=null}else{KAS.done=true;S.paket[KAS.pid].dipakai=today();save()}render();window.scrollTo(0,0);break}
   case'toJem':s.done[2]=true;s.fase=3;JEM=null;save();render();window.scrollTo(0,0);break;
-  case'jemOpt':{if(JEM.answered)break;const p=S.paket[s.paketId],q=soalPaket(p)[JEM.i],i=+v,tm=isV4(p)?jemCatat(s,q.bagian):null;if(tm){JEM.d=tm.d;JEM.lw=tm.lw;s.jemI=JEM.i+1}JEM.chosen=i;JEM.answered=true;JEM.ok=i===q.kunci;s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
+  case'jemOpt':{if(JEM.answered)break;const p=S.paket[s.paketId],q=soalPaket(p)[JEM.i],i=+v,tm=isV4(p)?jemCatat(s,q.bagian):null;if(tm){JEM.d=tm.d;s.jemI=JEM.i+1}JEM.chosen=i;JEM.answered=true;JEM.ok=i===q.kunci;mwCatat(JEM.ok);s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
     record('jembatan',skSoal(p,q),JEM.ok,(q.jebakan_opsi||[])[i],Object.assign({teks:q.teks,perintah:q.perintah,opsi:q.opsi,kunci:q.kunci,jw:i,pembahasan:q.pembahasan},dataSoal(q),tm?{detik:tm.d}:{}),Object.assign({},logSoal(q),tm));render();break}
   case'bsPick':if(!JEM.answered){JEM.bs[+b.dataset.i]=v==='1';render()}break;
-  case'bsCek':{if(JEM.answered)break;const p=S.paket[s.paketId],q=soalPaket(p)[JEM.i],tm=isV4(p)?jemCatat(s,q.bagian):null;if(tm){JEM.d=tm.d;JEM.lw=tm.lw;s.jemI=JEM.i+1}JEM.answered=true;JEM.ok=q.pernyataan.every((_,i)=>JEM.bs[i]===q.kunci[i]);s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
+  case'bsCek':{if(JEM.answered)break;const p=S.paket[s.paketId],q=soalPaket(p)[JEM.i],tm=isV4(p)?jemCatat(s,q.bagian):null;if(tm){JEM.d=tm.d;s.jemI=JEM.i+1}JEM.answered=true;JEM.ok=q.pernyataan.every((_,i)=>JEM.bs[i]===q.kunci[i]);mwCatat(JEM.ok);s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
     record('jembatan',skSoal(p,q),JEM.ok,q.jebakan,Object.assign({jenis:'bs',teks:q.teks,perintah:q.perintah,pernyataan:q.pernyataan,kunci:q.kunci,label_b:q.label_b,label_s:q.label_s,jw:Object.assign({},JEM.bs),pembahasan:q.pembahasan},dataSoal(q),tm?{detik:tm.d}:{}),Object.assign({},logSoal(q),tm));render();break}
   case'ubsPick':if(UB&&!UB.answered){UB.sel[+b.dataset.i]=v==='1';renderUlangBS()}break;
   case'ubsCek':{const x=S.salah.find(y=>y.id===UB.id);UB.answered=true;UB.ok=x.pernyataan.every((_,i)=>UB.sel[i]===x.kunci[i]);S.log.push({t:today(),src:'ulang',sk:x.sk,ok:UB.ok?1:0,j:null});if(UB.ok)x.tuntas=true;save();renderUlangBS();if(UB.ok&&route==='rekap')render();break}
@@ -2050,7 +2105,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'ulgNext':{ULG=null;if((s.ulangI||0)>=(s.ulangIds||[]).length){donePart(6);break}render();window.scrollTo(0,0);break}
   case'ulgSelesai':ULG=null;donePart(6);break;
   case'jemSelesai':{const p=S.paket[s.paketId];JEM=null;if(p&&!p.dipakai)p.dipakai=today();donePart(3);break}
-  case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<soalPaket(p).length-1){JEM={i:JEM.i+1,answered:false,bs:{}}}else{JEM=null;if(!p.dipakai)p.dipakai=today();donePart(3);break}render();window.scrollTo(0,0);break}
+  case'mwMode':mwSet('m',v);break;
+  case'mwSpr':mwSet('spr',+v);break;
+  case'mwSv':mwSet('sv',+v);break;
+  case'mwGo':{const P=mwPref();s.wktCarry=0;JEM.t0=null;JEM.run={m:P.m,spr:P.spr,sv:P.sv,used:0,n:0,b:0};save();render();window.scrollTo(0,0);break}
+  case'mwLagi':JEM={i:s.jemI||0,answered:false,bs:{}};render();window.scrollTo(0,0);break;
+  case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<soalPaket(p).length-1){const R=JEM.run;JEM={i:JEM.i+1,answered:false,bs:{},run:R};if(R&&(R.end||(R.m==='sprint'&&mwLim(R)<=0)))R.over=1}else{JEM=null;if(!p.dipakai)p.dipakai=today();donePart(3);break}render();window.scrollTo(0,0);break}
   case'ulang':openUlang(v);break;
   case'ebSebab':{const[id,sb]=v.split('|');EBV.sel[id]=sb;delete EBV.err[id];render();break}
   case'ebSimpan':ebDiag(v);break;
@@ -2479,6 +2539,7 @@ window.SFX=(function(){
     if(G&&!G.over&&!G.intro){if(G.id==='bukti'&&(G.phase==='judge'||G.phase==='proof')){end=G.end;th=5}
       else if(G.id==='hakim'&&G.ans===null){end=G.end;th=5}else if(G.id==='kasir'&&G.phase==='shop'){end=G.kend;th=5}
       else if(G.id==='geser'&&G.mode==='cepat'){end=G.end;th=5}}
+    if(!end&&JEM&&JEM.run&&route==='hari-ini'){const ss=S.sesi[today()];if(ss&&ss.fase===3){end=mwEnd(ss);th=JEM.run.m==='sprint'?10:5}}
     if(!end){tk={end:0,sec:-1};return}
     const left=end-Date.now(),sec=Math.ceil(left/1000);
     if(tk.end===end&&left>0&&sec<=th&&sec!==tk.sec)P('tick',sec<=3);tk={end,sec}},100);
