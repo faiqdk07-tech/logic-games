@@ -717,7 +717,7 @@ function siapkanV4(s){const pid=getPaketId(s);if(pid&&isV4(S.paket[pid])){let ch
 const partNama=(i,s)=>i===3&&s&&sesiV4(s)?'Set PU':PART_NAMA[i];
 function openPart(i){const s=sesi(today());if(s.selesai)return;siapkanV4(s);if(s.done[i]){toast('Misi ini sudah selesai');return}
   if(i===3&&!s.paketId){const pid=getPaketId(s);if(pid)s.paketId=pid}s.fase=i;save();render();window.scrollTo(0,0)}
-function leavePart(){const s=sesi(today());if(PEM&&PEM.left==null){PEM.left=Math.max(0,PEM.end-Date.now())}clearInterval(pemTimer);s.fase=0;save();render();window.scrollTo(0,0)}
+function leavePart(){const s=sesi(today());jemJeda(s);if(PEM&&PEM.left==null){PEM.left=Math.max(0,PEM.end-Date.now())}clearInterval(pemTimer);s.fase=0;save();render();window.scrollTo(0,0)}
 function donePart(i,silent){const s=sesi(today());s.done[i]=true;s.fase=0;
   if(WAJIB.every(k=>s.done[k])){s.fase=5;s.selesai=true;s.lengkap=!!(s.jem.n&&(s.kas.n||sesiV4(s)));save();writeRingkasan();PEM=KAS=JEM=null;toast('Sesi selesai');render();window.scrollTo(0,0);return}
   save();if(!silent)toast(partNama(i,s)+' selesai');render();window.scrollTo(0,0)}
@@ -1461,7 +1461,7 @@ const TABS=[['hari-ini','Hari ini','<circle cx="12" cy="12" r="4"/><path d="M12 
  ['jurnal','Jurnal','<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/>']];
 const svg=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 let route='hari-ini';
-function nav(r){clearInterval(gTimer);if(r==='hari-ini'&&route==='hari-ini'){const s=S.sesi[today()];if(s&&s.fase>=1&&s.fase<=4&&!s.selesai){leavePart();return}}if(r!=='eb')EBR=null;route=r;try{history.replaceState(null,'','#'+r)}catch(e){location.hash=r}G=null;render();window.scrollTo(0,0)}
+function nav(r){clearInterval(gTimer);{const ss=S.sesi[today()];if(ss&&JEM)jemJeda(ss)}if(r==='hari-ini'&&route==='hari-ini'){const s=S.sesi[today()];if(s&&s.fase>=1&&s.fase<=4&&!s.selesai){leavePart();return}}if(r!=='eb')EBR=null;route=r;try{history.replaceState(null,'','#'+r)}catch(e){location.hash=r}G=null;render();window.scrollTo(0,0)}
 function renderTabs(){$('#tabs').innerHTML=TABS.map(([k,l,p])=>`<button class="${route===k?'on':''} ${yk(TABC[k])}" style="--c:${TABC[k]}" data-act="nav" data-v="${k}">${svg(p)}<span>${l}</span>${k==='eb'&&ebBadge()?`<i class="bdg">${ebBadge()}</i>`:''}</button>`).join('')}
 function render(){
   wkApply();
@@ -1499,6 +1499,22 @@ function openCfg(){const c=cfg();
 
 /* ================= HARI INI ================= */
 let PEM=null,KAS=null,JEM=null,pemTimer=null;
+/* ===== pewaktu Set PU (R7) =====
+   10 menit per bagian (Deduktif, Induktif). Waktu tiap soal dicatat dalam detik dan berhenti selama pembahasan dibaca,
+   saat keluar dari misi, dan saat aplikasi tidak terlihat. Bila 10 menit habis, sisa soal tetap bisa dikerjakan tetapi
+   ditandai "lewat waktu". Posisi soal (s.jemI) dan waktu terpakai (s.wkt, s.wktCarry) disimpan di sesi hari itu,
+   supaya muat ulang tidak mengulang set dari soal 1. */
+const BATAS_BAGIAN=600000;let jemTimer=null;
+function wktPakai(s,b){const w=(s.wkt||{})[b]||0;return w+(JEM&&JEM.b===b&&!JEM.answered?(JEM.t0?Date.now()-JEM.t0:0)+(s.wktCarry||0):0)}
+function fmtSisa(ms){const a=Math.abs(ms),m=Math.floor(a/60000),d=Math.floor(a/1000)%60;return m+':'+String(d).padStart(2,'0')}
+function tickJem(){const s=S.sesi[today()],el=$('#jtime');if(!el||!JEM||!s||!JEM.b)return;const sisa=BATAS_BAGIAN-wktPakai(s,JEM.b);
+  el.textContent=sisa>=0?'⏱ '+fmtSisa(sisa):'Lewat waktu +'+fmtSisa(sisa);el.classList.toggle('bad',sisa<0);el.classList.toggle('y',sisa>=0)}
+function jemJeda(s){if(JEM&&JEM.t0){s.wktCarry=(s.wktCarry||0)+(Date.now()-JEM.t0);JEM.t0=null;save()}clearInterval(jemTimer)}
+function jemCatat(s,b){const ms=(JEM.t0?Date.now()-JEM.t0:0)+(s.wktCarry||0);JEM.t0=null;s.wktCarry=0;clearInterval(jemTimer);
+  s.wkt=s.wkt||{DED:0,IND:0};s.wkt[b]=(s.wkt[b]||0)+ms;return{d:Math.round(ms/1000),lw:s.wkt[b]>BATAS_BAGIAN?1:0}}
+/* ringkasan waktu Set PU hari ini dari log */
+function ringkasWaktu(t){const L=S.log.filter(x=>x.t===t&&x.src==='jembatan'&&x.d!=null);if(!L.length)return null;
+  return{n:L.length,rata:Math.round(L.reduce((a,x)=>a+x.d,0)/L.length),lebih60:L.filter(x=>x.d>60).length,lewat:L.filter(x=>x.lw).length}}
 function getPaketId(s){const t=today();if(s.paketId&&S.paket[s.paketId])return s.paketId;
   if(S.paket[t]&&!S.paket[t].dipakai)return t;
   const ids=Object.keys(S.paket).filter(k=>/^\d/.test(k)&&!S.paket[k].dipakai).sort();
@@ -1523,6 +1539,9 @@ function vHari(){
     ${sesiV4(s)?'':`<div class="kv"><span class="muted">Kasus hari ini</span><b>${s.kas.n?s.kas.b+'/'+s.kas.n:'dilewati'}</b></div>`}
     <div class="kv"><span class="muted">${sesiV4(s)?'Set PU (20 soal)':'Jembatan UTBK'}</span><b>${s.jem.n?s.jem.b+'/'+s.jem.n:'dilewati'}</b></div>
     <div class="kv"><span class="muted">Akurasi</span><b>${n?Math.round(b/n*100):0}%</b></div>
+    ${(()=>{const w=ringkasWaktu(t);if(!w)return'';const bg=s.wkt||{};return`<div class="kv"><span class="muted">Waktu per soal</span><b>rata-rata ${w.rata} dtk</b></div>
+    <div class="kv"><span class="muted">Di atas 60 detik</span><b>${w.lebih60} dari ${w.n} soal</b></div>
+    <div class="kv"><span class="muted">Deduktif · Induktif</span><b>${fmtSisa(bg.DED||0)} · ${fmtSisa(bg.IND||0)} <span class="tiny muted">(batas 10:00)</span></b></div>${w.lewat?`<div class="kv"><span class="muted">Dikerjakan lewat batas</span><b>${w.lewat} soal</b></div>`:''}`})()}
     <div class="row" style="margin-top:12px"><button class="btn sm" data-act="nav" data-v="rekap">Lihat rekap</button><button class="btn sm" data-act="nav" data-v="main">Mini game</button></div></div>`}
   else{
     h+=`<div class="glass card has-st">${studs(3,'var(--plate)')}<div class="row sp"><span class="lbl">${v4?'Sesi ±30 menit':'Sesi ±15 menit'}</span><button class="btn sm" data-act="nav" data-v="paket">Paket · ${stok}</button></div>
@@ -1644,16 +1663,19 @@ function vJem(s){const p=s.paketId&&S.paket[s.paketId];if(!p)return`<div class="
   const v4=isV4(p);
   if(v4){if(!(s.intro&&s.intro[3]))return introCard('Set PU','var(--blue)',['20 soal: Deduktif 10, lalu Induktif 10.','Waktu resmi 60 detik per soal. Soal benar/salah: semua baris harus tepat.'],'sesiGo',3,'Mulai soal')}
   else{const it=sesiIntro(s,3);if(it)return it}
-  if(!JEM)JEM={i:0,answered:false,bs:{}};const Q=soalPaket(p),q=Q[JEM.i],bs=(q.jenis||'pg')==='bs';
+  if(!JEM)JEM={i:v4?(s.jemI||0):0,answered:false,bs:{}};const Q=soalPaket(p);
+  if(v4&&JEM.i>=Q.length)return`<div class="glass card"><div class="lbl">Set PU</div><h2>Semua soal sudah dikerjakan</h2><button class="btn p w" style="margin-top:10px" data-act="jemSelesai">Selesai · kembali ke misi</button></div>`;
+  const q=Q[JEM.i],bs=(q.jenis||'pg')==='bs';
+  if(v4){JEM.b=q.bagian;clearInterval(jemTimer);if(!JEM.answered){if(!JEM.t0&&!document.hidden)JEM.t0=Date.now();jemTimer=setInterval(tickJem,500)}after(tickJem)}
   const ke=v4?Q.slice(0,JEM.i+1).filter(x=>x.bagian===q.bagian).length:0,nB=v4?Q.filter(x=>x.bagian===q.bagian).length:0;
   const judul=v4?`${q.bagian==='IND'?'Induktif':'Deduktif'} · ${ke}/${nB}`:`Jembatan UTBK · ${JEM.i+1}/${Q.length}`;
   const chip=v4?`<span class="chip a">${esc(q.kemampuan||'')}</span>${q.nyata?'<span class="chip">kasus nyata</span>':''}`:`<span class="chip a">${esc(q.keterampilan||(p.kasus&&p.kasus.keterampilan)||'')}</span>`;
-  let h=`${v4&&ke===1&&q.bagian==='IND'&&JEM.i>0?'<div class="tiny muted" style="margin:0 4px 8px;font-weight:600">Bagian Deduktif selesai. Lanjut ke bagian Induktif.</div>':''}<div class="row sp wrapf" style="margin:2px 2px 0"><span class="lbl w" style="--lc:var(--blue)">${judul}</span><div class="row" style="gap:6px">${chip}</div></div>
+  let h=`${v4&&ke===1&&q.bagian==='IND'&&JEM.i>0?'<div class="tiny muted" style="margin:0 4px 8px;font-weight:600">Bagian Deduktif selesai. Lanjut ke bagian Induktif.</div>':''}<div class="row sp wrapf" style="margin:2px 2px 0"><span class="lbl w" style="--lc:var(--blue)">${judul}</span><div class="row" style="gap:6px">${v4?'<span class="chip y" id="jtime">⏱</span>':''}${chip}</div></div>
   <div class="glass card has-st" style="margin-top:16px">${studs(4,COL.jem)}${stimBox(q.teks)}${tabelHTML(q.tabel)}<div class="qask"${q.teks?'':' style="margin-top:0"'}>${esc(q.perintah||'')}</div>`;
   if(bs){h+=bsRows(q,JEM.bs,JEM.answered,'bsPick');
     if(!JEM.answered)h+=`<button class="btn p w" style="margin-top:12px" data-act="bsCek" ${Object.keys(JEM.bs).length<q.pernyataan.length?'disabled':''}>Periksa</button>`}
   else h+=`<div class="opts" style="--c:var(--blue)">${q.opsi.map((o,i)=>{let c='';if(JEM.answered){c=i===q.kunci?'ok':i===JEM.chosen?'bad':'dim'}return`<button class="opt ${c}" data-act="jemOpt" data-v="${i}" ${JEM.answered?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
-  if(JEM.answered){const jj=bs?q.jebakan:(q.jebakan_opsi||[])[JEM.chosen];h+=`<div class="fb">${JEM.ok?'<b style="color:var(--ok)">Tepat.</b> ':`<b style="color:var(--bad)">Belum tepat.</b> ${bs?`<span class="muted">(${q.pernyataan.filter((_,i)=>JEM.bs[i]===q.kunci[i]).length}/${q.pernyataan.length} baris benar; semua baris harus tepat)</span> `:''}`}${pembahasanHTML(q.pembahasan)}${!JEM.ok&&jj&&TRAPS[jj]?`<div style="margin-top:6px"><span class="chip bad">${bs?'Jebakan':'Jebakan pilihanmu'}: ${TRAPS[jj]}</span></div>`:''}</div>
+  if(JEM.answered){const jj=bs?q.jebakan:(q.jebakan_opsi||[])[JEM.chosen];h+=`<div class="fb">${JEM.ok?'<b style="color:var(--ok)">Tepat.</b> ':`<b style="color:var(--bad)">Belum tepat.</b> ${bs?`<span class="muted">(${q.pernyataan.filter((_,i)=>JEM.bs[i]===q.kunci[i]).length}/${q.pernyataan.length} baris benar; semua baris harus tepat)</span> `:''}`}${pembahasanHTML(q.pembahasan)}${v4&&JEM.d!=null?`<div class="tiny ${JEM.d>60?'':'muted'}" style="margin-top:6px;${JEM.d>60?'color:var(--bad);font-weight:600':''}">Waktu: ${JEM.d} detik${JEM.d>60?' (di atas 60 detik)':''}${JEM.lw?' · lewat batas 10 menit bagian ini':''}</div>`:''}${!JEM.ok&&jj&&TRAPS[jj]?`<div style="margin-top:6px"><span class="chip bad">${bs?'Jebakan':'Jebakan pilihanmu'}: ${TRAPS[jj]}</span></div>`:''}</div>
     <button class="btn p w" style="margin-top:10px" data-act="jemNext">${JEM.i<Q.length-1?'Soal berikutnya':'Lanjut'}</button>`}
   return h+'</div>'}
 
@@ -2683,7 +2705,7 @@ function resetHariIni(){const t=today();
   for(const k in S.paket){if(S.paket[k].dipakai===t)S.paket[k].dipakai=null}
   if(S.paket.contoh&&S.sesi[t]&&S.sesi[t].paketId==='contoh'){delete S.paket.contoh;S.contohDipakai=false}
   delete S.sesi[t];S.snapDay=null;S.snapSkills=null;S.resetN={[t]:(((S.resetN||{})[t])||0)+1};
-  clearInterval(pemTimer);PEM=KAS=JEM=null;LT=-1;save();
+  clearInterval(pemTimer);clearInterval(jemTimer);PEM=KAS=JEM=null;LT=-1;save();
   try{const r=JSON.parse(localStorage.getItem(KEY_RING))||{};if(r.riwayat)delete r.riwayat[t];
     Object.assign(r,{tgl:t,selesai:false,lengkap:false,butir:0,benar:0,akurasi:0,beruntun:streak(),diperbarui:new Date().toISOString()});localStorage.setItem(KEY_RING,JSON.stringify(r))}catch(e){}
   closeSheet();nav('hari-ini');toast('Progres hari ini direset')}
@@ -2724,13 +2746,14 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
     kasAnswer(ok,{teks:k.kalimat.join(' '),perintah:l.perintah,opsi:l.opsi,kunci:l.kunci,jw:i,pembahasan:l.pembahasan||k.pembahasan||''});break}
   case'kasNext':{const L=S.paket[KAS.pid].kasus.langkah;if(KAS.step<L.length-1){KAS.step++;KAS.answered=false;KAS.chosen=null}else{KAS.done=true;S.paket[KAS.pid].dipakai=today();save()}render();window.scrollTo(0,0);break}
   case'toJem':s.done[2]=true;s.fase=3;JEM=null;save();render();window.scrollTo(0,0);break;
-  case'jemOpt':{const p=S.paket[s.paketId],q=soalPaket(p)[JEM.i],i=+v;JEM.chosen=i;JEM.answered=true;JEM.ok=i===q.kunci;s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
-    record('jembatan',skSoal(p,q),JEM.ok,(q.jebakan_opsi||[])[i],Object.assign({teks:q.teks,perintah:q.perintah,opsi:q.opsi,kunci:q.kunci,jw:i,pembahasan:q.pembahasan},dataSoal(q)),logSoal(q));render();break}
+  case'jemOpt':{if(JEM.answered)break;const p=S.paket[s.paketId],q=soalPaket(p)[JEM.i],i=+v,tm=isV4(p)?jemCatat(s,q.bagian):null;if(tm){JEM.d=tm.d;JEM.lw=tm.lw;s.jemI=JEM.i+1}JEM.chosen=i;JEM.answered=true;JEM.ok=i===q.kunci;s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
+    record('jembatan',skSoal(p,q),JEM.ok,(q.jebakan_opsi||[])[i],Object.assign({teks:q.teks,perintah:q.perintah,opsi:q.opsi,kunci:q.kunci,jw:i,pembahasan:q.pembahasan},dataSoal(q),tm?{detik:tm.d}:{}),Object.assign({},logSoal(q),tm));render();break}
   case'bsPick':if(!JEM.answered){JEM.bs[+b.dataset.i]=v==='1';render()}break;
-  case'bsCek':{const p=S.paket[s.paketId],q=soalPaket(p)[JEM.i];JEM.answered=true;JEM.ok=q.pernyataan.every((_,i)=>JEM.bs[i]===q.kunci[i]);s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
-    record('jembatan',skSoal(p,q),JEM.ok,q.jebakan,Object.assign({jenis:'bs',teks:q.teks,perintah:q.perintah,pernyataan:q.pernyataan,kunci:q.kunci,label_b:q.label_b,label_s:q.label_s,jw:Object.assign({},JEM.bs),pembahasan:q.pembahasan},dataSoal(q)),logSoal(q));render();break}
+  case'bsCek':{if(JEM.answered)break;const p=S.paket[s.paketId],q=soalPaket(p)[JEM.i],tm=isV4(p)?jemCatat(s,q.bagian):null;if(tm){JEM.d=tm.d;JEM.lw=tm.lw;s.jemI=JEM.i+1}JEM.answered=true;JEM.ok=q.pernyataan.every((_,i)=>JEM.bs[i]===q.kunci[i]);s.jem.n++;if(JEM.ok)s.jem.b++;seqPush(s,'j'+(JEM.ok?1:0));
+    record('jembatan',skSoal(p,q),JEM.ok,q.jebakan,Object.assign({jenis:'bs',teks:q.teks,perintah:q.perintah,pernyataan:q.pernyataan,kunci:q.kunci,label_b:q.label_b,label_s:q.label_s,jw:Object.assign({},JEM.bs),pembahasan:q.pembahasan},dataSoal(q),tm?{detik:tm.d}:{}),Object.assign({},logSoal(q),tm));render();break}
   case'ubsPick':if(UB&&!UB.answered){UB.sel[+b.dataset.i]=v==='1';renderUlangBS()}break;
   case'ubsCek':{const x=S.salah.find(y=>y.id===UB.id);UB.answered=true;UB.ok=x.pernyataan.every((_,i)=>UB.sel[i]===x.kunci[i]);S.log.push({t:today(),src:'ulang',sk:x.sk,ok:UB.ok?1:0,j:null});if(UB.ok)x.tuntas=true;save();renderUlangBS();if(UB.ok&&route==='rekap')render();break}
+  case'jemSelesai':{const p=S.paket[s.paketId];JEM=null;if(p&&!p.dipakai)p.dipakai=today();donePart(3);break}
   case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<soalPaket(p).length-1){JEM={i:JEM.i+1,answered:false,bs:{}}}else{JEM=null;if(!p.dipakai)p.dipakai=today();donePart(3);break}render();window.scrollTo(0,0);break}
   case'finish':finishSesi(v==='1');break;
   case'ulang':openUlang(v);break;
@@ -2821,6 +2844,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'kNext':if(G.i<G.n-1){G.i++;newKasir();render()}else gDone(G.score,G.n);break;
   }
 });
+document.addEventListener('visibilitychange',()=>{const s=S.sesi[today()];if(!s||!JEM)return;
+  if(document.hidden)jemJeda(s);else if(route==='hari-ini'&&s.fase===3&&!JEM.answered)render()});
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.eb)EBV.txt[t.dataset.eb]=t.value});
 document.addEventListener('keydown',e=>{if(G&&G.id==='geser'&&G.mode==='cepat'&&!G.over){if(e.key==='ArrowRight')answerGeser(true);if(e.key==='ArrowLeft')answerGeser(false)}});
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
