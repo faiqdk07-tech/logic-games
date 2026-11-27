@@ -1330,11 +1330,11 @@ function buildPlanV4(start,salt){const r=seedRng('v4'+start+'#'+(salt||0)),d=day
   const pg=all.filter(s=>s.f==='J1');let dk;for(let t=0;t<50;t++){dk=[];while(dk.length<pg.length)dk=dk.concat(shuffleR([0,1,2,3,4],r));dk=dk.slice(0,pg.length);if(dk.every((x,i)=>i<2||!(x===dk[i-1]&&x===dk[i-2])))break}
   pg.forEach((s,i)=>{s.kunci=dk[i]});
   return{tgl:start,soal:all,status:Object.assign({},ded.status,ind.status),naik:{DED:ded.naik,IND:ind.naik}}}
-/* latar dan nama tokoh/lembaga dari paket v4 14 hari terakhir, untuk dihindari */
+/* topik cerita (kolom latar) dan nama tokoh/lembaga dari paket v4 14 hari terakhir, untuk dihindari; bidang tidak dilarang, hanya diputar */
 function riwayatLatar(start){const Q=soalTerakhir(start,14),lat={},nm=new Set();
   Q.forEach(q=>{if(q.latar&&q.bidang){(lat[q.bidang]=lat[q.bidang]||new Set()).add(String(q.latar).slice(0,40))}(Array.isArray(q.tokoh)?q.tokoh:[]).forEach(n=>{if(n)nm.add(String(n).slice(0,40))})});
   const L=Object.entries(lat).map(([b,v])=>`${b}: ${[...v].slice(-5).join(', ')}`);if(!L.length&&!nm.size)return'';
-  return'Bidang dan nama tokoh yang dipakai 14 hari terakhir (jangan dipakai lagi): '+(L.length?'latar per bidang: '+L.join('; ')+'. ':'')+(nm.size?'Nama tokoh dan lembaga: '+[...nm].slice(-80).join(', ')+'.':'')}
+  return'Nama tokoh dan topik cerita yang dipakai 14 hari terakhir (jangan dipakai lagi; bidangnya boleh dipakai ulang): '+(L.length?'topik cerita per bidang: '+L.join('; ')+'. ':'')+(nm.size?'Nama tokoh dan lembaga: '+[...nm].slice(-80).join(', ')+'.':'')}
 const fmtLabel=f=>f==='J5'?'J5 (ditulis sebagai J2)':f;
 function barisRencana(s){const b=[`${s.no}. ${s.kemampuan} · ${s.jp}`];
   if(s.jp==='L')b.push(`bentuk ${s.bd}`);
@@ -1363,7 +1363,7 @@ function buildPromptV4(start,salt){const plan=buildPlanV4(start,salt),L=[],P=x=>
    'NYATA: soal dibungkus situasi nyata sehari-hari siswa (wadah yang disebut), tetap berbentuk soal UTBK, dan jawabannya terbukti hanya dari stimulus.',
    'Format: J1 = pilihan ganda 5 opsi ("tipe":"pg"). J2 = tabel benar/salah ("tipe":"bs"). "J5 (ditulis sebagai J2)" = pilih semua yang benar, ditulis sebagai tabel benar/salah per opsi. Hanya soal yang rencananya menyebut J2 atau J5 yang memakai tabel benar/salah (paling banyak 2 per bagian); soal lain J1, termasuk soal G yang menggeser stimulus atau arah tanya.',
    'Kunci: huruf target soal pilihan ganda (A = indeks 0). Pada opsi baku, atur stimulus atau simpulannya, bukan urutan opsinya.',
-   'Bidang: latar soal. Pakai nama generik (Kota X, PT X, Ahli A) atau nama fiktif. Isi "latar" (2–4 kata, misalnya "warung kopi") dan "tokoh" (nama orang dan lembaga fiktif di soal itu); aplikasi memakainya agar latar dan nama tidak berulang.'].forEach(x=>P('- '+x));
+   'Bidang: wilayah latar soal; bidang memang dipakai ulang antarhari. Pakai nama generik (Kota X, PT X, Ahli A) atau nama fiktif. Isi "latar" dengan topik cerita soal itu (2–5 kata, misalnya "lomba kebersihan kelas" atau "promo kedai kopi") dan "tokoh" (nama orang dan lembaga fiktif di soal itu); aplikasi memakainya agar latar dan nama tidak berulang.'].forEach(x=>P('- '+x));
   P('\n## Aturan soal');
   ['Stimulus 2–6 kalimat; cerita bertokoh PU-D6 sampai 8 kalimat; thread 4–6 unggahan. Tanpa nomor atau huruf kalimat seperti (1), 1., (a). Jawaban terbukti hanya dari stimulus; pengetahuan luar adalah pengecoh.',
    'Opsi setara: struktur sejajar, selisih jumlah kata opsi terpanjang dan terpendek paling banyak 30%, kunci menjadi opsi terpanjang paling banyak 1 dari 5 soal, kata hati-hati dan kata mutlak tersebar di kunci dan pengecoh. Tutup stimulus: bila kunci bisa ditebak dari bentuk opsinya, tulis ulang.',
