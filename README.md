@@ -5,8 +5,8 @@ Latihan PU UTBK-SNBT 2027 sekitar 30 menit sehari: 20 soal bagian Deduktif dan I
 ## Isi
 - **Hari ini** – **Set PU** 20 soal (Deduktif 10 lalu Induktif 10, 60 detik per soal), satu kalimat nalar. Paket versi 3 lama (kasus 3 langkah + 3 jembatan) yang masih di stok tetap berjalan.
 - **Main** – 11 mini game pendamping: Arsir Venn, Lampu Berantai, Rantai Kunci, Inspektur Bandara, Satu Bukti, Detektif Chat, Belanja Hemat, Hakim Simpulan, Beli Petunjuk, Kursi Rapat, Lompat Batu. Tidak menggantikan sesi harian dan tidak mengubah tahap.
-- **Peta** – N1–N8, tahap (Terang, Tersembunyi, Berantakan), akurasi 10 butir terakhir. Naik tahap bila ≥80%.
-- **Rekap** – jebakan terbanyak (J1–J13), kasus nyata vs jembatan, ringkasan Error Book.
+- **Peta** – 11 kemampuan PU (PU-DED-1…5, PU-IND-1…6): 10 soal terakhir, akurasi L dan B+M, Indeks Kesiapan, dan status (Mode Dasar, porsi B/M naik, dalam target, data belum cukup).
+- **Rekap** – Kesiapan 2027 (tabel L/G/B/M: benar/total, persen, waktu rata-rata; akurasi total, Indeks Kesiapan, waktu bentuk baru dengan targetnya), jebakan terbanyak, Set PU per bagian, status kemampuan, ringkasan Error Book.
 - **Error Book** (`#eb`) – butir salah dari kasus dan jembatan masuk otomatis beserta jawabanmu dan jebakan yang menjerat (J1–J13). Tiga langkah:
   1. *Diagnosis*: pilih apa yang terjadi di kepalamu (belum paham aturannya, kata kunci terlewat, pakai pengetahuan luar, terpancing opsi, simpulan kelewat jauh, terburu-buru, menebak), lalu tulis aturan "Kalau …, aku …". Aturan yang terlalu umum diberi peringatan.
   2. *Ulang berjarak tanpa kunci*: mulai besok, lalu 3, 7, 14 hari (paling banyak 10 butir per putaran, urutan diacak). Aturanmu baru ditampilkan setelah menjawab.
