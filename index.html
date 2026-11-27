@@ -647,8 +647,8 @@ html[data-theme="dark"] .ebrule{background:#3d3824;color:#f3ecd0}html[data-theme
 .mw-seg button.on{background:var(--mc);color:#fff}
 .mw-ban{display:flex;gap:12px;align-items:center;margin-top:10px;padding:13px 15px;border-radius:12px;color:#fff;background:linear-gradient(90deg,var(--m1),var(--m2))}
 .mw-ban .ic{font-size:26px;line-height:1;flex:none}.mw-ban b{display:block;font-size:16px}.mw-ban span{font-size:13px;opacity:.95}
-.mw-pills{display:flex;flex-wrap:wrap;gap:6px}.mw-pills button{flex:1;min-width:64px;height:36px;border-radius:9px;border:2px solid var(--line);background:var(--plate);color:var(--text);font-weight:700;font-size:13.5px;cursor:pointer}
-.mw-pills button.on{background:var(--mc);border-color:var(--mc);color:#fff}
+.mw-pills{display:flex;flex-wrap:nowrap;gap:6px}.mw-pills button{flex:1 1 0;min-width:0;padding:0 2px;white-space:nowrap;height:36px;border-radius:9px;border:2px solid var(--line);background:var(--plate);color:var(--text);font-weight:700;font-size:13.5px;cursor:pointer}
+.mw-pills button{font-size:15px}.mw-pills button.on{background:var(--mc);border-color:var(--mc);color:#fff}
 .mw-big{font-family:"Lilita One","Rubik",sans-serif;font-size:40px;line-height:1.1;color:var(--ink)}
 </style>
 </head>
@@ -1306,16 +1306,16 @@ let jemTimer=null;
 const MW={santai:{nama:'Santai',c:'#4fa9f0',g:['#6fd3f8','#4fa9f0'],ic:'🌿',tag:'Waktu bebas, maksimalkan akurasi'},
   sprint:{nama:'Sprint',c:'#e8894a',g:['#f0b26e','#e8894a'],ic:'⚡',tag:'Siap ngebut? Selesaikan sebanyak mungkin'},
   survival:{nama:'Survival',c:'#d9534f',g:['#ef7d78','#d9534f'],ic:'🔥',tag:'Bertahan selama mungkin, raih streak terpanjang!'}};
-const MW_SPR=[3,5,10,20],MW_SV=[60,45,30];
+const MW_SPR=[3,5,7,10,15],MW_SV=[45,60,75,90,120];
 function mwPref(){const m=S.mw||{};return{m:MW[m.m]?m.m:'sprint',spr:MW_SPR.includes(m.spr)?m.spr:10,sv:MW_SV.includes(m.sv)?m.sv:60}}
 function mwSet(k,v){S.mw=Object.assign(mwPref(),{[k]:v});save();render()}
 function mwPicker(){const P=mwPref(),M=MW[P.m];
   let h=`<div class="mw-seg">${Object.keys(MW).map(k=>`<button class="${k===P.m?'on':''}" style="--mc:${MW[k].c}" data-act="mwMode" data-v="${k}">${MW[k].nama}</button>`).join('')}</div>
   <div class="mw-ban" style="--m1:${M.g[0]};--m2:${M.g[1]}"><span class="ic">${M.ic}</span><div><b>Mode ${M.nama}</b><span>${M.tag}</span></div></div>`;
-  if(P.m==='sprint')h+=`<div class="cap" style="margin-top:14px">Batas waktu</div><div class="mw-pills" style="--mc:${M.c}">${MW_SPR.map(x=>`<button class="${x===P.spr?'on':''}" data-act="mwSpr" data-v="${x}">${x} menit</button>`).join('')}</div>
+  if(P.m==='sprint')h+=`<div class="cap" style="margin-top:14px">Batas waktu (menit)</div><div class="mw-pills" style="--mc:${M.c}">${MW_SPR.map(x=>`<button class="${x===P.spr?'on':''}" data-act="mwSpr" data-v="${x}">${x}</button>`).join('')}</div>
     <div class="tiny muted" style="margin-top:8px">Target ±${P.spr} soal (60 detik per soal). Waktu habis = run berhenti; sisa soal bisa dilanjutkan nanti.</div>`;
-  else if(P.m==='survival')h+=`<div class="cap" style="margin-top:14px">Timer per soal</div><div class="mw-pills" style="--mc:${M.c}">${MW_SV.map(x=>`<button class="${x===P.sv?'on':''}" data-act="mwSv" data-v="${x}">${x} detik${x===60?' · resmi':''}</button>`).join('')}</div>
-    <div class="tiny muted" style="margin-top:8px">Satu jawaban salah atau waktu habis, run selesai. Sisa soal bisa dilanjutkan nanti.</div>`;
+  else if(P.m==='survival')h+=`<div class="cap" style="margin-top:14px">Timer per soal (detik)</div><div class="mw-pills" style="--mc:${M.c}">${MW_SV.map(x=>`<button class="${x===P.sv?'on':''}" data-act="mwSv" data-v="${x}">${x}</button>`).join('')}</div>
+    <div class="tiny muted" style="margin-top:8px">Waktu resmi 60 detik per soal. Satu jawaban salah atau waktu habis, run selesai. Sisa soal bisa dilanjutkan nanti.</div>`;
   else h+=`<div class="tiny muted" style="margin-top:10px">Tanpa hitung mundur. Waktu tiap soal tetap dicatat di rekap (waktu resmi 60 detik per soal).</div>`;
   return h}
 function curMs(s){return JEM&&!JEM.answered?(JEM.t0?Date.now()-JEM.t0:0)+(s.wktCarry||0):0}
