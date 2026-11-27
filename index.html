@@ -702,7 +702,57 @@ function mkOpts(items){const s=shuffle(items);return{opsi:s.map(x=>x.t),kunci:s.
 function blank(){const sk={};for(const k in SKILLS)sk[k]={tahap:1,r:[]};return{skills:sk,paket:{},sesi:{},jurnal:[],log:[],salah:[],games:{},contohDipakai:false}}
 function load(){try{const o=JSON.parse(localStorage.getItem(KEY));if(o&&o.skills){const b=blank();return Object.assign(b,o,{skills:Object.assign(b.skills,o.skills)})}}catch(e){}return blank()}
 let S=load();
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+/* simpan dan baca ulang; bila kuota penuh atau isinya tidak sama, tandai "Belum tersimpan" */
+let SAVE_GAGAL=false;
+function save(){let ok=false;try{const str=JSON.stringify(S);localStorage.setItem(KEY,str);ok=localStorage.getItem(KEY)===str}catch(e){ok=false}
+  if(ok!==!SAVE_GAGAL){SAVE_GAGAL=!ok;tandaSimpan()}return ok}
+function tandaSimpan(){let el=document.getElementById('tandaSimpan');
+  if(!SAVE_GAGAL){if(el)el.remove();return}
+  if(!el){el=document.createElement('button');el.id='tandaSimpan';el.type='button';el.dataset.act='openCfg';
+    el.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:60;background:var(--bad);color:#fff;border:2px solid var(--line);border-radius:12px;padding:6px 12px;font-weight:700;font-size:13px';
+    el.textContent='Belum tersimpan · penyimpanan penuh, buka Pengaturan';document.body.appendChild(el)}}
+
+/* ================= PERAMPINGAN PENYIMPANAN =================
+   Semua app di faiqdk07-tech.github.io berbagi satu kuota localStorage (±5 MB). Aturan bersama ketiga app
+   (latihan-ppu-pbm PR #20), untuk data lebih dari 30 hari; key localStorage tidak berubah:
+   - paket soal > 30 hari dibuang (umur dari tanggal paket), kecuali paket contoh dan paket sesi hari ini;
+   - butir Error Book yang masih aktif utuh; yang sudah lulus > 30 hari diringkas (kode pola, jenis, tanggal,
+     hasil, penyebab, aturan pribadi) dengan log: [];
+   - riwayat jawaban > 30 hari TIDAK dihapus: hanya kolom kosong dibuang; kemampuan, jenis, format, bentuk,
+     benar/salah, waktu, dan tanggal tetap, sehingga Indeks Kesiapan, status kemampuan, dan rekap tetap sama;
+   - sesi > 30 hari hanya kehilangan data tampilan (urutan balok menara, posisi soal);
+   - data ≤ 30 hari utuh. Perampingan baru berjalan setelah cadangan pertama dibuat. */
+const RAMPING_HARI=30;
+function rampingkan(st){const t0=addDays(today(),-RAMPING_HARI),n={paket:0,salah:0,log:0,sesi:0},kini=(st.sesi||{})[today()];
+  for(const k in st.paket||{}){if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&k<t0&&!(kini&&kini.paketId===k)){delete st.paket[k];n.paket++}}
+  (st.salah||[]).forEach((x,i)=>{if(x&&x.lulus&&x.lulus<t0&&!x.ringkas){
+    st.salah[i]={id:x.id,t:x.t,src:x.src,sk:x.sk,kemampuan:x.kemampuan||null,jenis_pola:x.jenis_pola||null,format:x.format||null,j:x.j||null,sebab:x.sebab||null,aturan:x.aturan||'',salah:x.salah||1,lulus:x.lulus,tuntas:true,box:x.box,due:'',log:[],ringkas:1};n.salah++}});
+  (st.log||[]).forEach(x=>{if(x&&x.t<t0){let ch=false;for(const f in x){if(x[f]==null||(f==='lw'&&!x[f])){delete x[f];ch=true}}if(ch)n.log++}});
+  for(const d in st.sesi||{}){if(d<t0){const s=st.sesi[d];let ch=false;['seq','intro','ulangIds','ulangI','jemI','wktCarry','paketId'].forEach(f=>{if(f in s){delete s[f];ch=true}});if(ch)n.sesi++}}
+  return n}
+const totalRamping=n=>n.paket+n.salah+n.log+n.sesi;
+/* perkiraan ukuran: jumlah panjang key + nilai, dalam karakter (≈ byte) */
+function ukuranDomain(){let t=0;try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);t+=k.length+(localStorage.getItem(k)||'').length}}catch(e){}return t}
+function ukuranApp(){try{return KEY.length+(localStorage.getItem(KEY)||'').length}catch(e){return 0}}
+const fmtMB=c=>(c/1e6).toFixed(2).replace('.',',')+' MB';
+function pratinjauRamping(){let raw=null;try{raw=localStorage.getItem(KEY)}catch(e){}const salinan=JSON.parse(raw||JSON.stringify(S)),sebelum=JSON.stringify(salinan).length,n=rampingkan(salinan);return{n,hemat:sebelum-JSON.stringify(salinan).length}}
+function rampingSekarang(diam){const n=rampingkan(S);S.rampingHari=today();const ok=save();if(!diam)toast(totalRamping(n)?`Dirampingkan: ${n.paket} paket, ${n.salah} butir Error Book, ${n.log} riwayat, ${n.sesi} sesi`+(ok?'':' · belum tersimpan'):'Tidak ada yang perlu dirampingkan');return n}
+function rampingOtomatis(){if(S.cadanganTs&&S.rampingHari!==today()){try{rampingSekarang(true)}catch(e){}}}
+function isiCadangan(){return JSON.stringify({app:'nalar-harian',key:KEY,dibuat:new Date().toISOString(),data:S})}
+function cadSalin(){let teks;try{teks=isiCadangan()}catch(e){toast('Cadangan gagal dibuat');return}
+  if(!navigator.clipboard||!navigator.clipboard.writeText){toast('Salin otomatis tidak tersedia. Pakai "Unduh berkas cadangan".');return}
+  navigator.clipboard.writeText(teks).then(()=>{S.cadanganTs=new Date().toISOString();save();toast('Cadangan tersalin. Simpan di tempat aman.');if(!$('#sheet').classList.contains('hidden'))openCfg()},
+    ()=>toast('Salin ditolak peramban. Pakai "Unduh berkas cadangan".'))}
+function cadUnduh(){try{const blob=new Blob([isiCadangan()],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`nalar-harian-cadangan-${today()}.json`;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);S.cadanganTs=new Date().toISOString();save();toast('Berkas cadangan diunduh');if(!$('#sheet').classList.contains('hidden'))openCfg()}catch(e){toast('Unduh cadangan gagal')}}
+function kartuPenyimpanan(){const dom=ukuranDomain(),app=ukuranApp(),pct=Math.min(100,Math.round(dom/5e6*100)),pr=pratinjauRamping(),n=pr.n;
+  const daftar=[[n.paket,'paket soal lebih dari 30 hari'],[n.salah,'butir Error Book lulus lebih dari 30 hari (diringkas)'],[n.log,'riwayat jawaban lama (kolom kosong dibuang)'],[n.sesi,'sesi lama (data tampilan)']].filter(x=>x[0]);
+  return`<div class="srow" style="display:block"><b>Penyimpanan</b><div class="small muted" style="margin-top:2px">${fmtMB(dom)} dari ±5 MB untuk semua app di domain ini (Nalar Harian ${fmtMB(app)})</div>
+  <div class="bar" style="margin:8px 0"><i style="width:${pct}%;${pct>=85?'background:var(--bad)':''}"></i></div>
+  ${SAVE_GAGAL?'<div class="small" style="color:var(--bad);font-weight:600">Perubahan terakhir belum tersimpan karena penyimpanan penuh.</div>':''}
+  <div class="small" style="margin-top:4px">${daftar.length?'Bisa dirampingkan: '+daftar.map(x=>`${x[0]} ${x[1]}`).join(' · ')+` (hemat ±${fmtMB(Math.max(0,pr.hemat))})`:'Belum ada data lebih dari 30 hari yang perlu dirampingkan.'}</div>
+  <div class="tiny muted" style="margin-top:4px">${S.cadanganTs?'Cadangan terakhir '+tglPendek(S.cadanganTs.slice(0,10))+'. Perampingan berjalan otomatis sekali sehari saat app dibuka.':'Buat cadangan dulu. Perampingan baru aktif setelah cadangan pertama.'}</div>
+  <div class="row wrapf" style="margin-top:8px;gap:8px"><button type="button" class="btn sm" data-act="cadSalin">Salin cadangan dulu</button><button type="button" class="btn sm" data-act="cadUnduh">Unduh berkas cadangan</button>${S.cadanganTs?'<button type="button" class="btn sm p" data-act="rampingSekarang">Rampingkan sekarang</button>':''}</div></div>`}
 function sesi(t){const s=S.sesi[t]||(S.sesi[t]={fase:0,pem:{b:0,n:0},kas:{b:0,n:0},jem:{b:0,n:0},selesai:false,lengkap:false,paketId:null,done:{}});
   if(!s.done){s.done={};for(let i=1;i<Math.min(s.fase,5);i++)s.done[i]=true;if(s.selesai)[1,2,3,4].forEach(i=>s.done[i]=true)}return s}
 /* misi harian bisa dipilih bebas; selesai satu misi kembali ke daftar misi */
@@ -731,7 +781,8 @@ function partBar(s){const W=wajib(s),n=W.filter(i=>s.done[i]).length;return`<div
 function record(src,sk,ok,j,q,x){
   if(S.snapDay!==today()){S.snapDay=today();S.snapSkills=JSON.parse(JSON.stringify(S.skills))}
   S.log.push(Object.assign({t:today(),src,sk,ok:ok?1:0,j:ok?null:(j||null)},x||{}));
-  if(S.log.length>3000)S.log=S.log.slice(-3000);
+  /* riwayat lama tidak dihapus (aturan perampingan); batas ini hanya pengaman, ±2,5 tahun pemakaian */
+  if(S.log.length>20000)S.log=S.log.slice(-20000);
   if(!ok&&q){S.salah.push(Object.assign({id:Date.now()+''+Math.random().toString(36).slice(2,6),t:today(),src,sk,tuntas:false,j:j||null,box:0,log:[],salah:1,perlu:true,due:addDays(today(),1)},q));ebTrim()}
   if((src==='kasus'||src==='jembatan')&&S.skills[sk]){
     const st=S.skills[sk];st.r.push(ok?1:0);if(st.r.length>10)st.r=st.r.slice(-10);
@@ -1222,6 +1273,7 @@ function openCfg(){const c=cfg();
   ${c.suara?`<div class="srow"><div class="grow"><b>Volume</b></div><input type="range" min="5" max="100" step="5" value="${Math.round(c.vol*100)}" aria-label="Volume efek suara" style="flex:1.3;accent-color:var(--blue)" oninput="setCfg('vol',this.value/100)" onchange="window.SFX&&SFX.play('ok','jem')"></div>`:''}
   ${sw(c.musik,'cfgMusik','Musik latar','Alunan tenang yang berulang selama belajar')}
   ${c.musik?`<div class="srow"><div class="grow"><b>Volume musik</b></div><input type="range" min="5" max="100" step="5" value="${Math.round(c.mvol*100)}" aria-label="Volume musik latar" style="flex:1.3;accent-color:var(--blue)" oninput="setCfg('mvol',this.value/100)"></div>`:''}
+  ${kartuPenyimpanan()}
   <div class="srow"><div class="grow"><b>Hapus progres hari ini</b><span class="small muted">Sesi hari ini kembali ke awal</span></div><button type="button" class="sbtn danger" data-act="resetTodayAsk">Hapus</button></div>
   <div class="srow"><div class="grow"><b>Hapus semua progres</b><span class="small muted">Semua tahap dan riwayat</span></div><button type="button" class="sbtn danger" data-act="resetAllAsk">Hapus</button></div>
   <div class="row" style="margin-top:14px"><button type="button" class="btn" style="flex:1" data-act="closeSheet">Tutup</button></div>`)}
@@ -2014,13 +2066,16 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'jCopy':copyText(jurnalPrompt(),'Jurnal tersalin');break;
   case'savePaket':savePaket();break;
   case'delPaket':delete S.paket[v];save();render();break;
-  case'backup':copyText(JSON.stringify(S),'Cadangan tersalin');break;
+  case'backup':cadSalin();break;
+  case'cadSalin':cadSalin();break;
+  case'cadUnduh':cadUnduh();break;
+  case'rampingSekarang':rampingSekarang();openCfg();break;
   case'restoreOpen':openSheet(`<h2>Pulihkan dari cadangan</h2><p class="small muted">Tempel teks cadangan. Data sekarang di peramban ini akan diganti.</p><textarea id="rtext" style="min-height:160px;margin-top:8px"></textarea><div class="row" style="margin-top:10px"><button class="btn" style="flex:1" data-act="closeSheet">Batal</button><button class="btn p" style="flex:1" data-act="restore">Pulihkan</button></div>`);break;
   case'askResetToday':askReset(false);break;
   case'askResetAll':askReset(true);break;
   case'resetToday':resetHariIni();break;
   case'resetAll':resetSemua();break;
-  case'restore':try{const o=JSON.parse($('#rtext').value);if(!o.skills)throw 0;localStorage.setItem(KEY,JSON.stringify(o));S=load();applyCfg();closeSheet();toast('Data dipulihkan');render()}catch(err){toast('Cadangan tidak valid')}break;
+  case'restore':try{let o=JSON.parse($('#rtext').value);if(o&&o.app==='nalar-harian'&&o.data)o=o.data;if(!o.skills)throw 0;localStorage.setItem(KEY,JSON.stringify(o));S=load();applyCfg();closeSheet();toast('Data dipulihkan');render()}catch(err){toast('Cadangan tidak valid')}break;
   case'gStart':startGame(v);break;
   case'gGo':initGame(G.id);break;
   case'gAgain':initGame(G.id);break;
@@ -2051,7 +2106,7 @@ document.addEventListener('visibilitychange',()=>{const s=S.sesi[today()];if(!s|
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.eb)EBV.txt[t.dataset.eb]=t.value});
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==route&&['hari-ini','main','peta','rekap','eb','jurnal','paket'].includes(h)){route=h;G=null;render()}});
-(function init(){applyCfg();$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','eb','jurnal','paket'].includes(h))route=h;
+(function init(){applyCfg();rampingOtomatis();$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','eb','jurnal','paket'].includes(h))route=h;
   const s=S.sesi[today()];if(s&&!s.selesai&&diMisi(s)){sesi(today());s.fase=0} /* muat ulang: kembali ke daftar misi */
   render();if(s&&s.selesai)writeRingkasan()})();
 </script>
