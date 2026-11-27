@@ -1535,7 +1535,7 @@ function vHari(){
     <div class="row tiny muted" style="gap:12px;margin-top:8px;font-weight:600"><span class="row" style="gap:4px"><span class="b" style="--c:var(--yellow);width:16px;height:9px"></span>pemanasan</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--red);width:16px;height:9px"></span>kasus</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--blue);width:16px;height:9px"></span>jembatan</span><span class="row" style="gap:4px"><span class="b x" style="width:16px;height:9px"></span>salah</span></div></div>`;
   if(s.selesai){
     h+=`<div class="glass card has-st">${studs(3,'var(--green)')}<span class="lbl w" style="--lc:var(--green)">Sesi selesai</span><h2>Menara hari ini berdiri.</h2>
-    <div class="kv"><span class="muted">Pemanasan</span><b>${s.pem.b}/${s.pem.n}</b></div>
+    <div class="kv"><span class="muted">Pemanasan</span><b>${s.pem.n?s.pem.b+'/'+s.pem.n:'dilewati'}</b></div>
     ${sesiV4(s)?'':`<div class="kv"><span class="muted">Kasus hari ini</span><b>${s.kas.n?s.kas.b+'/'+s.kas.n:'dilewati'}</b></div>`}
     <div class="kv"><span class="muted">${sesiV4(s)?'Set PU (20 soal)':'Jembatan UTBK'}</span><b>${s.jem.n?s.jem.b+'/'+s.jem.n:'dilewati'}</b></div>
     <div class="kv"><span class="muted">Akurasi</span><b>${n?Math.round(b/n*100):0}%</b></div>
