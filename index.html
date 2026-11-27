@@ -669,7 +669,7 @@ const PERAN=['klaim','alasan','contoh','pengalih'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
-/* RNG bisa diberi benih sementara (pemanasan harian); bawaan Math.random */
+/* RNG bisa diberi benih sementara; bawaan Math.random */
 let RNG=Math.random;
 const rnd=a=>a[Math.floor(RNG()*a.length)];
 const ri=(a,b)=>a+Math.floor(RNG()*(b-a+1));
@@ -708,7 +708,7 @@ function sesi(t){const s=S.sesi[t]||(S.sesi[t]={fase:0,pem:{b:0,n:0},kas:{b:0,n:
   if(!s.done){s.done={};for(let i=1;i<Math.min(s.fase,5);i++)s.done[i]=true;if(s.selesai)[1,2,3,4].forEach(i=>s.done[i]=true)}return s}
 /* misi harian bisa dipilih bebas; selesai satu misi kembali ke daftar misi */
 const PART_NAMA=['','Pemanasan kilat','Kasus hari ini','Jembatan UTBK','Satu kalimat nalar'];
-/* pemanasan (misi 1) opsional sejak R1: sesi selesai bila misi 2–4 selesai. Paket versi 4 tidak punya kasus 3 langkah,
+/* misi 1 (pemanasan) dihapus di R2: sesi selesai bila misi 2–4 selesai. Paket versi 4 tidak punya kasus 3 langkah,
    jadi misi 2 otomatis dianggap selesai (siapkanV4). */
 const WAJIB=[2,3,4];
 const nextPart=s=>WAJIB.find(i=>!s.done[i]);
@@ -717,9 +717,9 @@ function siapkanV4(s){const pid=getPaketId(s);if(pid&&isV4(S.paket[pid])){let ch
 const partNama=(i,s)=>i===3&&s&&sesiV4(s)?'Set PU':PART_NAMA[i];
 function openPart(i){const s=sesi(today());if(s.selesai)return;siapkanV4(s);if(s.done[i]){toast('Misi ini sudah selesai');return}
   if(i===3&&!s.paketId){const pid=getPaketId(s);if(pid)s.paketId=pid}s.fase=i;save();render();window.scrollTo(0,0)}
-function leavePart(){const s=sesi(today());jemJeda(s);if(PEM&&PEM.left==null){PEM.left=Math.max(0,PEM.end-Date.now())}clearInterval(pemTimer);s.fase=0;save();render();window.scrollTo(0,0)}
+function leavePart(){const s=sesi(today());jemJeda(s);s.fase=0;save();render();window.scrollTo(0,0)}
 function donePart(i,silent){const s=sesi(today());s.done[i]=true;s.fase=0;
-  if(WAJIB.every(k=>s.done[k])){s.fase=5;s.selesai=true;s.lengkap=!!(s.jem.n&&(s.kas.n||sesiV4(s)));save();writeRingkasan();PEM=KAS=JEM=null;toast('Sesi selesai');render();window.scrollTo(0,0);return}
+  if(WAJIB.every(k=>s.done[k])){s.fase=5;s.selesai=true;s.lengkap=!!(s.jem.n&&(s.kas.n||sesiV4(s)));save();writeRingkasan();KAS=JEM=null;toast('Sesi selesai');render();window.scrollTo(0,0);return}
   save();if(!silent)toast(partNama(i,s)+' selesai');render();window.scrollTo(0,0)}
 function partBar(s){const n=WAJIB.filter(i=>s.done[i]).length;return`<div class="row sp" style="margin:0 2px 12px"><button class="btn sm" data-act="leavePart">‹ Misi hari ini</button><span class="tiny muted" style="font-weight:600">${n}/3 misi wajib selesai</span></div>`}
 
@@ -745,7 +745,7 @@ function writeRingkasan(){
   try{localStorage.setItem(KEY_RING,JSON.stringify(o))}catch(e){}
 }
 
-/* ================= BANK KALIMAT (pemanasan) ================= */
+/* ================= BANK KALIMAT (kartu WARM untuk mini game) ================= */
 const COND=[
 [['hujan turun','hujan tidak turun'],['upacara dipindah ke aula','upacara tidak dipindah ke aula']],
 [['Dina belajar setiap malam','Dina tidak belajar setiap malam'],['nilai try out Dina naik','nilai try out Dina tidak naik']],
@@ -910,21 +910,7 @@ const WARM={
     const j=KS_OPSI.map((_,i)=>i===k?null:((i===1&&k===4)||(i===4&&k===1))?'J13':'J6');
     return{sk:'N4',label:'Kualitas simpulan · 5 opsi baku',teks,opsi:KS_OPSI,kunci:k,j,why}}
 };
-const WARM_LAMA=['negIf','setara','sah','negQ','kalib','negAnd','negOr'],WARM_BARU=['hanyaJika','atauJika','kecuali','rantai','kalib5'];
-/* tiap hari: 3–4 kartu bentuk baru + sisanya bentuk dasar, susunannya berbeda per tanggal */
-/* kartu pemanasan dari paket Claude (opsional): isinya baru tiap hari */
-function paketPemanasan(){const t=today(),pid=getPaketId(sesi(t)),p=pid&&S.paket[pid];
-  return(p&&Array.isArray(p.pemanasan)?p.pemanasan:[]).filter(c=>c&&Array.isArray(c.opsi)&&c.opsi.length>=3&&Number.isInteger(c.kunci)&&c.kunci>=0&&c.kunci<c.opsi.length)}
-function genWarmup(n){const t=today(),salt=((S.resetN||{})[t])||0,r=seedRng('pem'+t+'#'+salt),prevR=RNG;
-  RNG=seedRng('pemisi'+t+'#'+salt);FRESH=new Set();
-  try{const pk=paketPemanasan().slice(0,4).map(c=>{const jo=i=>i===c.kunci?null:((c.jebakan_opsi||[])[i]||null);
-      /* opsi baku tidak diacak */
-      const o=bakuJenis(c.opsi)?{opsi:c.opsi.slice(),kunci:c.kunci,j:c.opsi.map((_,i)=>jo(i))}:mkOpts(c.opsi.map((x,i)=>i===c.kunci?{t:x,ok:1}:{t:x,j:jo(i)}));
-      return Object.assign({sk:SKILLS[c.keterampilan]?c.keterampilan:'N2',label:c.label||'Kartu hari ini',teks:String(c.teks||''),why:c.pembahasan||'',baru:true},o)});
-    const m=n-pk.length,nb=Math.min(m,(pk.length?1:3)+Math.floor(r()*2));
-    const pick=shuffleR(WARM_BARU,r).slice(0,nb).concat(shuffleR(WARM_LAMA,r).slice(0,m-nb));
-    return shuffleR(pick.map(x=>Object.assign(WARM[x](),{baru:WARM_BARU.includes(x)})).concat(pk),r)}
-  finally{RNG=prevR;FRESH=null}}
+/* kartu WARM dipakai mini game (Satu Bukti). Pemanasan kilat di sesi harian dihapus di R2. */
 
 /* ================= PAKET CONTOH ================= */
 const CONTOH={versi:2,tgl:'contoh',kasus:{keterampilan:'N2',tahap:1,konteks:'chat grup',judul:'Rapat OSIS sore ini',
@@ -1498,7 +1484,7 @@ function openCfg(){const c=cfg();
   <div class="row" style="margin-top:14px"><button type="button" class="btn" style="flex:1" data-act="closeSheet">Tutup</button></div>`)}
 
 /* ================= HARI INI ================= */
-let PEM=null,KAS=null,JEM=null,pemTimer=null;
+let KAS=null,JEM=null;
 /* ===== pewaktu Set PU (R7) =====
    10 menit per bagian (Deduktif, Induktif). Waktu tiap soal dicatat dalam detik dan berhenti selama pembahasan dibaca,
    saat keluar dari misi, dan saat aplikasi tidak terlihat. Bila 10 menit habis, sisa soal tetap bisa dikerjakan tetapi
@@ -1524,7 +1510,8 @@ function partRow(i,name,info,s,c,nomor){const k=i+1,st=s.selesai||s.done[k]?'don
 function vHari(){
   const t=today(),s=sesi(t);
   if(!s.selesai)siapkanV4(s);
-  if(s.fase>=1&&s.fase<=4&&!s.selesai)return partBar(s)+[null,vPem,vKas,vJem,vKalimat][s.fase](s);
+  if(s.fase===1){s.fase=0;save()} /* misi pemanasan sudah dihapus (R2) */
+  if(s.fase>=2&&s.fase<=4&&!s.selesai)return partBar(s)+[null,null,vKas,vJem,vKalimat][s.fase](s);
   const pid=getPaketId(s),pk=pid?S.paket[pid]:null,v4=isV4(pk);
   const kasInfo=pk&&pk.kasus?`${pk.kasus.keterampilan} · ${esc(pk.kasus.judul||'')}`:'paket belum ada';
   const stok=Object.keys(S.paket).filter(k=>/^\d/.test(k)&&!S.paket[k].dipakai).length;
@@ -1532,10 +1519,10 @@ function vHari(){
   let h=`<div class="glass card has-st">${studs(4,'var(--plate)')}${studs(2,'var(--plate)',1)}
     <div class="row sp"><span class="lbl">Menara hari ini</span></div>
     ${n?tower(s):`<div class="tower" style="align-items:center;align-content:center;justify-content:center"><span class="tiny" style="color:color-mix(in srgb,var(--green) 55%,#1c2a22);font-weight:700">Belum ada balok. Mulai sesi untuk membangun.</span></div>`}
-    <div class="row tiny muted" style="gap:12px;margin-top:8px;font-weight:600"><span class="row" style="gap:4px"><span class="b" style="--c:var(--yellow);width:16px;height:9px"></span>pemanasan</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--red);width:16px;height:9px"></span>kasus</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--blue);width:16px;height:9px"></span>jembatan</span><span class="row" style="gap:4px"><span class="b x" style="width:16px;height:9px"></span>salah</span></div></div>`;
+    <div class="row tiny muted" style="gap:12px;margin-top:8px;font-weight:600"><span class="row" style="gap:4px"><span class="b" style="--c:var(--red);width:16px;height:9px"></span>kasus</span><span class="row" style="gap:4px"><span class="b" style="--c:var(--blue);width:16px;height:9px"></span>soal UTBK</span><span class="row" style="gap:4px"><span class="b x" style="width:16px;height:9px"></span>salah</span></div></div>`;
   if(s.selesai){
     h+=`<div class="glass card has-st">${studs(3,'var(--green)')}<span class="lbl w" style="--lc:var(--green)">Sesi selesai</span><h2>Menara hari ini berdiri.</h2>
-    <div class="kv"><span class="muted">Pemanasan</span><b>${s.pem.n?s.pem.b+'/'+s.pem.n:'dilewati'}</b></div>
+    ${s.pem.n?`<div class="kv"><span class="muted">Pemanasan</span><b>${s.pem.b}/${s.pem.n}</b></div>`:''}
     ${sesiV4(s)?'':`<div class="kv"><span class="muted">Kasus hari ini</span><b>${s.kas.n?s.kas.b+'/'+s.kas.n:'dilewati'}</b></div>`}
     <div class="kv"><span class="muted">${sesiV4(s)?'Set PU (20 soal)':'Jembatan UTBK'}</span><b>${s.jem.n?s.jem.b+'/'+s.jem.n:'dilewati'}</b></div>
     <div class="kv"><span class="muted">Akurasi</span><b>${n?Math.round(b/n*100):0}%</b></div>
@@ -1546,15 +1533,14 @@ function vHari(){
   else{
     h+=`<div class="glass card has-st">${studs(3,'var(--plate)')}<div class="row sp"><span class="lbl">${v4?'Sesi ±30 menit':'Sesi ±15 menit'}</span><button class="btn sm" data-act="nav" data-v="paket">Paket · ${stok}</button></div>
     <div>
-      ${partRow(0,'Pemanasan kilat','Opsional · 3 menit · 8 kartu',s,COL.pem)}
-      ${v4?'':partRow(1,'Kasus hari ini','7 menit · '+kasInfo,s,COL.kas)}
-      ${v4?partRow(2,'Set PU','±20 menit · Deduktif 10 + Induktif 10 · 60 detik per soal',s,COL.jem,2):partRow(2,'Jembatan UTBK','4 menit · 3 soal',s,COL.jem)}
-      ${partRow(3,'Satu kalimat nalar','1 menit · boleh dilewati',s,COL.kal,v4?3:4)}
+      ${v4?'':partRow(1,'Kasus hari ini','7 menit · '+kasInfo,s,COL.kas,1)}
+      ${v4?partRow(2,'Set PU','±20 menit · Deduktif 10 + Induktif 10 · 60 detik per soal',s,COL.jem,1):partRow(2,'Jembatan UTBK','4 menit · 3 soal',s,COL.jem,2)}
+      ${partRow(3,'Satu kalimat nalar','1 menit · boleh dilewati',s,COL.kal,v4?2:3)}
     </div>
     ${v4?'':`<div class="tiny muted" style="margin-top:10px;padding-top:9px;border-top:2px dashed var(--edge)"><b style="color:var(--text)">Bentuk hari ini</b> · ${mutPendek(t).map(esc).join(' · ')}</div>`}
     <div class="tiny muted" style="margin-top:8px">Ketuk satu misi untuk memilih, atau kerjakan berurutan.</div>
     <button class="btn p w" style="margin-top:10px" data-act="mulai">${WAJIB.some(i=>s.done[i]&&!(v4&&i===2))?'Lanjut: '+partNama(nextPart(s),s):'Mulai berurutan'}</button></div>`;
-    if(!pk)h+=`<div class="glass card small"><b>Belum ada paket kasus.</b> <span class="muted">Pemanasan tetap bisa jalan. Buat paket dengan menyalin prompt ke proyek Claude “Nalar Harian”, lalu tempel JSON-nya di halaman Paket.</span>
+    if(!pk)h+=`<div class="glass card small"><b>Belum ada paket soal.</b> <span class="muted">Buat paket dengan menyalin prompt ke proyek Claude “Nalar Harian”, lalu tempel JSON-nya di halaman Paket.</span>
       <div class="row wrapf" style="margin-top:10px"><button class="btn sm" data-act="copyPrompt" data-v="1">Salin prompt 1 hari</button><button class="btn sm" data-act="nav" data-v="paket">Buka Paket</button></div></div>`}
   h+=ebKartuHari();
   h+=`<button class="glass card row sp" style="width:100%;text-align:left" data-act="nav" data-v="main"><span class="row"><span class="pn" style="width:30px;height:26px;border-radius:6px;background:var(--red);border:2px solid var(--line);display:grid;place-items:center;color:#fff">${svg(TABS[1][2]).replace('<svg','<svg width="16" height="16"')}</span><span><span style="font-weight:600;display:block">Mini game pendamping</span><span class="tiny muted">Untuk waktu luang. Tidak menggantikan sesi.</span></span></span><span style="font-weight:700">›</span></button>`;
@@ -1564,7 +1550,6 @@ function vHari(){
 
 /* ================= PENGENALAN MODE ================= */
 const SESI_INTRO={
- 1:{judul:'Pemanasan kilat',c:'var(--yellow)',langkah:['8 kartu, 3 menit.','Salah? Baca alasannya, lalu Lanjut.'],tombol:'Mulai pemanasan'},
  2:{judul:'Kasus hari ini',c:'var(--red)',langkah:['Baca kejadiannya sampai habis.','Jawab 3 langkah: Bongkar, Nilai, Putuskan.'],tombol:'Mulai kasus'},
  3:{judul:'Jembatan UTBK',c:'var(--blue)',langkah:['3 soal bergaya UTBK.','Soal benar/salah: semua baris harus tepat.'],tombol:'Mulai soal'}};
 const GAME_INTRO={
@@ -1585,22 +1570,6 @@ function introCard(judul,c,langkah,act,v,tombol){return`<div class="glass card h
 function sesiIntro(s,f){if(s.intro&&s.intro[f])return'';const x=SESI_INTRO[f];return introCard(x.judul,x.c,x.langkah,'sesiGo',f,x.tombol)}
 
 const verdict=s=>{const m=String(s||'').match(/<b[^>]*>.*?<\/b>/);return m?`<div class="verdict">${m[0]}</div>`:''};
-/* --- pemanasan --- */
-function startPem(){PEM={cards:genWarmup(8),i:0,locked:false,end:Date.now()+180000};clearInterval(pemTimer);pemTimer=setInterval(tickPem,500)}
-function tickPem(){if(!PEM)return;{const s=S.sesi[today()];if(route!=='hari-ini'||!s||s.fase!==1){if(PEM.left==null)PEM.left=Math.max(0,PEM.end-Date.now());return}}const left=Math.max(0,PEM.end-Date.now());const el=$('#ptime');if(el){el.textContent=Math.floor(left/60000)+':'+String(Math.floor(left/1000)%60).padStart(2,'0');$('#pbar').style.width=(left/1800)+'%'}
-  if(left<=0&&!PEM.locked)endPem()}
-function endPem(){clearInterval(pemTimer);PEM=null;donePart(1)}
-function vPem(s){{const it=sesiIntro(s,1);if(it)return it}if(!PEM)startPem();else if(PEM.left!=null){PEM.end=Date.now()+PEM.left;delete PEM.left;clearInterval(pemTimer);pemTimer=setInterval(tickPem,500)}const c=PEM.cards[PEM.i];
-  return`<div class="row sp" style="margin:2px 2px 0"><span class="lbl">Pemanasan kilat · ${PEM.i+1}/${PEM.cards.length}</span><span class="chip y" id="ptime">3:00</span></div>
-  <div class="bar" style="margin:10px 0 22px"><i id="pbar" style="width:100%"></i></div>
-  <div class="glass card has-st" style="--c:var(--yellow)">${studs(3,COL.pem)}<div class="cap">${c.label}</div><div class="stim" style="font-weight:600">${esc(c.teks)}</div>
-  <div class="opts" id="popts" style="--c:var(--orange)">${c.opsi.map((o,i)=>`<button class="opt" data-act="pem" data-v="${i}"><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`).join('')}</div><div id="pfb"></div></div>
-  <div class="row sp tiny muted" style="padding:0 4px"><span>Benar ${s.pem.b} dari ${s.pem.n}</span><button class="btn sm" data-act="endPem">Akhiri pemanasan</button></div>`}
-function answerPem(i){if(!PEM||PEM.locked)return;PEM.locked=true;const c=PEM.cards[PEM.i],s=sesi(today()),ok=i===c.kunci;
-  s.pem.n++;if(ok)s.pem.b++;seqPush(s,'p'+(ok?1:0));record('pemanasan',c.sk,ok,c.j[i]);
-  markOpts('#popts',i,c.kunci);
-  if(ok){setTimeout(nextPem,650)}else{$('#pfb').innerHTML=`<div class="fb"><b>Kurang tepat.</b> ${esc(c.why)}${c.j[i]?` <span class="chip bad">Jebakan: ${TRAPS[c.j[i]]}</span>`:''}<div style="margin-top:8px"><button class="btn sm p" data-act="nextPem">Lanjut</button></div></div>`}}
-function nextPem(){if(!PEM)return;PEM.i++;PEM.locked=false;if(PEM.i>=PEM.cards.length||Date.now()>=PEM.end)endPem();else render()}
 function markOpts(sel,chosen,kunci){document.querySelectorAll(sel+' .opt').forEach((b,j)=>{b.disabled=true;if(j===kunci)b.classList.add('ok');else if(j===chosen)b.classList.add('bad');else b.classList.add('dim')})}
 
 /* --- tampilan kasus seperti kejadian nyata --- */
@@ -1818,7 +1787,7 @@ function vRekap(){const w=weekLog(7);const tr=topTraps(w.filter(x=>x.src!=='game
   let h=`<div class="glass card has-st">${studs(4)}<span class="lbl w" style="--lc:var(--green)">7 hari terakhir</span><div class="days">${days.map(d=>{const s=S.sesi[d];const on=s&&s.selesai;return`<div><span class="b${on?'':' x'}" style="--c:${on?'var(--green)':s&&s.fase>0?'var(--yellow)':'var(--gray)'}"></span><div class="tiny muted" style="margin-top:4px;font-weight:600">${HARI[new Date(d+'T12:00:00').getDay()].slice(0,3)}</div></div>`}).join('')}</div></div>`;
   h+=`<div class="glass card has-st">${studs(3,'var(--red)')}${tl('Jebakan terbanyak','var(--red)')}${tr.length?tr.map(([k,c],i)=>`<div class="kv"><span>${i+1}. <b>${TRAPS[k]}</b></span><span class="muted">${c}x</span></div>`).join(''):'<div class="small muted">Belum ada jebakan yang menjeratmu minggu ini.</div>'}</div>`;
   h+=`<div class="glass card has-st">${studs(3,'var(--blue)')}${tl('Kasus nyata vs jembatan UTBK','var(--blue)')}
-   <div class="kv"><span class="muted">Pemanasan</span>${pv(pe)}</div>
+   ${pe.length?`<div class="kv"><span class="muted">Pemanasan</span>${pv(pe)}</div>`:''}
    <div class="kv"><span class="muted">Kasus nyata</span>${pv(ka)}</div>
    <div class="kv"><span class="muted">Jembatan UTBK</span>${pv(je)}</div>
    <div class="small" style="margin-top:6px">${interp}</div></div>`;
@@ -2705,12 +2674,12 @@ function resetHariIni(){const t=today();
   for(const k in S.paket){if(S.paket[k].dipakai===t)S.paket[k].dipakai=null}
   if(S.paket.contoh&&S.sesi[t]&&S.sesi[t].paketId==='contoh'){delete S.paket.contoh;S.contohDipakai=false}
   delete S.sesi[t];S.snapDay=null;S.snapSkills=null;S.resetN={[t]:(((S.resetN||{})[t])||0)+1};
-  clearInterval(pemTimer);clearInterval(jemTimer);PEM=KAS=JEM=null;LT=-1;save();
+  clearInterval(jemTimer);KAS=JEM=null;LT=-1;save();
   try{const r=JSON.parse(localStorage.getItem(KEY_RING))||{};if(r.riwayat)delete r.riwayat[t];
     Object.assign(r,{tgl:t,selesai:false,lengkap:false,butir:0,benar:0,akurasi:0,beruntun:streak(),diperbarui:new Date().toISOString()});localStorage.setItem(KEY_RING,JSON.stringify(r))}catch(e){}
   closeSheet();nav('hari-ini');toast('Progres hari ini direset')}
 function resetSemua(){const keep={};for(const k in S.paket){if(/^\d/.test(k)&&!S.paket[k].dipakai)keep[k]=S.paket[k]}
-  const jur=S.jurnal,cf=S.set,wk=S.wk;S=blank();S.paket=keep;if(wk)S.wk=wk;S.jurnal=jur;if(cf)S.set=cf;clearInterval(pemTimer);PEM=KAS=JEM=null;LT=-1;save();
+  const jur=S.jurnal,cf=S.set,wk=S.wk;S=blank();S.paket=keep;if(wk)S.wk=wk;S.jurnal=jur;if(cf)S.set=cf;clearInterval(jemTimer);KAS=JEM=null;LT=-1;save();
   try{localStorage.removeItem(KEY_RING)}catch(e){}
   closeSheet();nav('hari-ini');toast('Semua progres direset')}
 function askReset(all){openSheet(`<h2>${all?'Reset semua progres?':'Reset progres hari ini?'}</h2>
@@ -2734,9 +2703,6 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'leavePart':leavePart();break;
   case'kasDone':donePart(2);break;
   case'skipJem':donePart(3);break;
-  case'pem':answerPem(+v);break;
-  case'nextPem':nextPem();break;
-  case'endPem':endPem();break;
   case'copyPrompt':{const st=v?((s.fase>=2||s.paketId)&&!s.selesai?today():nextStart()):($('#pstart').value||today());copyText(buildPromptV4(st).teks,'Prompt 20 soal tersalin');break}
   case'pakaiContoh':S.paket.contoh=Object.assign(JSON.parse(JSON.stringify(CONTOH)),{dipakai:null});S.contohDipakai=true;s.paketId='contoh';save();render();break;
   case'skipKasus':s.done[3]=s.done[3]||!s.paketId;donePart(2);break;
@@ -3158,8 +3124,6 @@ window.SFX=(function(){
   wrap('tower',o=>function(s,mini){const h=o.apply(this,arguments);if(!mini&&h.indexOf(' new"')>=0)PD(300,'brick',1);return h});
 
   /* --- sesi harian --- */
-  wrap('answerPem',o=>function(i){const live=PEM&&!PEM.locked,c=live&&PEM.cards[PEM.i];o.apply(this,arguments);if(live)res(i===c.kunci,'pem')});
-  wrap('endPem',o=>function(){const tout=PEM&&Date.now()>=PEM.end;o.apply(this,arguments);P(tout?'timeup':'segDone')});
   wrap('kasAnswer',o=>function(ok){o.apply(this,arguments);res(ok,'kas')});
   wrap('ebAnswer',o=>function(ok){o.apply(this,arguments);res(ok,'kas')});
   wrap('answerUlang',o=>function(id,i){const x=S.salah.find(y=>y.id===id);o.apply(this,arguments);if(x)res(i===x.kunci,'kas')});
@@ -3238,8 +3202,7 @@ window.SFX=(function(){
   /* --- detak waktu di detik-detik terakhir --- */
   let tk={end:0,sec:-1};
   setInterval(()=>{if(document.hidden)return;let end=0,th=0;
-    if(route==='hari-ini'&&PEM&&!PEM.locked){end=PEM.end;th=10}
-    else if(G&&!G.over&&!G.intro){if(G.id==='bukti'&&(G.phase==='judge'||G.phase==='proof')){end=G.end;th=5}
+    if(G&&!G.over&&!G.intro){if(G.id==='bukti'&&(G.phase==='judge'||G.phase==='proof')){end=G.end;th=5}
       else if(G.id==='hakim'&&G.ans===null){end=G.end;th=5}else if(G.id==='kasir'&&G.phase==='shop'){end=G.kend;th=5}
       else if(G.id==='geser'&&G.mode==='cepat'){end=G.end;th=5}}
     if(!end){tk={end:0,sec:-1};return}
