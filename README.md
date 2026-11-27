@@ -3,7 +3,7 @@
 Latihan PU UTBK-SNBT 2027 sekitar 30 menit sehari: 20 soal bagian Deduktif dan Induktif, disusun dari kode kemampuan Brief Kunci Pola. Satu file `index.html`, tanpa instalasi.
 
 ## Isi
-- **Hari ini** – pemanasan kilat (opsional), **Set PU** 20 soal (Deduktif 10 lalu Induktif 10, 60 detik per soal), satu kalimat nalar. Paket versi 3 lama (kasus 3 langkah + 3 jembatan) yang masih di stok tetap berjalan.
+- **Hari ini** – **Set PU** 20 soal (Deduktif 10 lalu Induktif 10, 60 detik per soal), satu kalimat nalar. Paket versi 3 lama (kasus 3 langkah + 3 jembatan) yang masih di stok tetap berjalan.
 - **Main** – 11 mini game pendamping: Arsir Venn, Lampu Berantai, Rantai Kunci, Inspektur Bandara, Satu Bukti, Detektif Chat, Belanja Hemat, Hakim Simpulan, Beli Petunjuk, Kursi Rapat, Lompat Batu. Tidak menggantikan sesi harian dan tidak mengubah tahap.
 - **Peta** – N1–N8, tahap (Terang, Tersembunyi, Berantakan), akurasi 10 butir terakhir. Naik tahap bila ≥80%.
 - **Rekap** – jebakan terbanyak (J1–J13), kasus nyata vs jembatan, ringkasan Error Book.
