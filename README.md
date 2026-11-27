@@ -3,8 +3,8 @@
 Latihan PU UTBK-SNBT 2027 sekitar 30 menit sehari: 20 soal bagian Deduktif dan Induktif, disusun dari kode kemampuan Brief Kunci Pola. Satu file `index.html`, tanpa instalasi.
 
 ## Isi
-- **Hari ini** – **Set PU** 20 soal (Deduktif 10 lalu Induktif 10, 60 detik per soal), satu kalimat nalar. Paket versi 3 lama (kasus 3 langkah + 3 jembatan) yang masih di stok tetap berjalan.
-- **Main** – 11 mini game pendamping: Arsir Venn, Lampu Berantai, Rantai Kunci, Inspektur Bandara, Satu Bukti, Detektif Chat, Belanja Hemat, Hakim Simpulan, Beli Petunjuk, Kursi Rapat, Lompat Batu. Tidak menggantikan sesi harian dan tidak mengubah tahap.
+- **Hari ini** – **Set PU** 20 soal (Deduktif 10 lalu Induktif 10, 60 detik per soal), lalu varian Error Book bila ada yang jatuh tempo. Paket versi 3 lama (kasus 3 langkah + 3 jembatan) yang masih di stok tetap berjalan.
+- **Main** – 5 mini game pendamping yang punya kode kemampuan Brief: Arsir Venn (PU-DED-3), Detektif Chat (PU-DED-5, PU-DED-4), Hakim Simpulan (PU-DED-4), Beli Petunjuk (PU-KUA-5), Lompat Batu (PU-KUA-2). Untuk waktu luang setelah sesi; tidak mengubah rencana harian.
 - **Peta** – 11 kemampuan PU (PU-DED-1…5, PU-IND-1…6): 10 soal terakhir, akurasi L dan B+M, Indeks Kesiapan, dan status (Mode Dasar, porsi B/M naik, dalam target, data belum cukup).
 - **Rekap** – Kesiapan 2027 (tabel L/G/B/M: benar/total, persen, waktu rata-rata; akurasi total, Indeks Kesiapan, waktu bentuk baru dengan targetnya), jebakan terbanyak, Set PU per bagian, status kemampuan, ringkasan Error Book.
 - **Error Book** (`#eb`) – butir salah dari kasus dan jembatan masuk otomatis beserta jawabanmu dan jebakan yang menjerat (J1–J13). Tiga langkah:
@@ -12,7 +12,7 @@ Latihan PU UTBK-SNBT 2027 sekitar 30 menit sehari: 20 soal bagian Deduktif dan I
   2. *Ulang berjarak tanpa kunci*: mulai besok, lalu 3, 7, 14 hari (paling banyak 10 butir per putaran, urutan diacak). Aturanmu baru ditampilkan setelah menjawab.
   3. *Lulus* setelah benar 4 kali berjarak; salah lagi berarti mulai dari awal dan diagnosis diperbarui.
   - *Pola 30 hari*: penyebab, jebakan, dan keterampilan yang paling sering salah, fokus minggu ini, dan prompt analisis pola untuk Claude. Kartu pengingat muncul di halaman Hari ini.
-- **Jurnal** – kalimat nalar harian; bisa disalin untuk diulas Claude.
+- **Jurnal** – catatan klaim yang kamu dengar (opsional, di luar sesi harian); bisa disalin untuk diulas Claude.
 - **Paket** (tombol "Paket" di kartu Sesi pada halaman Hari ini) – salin prompt ke proyek Claude "Nalar Harian", tempel JSON, cek format, stok, cadangan data.
   - Paket versi 4 per hari: 20 soal (`soal`), tiap soal membawa `kemampuan` (PU-DED-1…5, PU-IND-1…6), `jenis_pola` (L/G/B/M), `bentuk_dekat`, `format` (J1–J7), `bidang`, `latar`, `tokoh`. Komposisi per bagian 3 L / 4 G / 2 B / 1 M; paling banyak 2 soal di luar J1 per bagian; satu soal "kasus nyata" per hari.
   - Rencana harian: semua kemampuan muncul tiap hari. Per kemampuan (±20 soal terakhir): akurasi L < 70% → hanya soal L; Indeks Kesiapan < 0,75 → porsi B dan M naik.
@@ -21,12 +21,6 @@ Latihan PU UTBK-SNBT 2027 sekitar 30 menit sehari: 20 soal bagian Deduktif dan I
   - Bila balasan Claude terpotong, ketik "lanjutkan" di chat, lalu tempel kedua potongan sekaligus; aplikasi menyambungnya sendiri.
   - Jebakan ditampilkan dengan namanya; kode J1–J13 hanya dipakai di data. Kode "J…" yang tampil hanya kode format di baris label.
   - Prompt memberi target huruf kunci per soal, aturan anti-tebak, dan daftar kerangka yang sudah dipakai. Saat menyimpan, aplikasi menolak paket dengan pelanggaran berat: kunci menjadi opsi terpanjang di lebih dari 1 dari 5 soal, pengecoh tanpa label jebakan, opsi kembar, opsi baku yang diubah atau diacak, "tepat dua" yang dilanggar, nomor/huruf kalimat di stimulus, atau stimulus lebih dari 8 kalimat. Pelanggaran ringan cukup diberi peringatan: selisih kata opsi lebih dari 30%, kunci satu-satunya yang berhati-hati, stimulus 7–8 kalimat atau kurang dari 2, frasa khas tulisan AI, dan huruf kunci yang menumpuk.
-
-## Paket mini game mingguan
-- Bank kata Lampu Berantai, Rantai Kunci, Inspektur Bandara, Arsir Venn, Hakim Simpulan, dan Beli Petunjuk diganti tiap minggu (Senin–Minggu).
-- Halaman Main → "Paket mingguan" (atau `#mingguan`): salin prompt mingguan → jalankan di proyek Claude "Nalar Harian" → tempel JSON → Cek & simpan. Paket minggu depan bisa disiapkan lebih awal.
-- Pengingat: mulai Jumat muncul kartu "Saatnya ganti paket mini game" bila paket minggu depan belum ada; mulai Senin tanpa paket muncul "Paket mini game terlambat" dan game memakai bank bawaan.
-- Status ditulis ke kunci `paketMingguan:nalar-harian` (`{"app","nama","minggu":["YYYY-MM-DD" hari Senin, ...],"diperbarui"}`) supaya Progres Harian ikut mengingatkan.
 
 ## Pasang di GitHub Pages
 1. Unggah `index.html` dan `README.md` ke repo `logic-games` (nama ini dipakai menu teleport Bloki untuk menandai app yang sedang dibuka).

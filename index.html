@@ -660,7 +660,6 @@ const SKILL_DESC={N1:'klaim, alasan, asumsi tersembunyi',N2:'negasi, dan, atau, 
 const TRAPS={J1:'Membalik implikasi',J2:'Menyangkal anteseden',J3:'Salah menyangkal dan/atau',J4:'Kuantor dibalik/diperluas',J5:'Terpancing kalimat pengalih',J6:'Simpulan terlalu kuat',J7:'Generalisasi tergesa',J8:'Korelasi dianggap sebab',J9:'Pembanding tidak setara',J10:'Analogi lemah',J11:'Informasi luar teks',J12:'Salah basis angka',J13:'Tertukar mungkin benar dan tidak dapat dinilai'};
 const TAHAP=['','Terang','Tersembunyi','Berantakan'];
 const BENTUK=['','lama','2026','2027'];
-const KONTEKS=['chat grup','promo dan iklan toko','pengumuman dan syarat','klaim kesehatan di media sosial','hasil survei dan grafik','debat di kolom komentar','keputusan pribadi','aturan permainan dan jadwal'];
 const LANGKAH=['Bongkar','Nilai','Putuskan'];
 const JENIS_LBL={tandai:'Tandai peran kalimat',bentuk:'Pilih bentuk logika',sah:'Sah atau tidak',kalibrasi:'Kalibrasi kepastian',celah:'Cari celah',perlu_dicek:'Yang perlu dicek',penjelasan:'Penjelasan lain',baca_angka:'Baca angka',keputusan:'Putuskan'};
 const PERAN=['klaim','alasan','contoh','pengalih'];
@@ -708,10 +707,10 @@ function sesi(t){const s=S.sesi[t]||(S.sesi[t]={fase:0,pem:{b:0,n:0},kas:{b:0,n:
   if(!s.done){s.done={};for(let i=1;i<Math.min(s.fase,5);i++)s.done[i]=true;if(s.selesai)[1,2,3,4].forEach(i=>s.done[i]=true)}return s}
 /* misi harian bisa dipilih bebas; selesai satu misi kembali ke daftar misi */
 const PART_NAMA=['','Pemanasan kilat','Kasus hari ini','Jembatan UTBK','Satu kalimat nalar','','Ulang varian Error Book'];
-/* misi 1 (pemanasan) dihapus di R2: sesi selesai bila misi 2–4 selesai. Paket versi 4 tidak punya kasus 3 langkah,
+/* misi 1 (pemanasan) dihapus di R2 dan misi 4 (satu kalimat nalar) dikeluarkan di R9: sesi selesai bila misi 2–3 (dan 6 bila ada varian) selesai. Paket versi 4 tidak punya kasus 3 langkah,
    jadi misi 2 otomatis dianggap selesai (siapkanV4). */
 /* misi 6 (R6): varian soal Error Book yang jatuh tempo, langkah terakhir sesi; wajib bila paket hari itu membawa varian */
-const wajib=s=>[2,3,4].concat(s&&s.ulangIds&&s.ulangIds.length?[6]:[]);
+const wajib=s=>[2,3].concat(s&&s.ulangIds&&s.ulangIds.length?[6]:[]);
 const diMisi=s=>s&&((s.fase>=1&&s.fase<=4)||s.fase===6);
 const nextPart=s=>wajib(s).find(i=>!s.done[i]);
 const sesiV4=s=>{const p=s.paketId&&S.paket[s.paketId];return isV4(p)};
@@ -750,172 +749,11 @@ function writeRingkasan(){
   try{localStorage.setItem(KEY_RING,JSON.stringify(o))}catch(e){}
 }
 
-/* ================= BANK KALIMAT (kartu WARM untuk mini game) ================= */
-const COND=[
-[['hujan turun','hujan tidak turun'],['upacara dipindah ke aula','upacara tidak dipindah ke aula']],
-[['Dina belajar setiap malam','Dina tidak belajar setiap malam'],['nilai try out Dina naik','nilai try out Dina tidak naik']],
-[['toko buka','toko tidak buka'],['lampu depan menyala','lampu depan tidak menyala']],
-[['rapat jadi diadakan','rapat tidak jadi diadakan'],['ketua OSIS hadir','ketua OSIS tidak hadir']],
-[['nilai Bima minimal 85','nilai Bima kurang dari 85'],['Bima lolos seleksi beasiswa','Bima tidak lolos seleksi beasiswa']],
-[['kuota internet Raka habis','kuota internet Raka tidak habis'],['Raka absen dari kelas daring','Raka tidak absen dari kelas daring']],
-[['jalan macet','jalan tidak macet'],['bus datang terlambat','bus tidak datang terlambat']],
-[['tugas dikumpulkan sebelum Jumat','tugas tidak dikumpulkan sebelum Jumat'],['tugas dinilai penuh','tugas tidak dinilai penuh']],
-[['listrik padam','listrik tidak padam'],['wifi sekolah mati','wifi sekolah tidak mati']],
-[['Sari ikut lomba debat','Sari tidak ikut lomba debat'],['Sari mengisi formulir izin','Sari tidak mengisi formulir izin']],
-[['promo berlaku','promo tidak berlaku'],['harga turun 20%','harga tidak turun 20%']],
-[['ujian diundur','ujian tidak diundur'],['jadwal les berubah','jadwal les tidak berubah']],
-[['Tio membawa payung','Tio tidak membawa payung'],['Tio tidak kehujanan','Tio kehujanan']],
-[['hari ini Senin','hari ini bukan Senin'],['kelompok A piket','kelompok A tidak piket']],
-[['tiketnya VIP','tiketnya bukan VIP'],['penonton duduk di baris depan','penonton tidak duduk di baris depan']],
-[['pesanan di atas Rp50.000','pesanan tidak di atas Rp50.000'],['ongkir gratis','ongkir tidak gratis']],
-[['Nadia tidur larut','Nadia tidak tidur larut'],['Nadia mengantuk di kelas','Nadia tidak mengantuk di kelas']],
-[['tim kita menang','tim kita tidak menang'],['tim kita masuk final','tim kita tidak masuk final']],
-[['baterai di bawah 10%','baterai tidak di bawah 10%'],['ponsel masuk mode hemat','ponsel tidak masuk mode hemat']],
-[['peserta terlambat','peserta tidak terlambat'],['peserta dilarang masuk ruang ujian','peserta tidak dilarang masuk ruang ujian']],
-[['Fajar diterima di kampus impiannya','Fajar tidak diterima di kampus impiannya'],['Fajar pindah ke Bandung','Fajar tidak pindah ke Bandung']],
-[['ada pengumuman baru','tidak ada pengumuman baru'],['grup kelas ramai','grup kelas tidak ramai']],
-[['Lala membeli sepatu','Lala tidak membeli sepatu'],['tabungan Lala berkurang','tabungan Lala tidak berkurang']],
-[['kantin tutup','kantin tidak tutup'],['siswa membawa bekal','siswa tidak membawa bekal']],
-[['film dimulai pukul 19.00','film tidak dimulai pukul 19.00'],['kami makan malam dulu','kami tidak makan malam dulu']],
-[['nilai rapor naik','nilai rapor tidak naik'],['Ayah memberi hadiah','Ayah tidak memberi hadiah']],
-[['jumlah peserta kurang dari 10','jumlah peserta tidak kurang dari 10'],['kelas dibatalkan','kelas tidak dibatalkan']],
-[['Gilang lupa alarm','Gilang tidak lupa alarm'],['Gilang bangun kesiangan','Gilang tidak bangun kesiangan']],
-[['Rani lolos seleksi OSN','Rani tidak lolos seleksi OSN'],['Rani mewakili sekolah','Rani tidak mewakili sekolah']],
-[['kartu ujian hilang','kartu ujian tidak hilang'],['peserta melapor ke panitia','peserta tidak melapor ke panitia']],
-[['pesanan dibatalkan','pesanan tidak dibatalkan'],['dana dikembalikan','dana tidak dikembalikan']],
-[['Bayu terpilih jadi ketua kelas','Bayu tidak terpilih jadi ketua kelas'],['Bayu memimpin rapat kelas','Bayu tidak memimpin rapat kelas']],
-[['nilai ujian praktik lengkap','nilai ujian praktik tidak lengkap'],['rapor dibagikan','rapor tidak dibagikan']],
-[['jumlah pendaftar melebihi kuota','jumlah pendaftar tidak melebihi kuota'],['panitia membuka gelombang dua','panitia tidak membuka gelombang dua']],
-[['harga cabai naik','harga cabai tidak naik'],['warung Bu Sri menaikkan harga sambal','warung Bu Sri tidak menaikkan harga sambal']],
-[['Tari ikut kelas daring','Tari tidak ikut kelas daring'],['Tari menyalakan kamera','Tari tidak menyalakan kamera']],
-[['ada pemadaman air','tidak ada pemadaman air'],['warga menampung air sejak pagi','warga tidak menampung air sejak pagi']],
-[['jadwal try out dimajukan','jadwal try out tidak dimajukan'],['Dimas mengulang materi minggu ini','Dimas tidak mengulang materi minggu ini']],
-[['tim debat menang di semifinal','tim debat tidak menang di semifinal'],['tim debat berangkat ke Surabaya','tim debat tidak berangkat ke Surabaya']],
-[['Wulan mendapat beasiswa','Wulan tidak mendapat beasiswa'],['Wulan membayar uang pangkal','Wulan tidak membayar uang pangkal']],
-[['aplikasi diperbarui','aplikasi tidak diperbarui'],['fitur baru muncul','fitur baru tidak muncul']],
-[['perpustakaan buka sampai malam','perpustakaan tidak buka sampai malam'],['ruang baca penuh','ruang baca tidak penuh']],
-[['Kevin terlambat tiga kali','Kevin tidak terlambat tiga kali'],['Kevin dipanggil wali kelas','Kevin tidak dipanggil wali kelas']],
-[['diskon akhir tahun dimulai','diskon akhir tahun belum dimulai'],['toko buku ramai pembeli','toko buku tidak ramai pembeli']]
-];
-const QB=[
-['siswa kelas 12','ikut try out','tidak ikut try out','Nadia'],
-['peserta lomba','membawa kartu pelajar','tidak membawa kartu pelajar','Arga'],
-['produk di rak depan','sedang diskon','tidak sedang diskon','Sepatu merah itu'],
-['anggota OSIS','hadir rapat','tidak hadir rapat','Putri'],
-['pembeli paket hemat','mendapat voucher','tidak mendapat voucher','Yoga'],
-['penumpang kereta pagi','memakai masker','tidak memakai masker','Hana'],
-['buku di rak atas','boleh dipinjam','tidak boleh dipinjam','Novel Laut Biru'],
-['peserta try out','mengerjakan semua soal','tidak mengerjakan semua soal','Dimas'],
-['pemain futsal sekolah','datang latihan','tidak datang latihan','Kevin'],
-['pendaftar beasiswa','melampirkan rapor','tidak melampirkan rapor','Wulan'],
-['warga kompleks','ikut kerja bakti','tidak ikut kerja bakti','Pak Darto'],
-['siswa yang ikut bimbel','belajar di perpustakaan','tidak belajar di perpustakaan','Bela'],
-['peserta seminar','mendapat sertifikat','tidak mendapat sertifikat','Tari'],
-['menu sarapan kantin','mengandung telur','tidak mengandung telur','Nasi uduk spesial'],
-['anggota klub sains','pernah ikut lomba','tidak pernah ikut lomba','Gilang'],
-['pendaftar jalur prestasi','mengunggah piagam','tidak mengunggah piagam','Rani'],
-['tiket konser kelas festival','berlaku untuk satu orang','tidak berlaku untuk satu orang','Tiket milik Bayu'],
-['siswa kelas 10','mengikuti MPLS','tidak mengikuti MPLS','Fajar'],
-['penumpang bus malam','membawa bantal','tidak membawa bantal','Pak Sarip'],
-['peserta lomba cerdas cermat','berlatih setiap Rabu','tidak berlatih setiap Rabu','Lala']
-];
-/* ambil butir bank tanpa mengulang subjek yang sama dalam satu set kartu */
-let FRESH=null;
-function pickFresh(arr,tag){if(!FRESH)return rnd(arr);const left=arr.filter((_,i)=>!FRESH.has(tag+i));const pool=left.length?left:arr;const x=rnd(pool);FRESH.add(tag+arr.indexOf(x));return x}
-function pq(){const c=pickFresh(COND,'c');return{P:{pos:c[0][0],neg:c[0][1]},Q:{pos:c[1][0],neg:c[1][1]}}}
-/* wadah kalimat: pernyataan yang sama disajikan dalam bungkus berbeda */
-const wadah=s=>rnd([`“${s}”`,`Pengumuman: “${s}”`,`Ketua kelas menulis di grup: “${s}”`,`Aturan tertulis: ${s}`,`Kata Bu Ratna: “${s}”`]);
-/* angka acak berbenih tanggal: susunan bentuk berbeda tiap hari, tetap sama bila dimuat ulang */
+/* angka acak berbenih (rencana harian, mini game) */
 function seedRng(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19}
   return()=>{h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);h^=h>>>16;return(h>>>0)/4294967296}}
 function shuffleR(a,r){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-/* ================= SUMBU VARIASI BENTUK =================
-   Konsep tetap; bentuk diputar lewat empat sumbu. Tiap sumbu berputar dengan langkah berbeda,
-   jadi kombinasi lengkapnya hampir tidak pernah terulang. */
-const SUMBU={
- wadah:['aturan tertulis','obrolan grup','tabel atau jadwal','cerita bertokoh 5–8 kalimat','pengumuman dengan catatan kecil','dua pendapat yang berlawanan'],
- tanya:['PASTI BENAR','yang TIDAK sah / PASTI SALAH','PALING memperkuat atau memperlemah','pernyataan yang setara','ingkaran','soal bersyarat (“jika X terjadi, maka …”)','informasi yang PALING perlu dicek'],
- format:['pilihan ganda 5 opsi (jenis "pg")','benar/salah per baris (jenis "bs", 4–5 pernyataan)','pilih 2 dari 5 (jenis "bs", label DIDUKUNG/TIDAK DIDUKUNG, tepat dua B)','pilihan ganda dengan opsi baku (jenis "pg")'],
- kejutan:['catatan kecil berisi pengecualian','informasi berlebih yang mengalihkan','data tidak lengkap','dua aturan yang saling memengaruhi','“hanya jika”, “kecuali”, atau “tanpa … tidak …” menggantikan “jika–maka”','kata pembatas (sebagian, paling sedikit, tidak semua)']};
-const SUMBU_PENDEK={wadah:['aturan','chat grup','tabel/jadwal','cerita panjang','pengumuman + catatan','dua pendapat'],tanya:['pasti benar','TIDAK sah','perkuat/perlemah','setara','ingkaran','bersyarat','perlu dicek'],kejutan:['pengecualian','info berlebih','data kurang','dua aturan','hanya jika/kecuali','kata pembatas']};
 function dayNum(t){return Math.round(new Date(t+'T12:00:00').getTime()/86400000)}
-function mutIdx(t){const d=dayNum(t);return{w:d%6,t:(d*3+1)%7,f:(d+Math.floor(d/7))%4,k:(d*5+2)%6}}
-function mutasi(t){const i=mutIdx(t);return{wadah:SUMBU.wadah[i.w],tanya:SUMBU.tanya[i.t],format:SUMBU.format[i.f],kejutan:SUMBU.kejutan[i.k]}}
-function mutPendek(t){const i=mutIdx(t);return[SUMBU_PENDEK.wadah[i.w],SUMBU_PENDEK.tanya[i.t],SUMBU_PENDEK.kejutan[i.k]]}
-const fmtMut=m=>`wadah ${m.wadah}; kata tanya ${m.tanya}; format ${m.format}; kejutan ${m.kejutan}`;
-const WARM={
-  negAnd(){const{P,Q}=pq();return Object.assign({sk:'N2',label:'Ingkaran',teks:wadah(`${cap(P.pos)} dan ${Q.pos}.`),
-    why:'Ingkaran “p dan q” adalah “bukan p atau bukan q”: cukup salah satunya tidak terjadi.'},mkOpts([
-    {t:`${cap(P.neg)} atau ${Q.neg}.`,ok:1},{t:`${cap(P.neg)} dan ${Q.neg}.`,j:'J3'},{t:`${cap(P.pos)} atau ${Q.pos}.`,j:'J3'},{t:`${cap(P.neg)} dan ${Q.pos}.`,j:'J3'}]))},
-  negOr(){const{P,Q}=pq();return Object.assign({sk:'N2',label:'Ingkaran',teks:wadah(`${cap(P.pos)} atau ${Q.pos}.`),
-    why:'Ingkaran “p atau q” adalah “bukan p dan bukan q”: keduanya harus tidak terjadi.'},mkOpts([
-    {t:`${cap(P.neg)} dan ${Q.neg}.`,ok:1},{t:`${cap(P.neg)} atau ${Q.neg}.`,j:'J3'},{t:`${cap(P.pos)} dan ${Q.neg}.`,j:'J3'},{t:`${cap(P.neg)} atau ${Q.pos}.`,j:'J3'}]))},
-  negIf(){const{P,Q}=pq();return Object.assign({sk:'N2',label:'Ingkaran',teks:wadah(`Jika ${P.pos}, maka ${Q.pos}.`),
-    why:'Ingkaran “jika p maka q” adalah “p dan bukan q”: syaratnya terjadi, akibatnya tidak.'},mkOpts([
-    {t:`${cap(P.pos)} dan ${Q.neg}.`,ok:1},{t:`Jika ${P.neg}, maka ${Q.neg}.`,j:'J2'},{t:`Jika ${Q.pos}, maka ${P.pos}.`,j:'J1'},{t:`${cap(P.neg)} dan ${Q.pos}.`,j:'J3'}]))},
-  setara(){const{P,Q}=pq();const k=RNG()<.6?`Jika ${Q.neg}, maka ${P.neg}.`:`${cap(P.neg)} atau ${Q.pos}.`;
-    return Object.assign({sk:'N2',label:'Pernyataan yang setara',teks:wadah(`Jika ${P.pos}, maka ${Q.pos}.`),
-    why:'“Jika p maka q” setara dengan kontraposisinya “jika bukan q maka bukan p”, dan dengan “bukan p atau q”.'},mkOpts([
-    {t:k,ok:1},{t:`Jika ${Q.pos}, maka ${P.pos}.`,j:'J1'},{t:`Jika ${P.neg}, maka ${Q.neg}.`,j:'J2'},{t:`${cap(P.pos)} dan ${Q.neg}.`,j:'J3'}]))},
-  sah(){const{P,Q}=pq();const f=rnd(['MP','MT','KONV','INV']);
-    const pre=`Jika ${P.pos}, maka ${Q.pos}.\n`;let teks,ok,why,jw;
-    if(f==='MP'){teks=pre+`${cap(P.pos)}.\nJadi, ${Q.pos}.`;ok=true;why='Sah (modus ponens): syarat terpenuhi, akibatnya pasti terjadi.'}
-    if(f==='MT'){teks=pre+`${cap(Q.neg)}.\nJadi, ${P.neg}.`;ok=true;why='Sah (modus tollens): akibatnya tidak terjadi, berarti syaratnya juga tidak.'}
-    if(f==='KONV'){teks=pre+`${cap(Q.pos)}.\nJadi, ${P.pos}.`;ok=false;jw='J1';why='Tidak sah: membalik implikasi. q bisa terjadi karena hal lain.'}
-    if(f==='INV'){teks=pre+`${cap(P.neg)}.\nJadi, ${Q.neg}.`;ok=false;jw='J2';why='Tidak sah: menyangkal anteseden. Aturan tidak menyebut apa yang terjadi bila p tidak terjadi.'}
-    /* 4 opsi berisi alasan: harus mengenali bentuknya, tidak cukup menebak sah/tidak (50%) */
-    const SO={MP:'Sah: syaratnya terjadi, jadi akibatnya pasti terjadi.',MT:'Sah: akibatnya tidak terjadi, jadi syaratnya pasti tidak terjadi.',
-      KONV:'Tidak sah: akibat yang terjadi dipakai untuk memastikan syaratnya.',INV:'Tidak sah: aturan tidak mengatur keadaan saat syaratnya tidak terjadi.'};
-    const it=['MP','MT','KONV','INV'].map(x=>x===f?{t:SO[x],ok:1}:{t:SO[x],j:(!ok&&(x==='MP'||x==='MT'))?jw:null});
-    return Object.assign({sk:'N2',label:'Sah atau tidak sah? Pilih alasannya',teks,why},mkOpts(it))},
-  negQ(){const[s,p,np]=pickFresh(QB,'q');if(Math.random()<.55)return Object.assign({sk:'N3',label:'Ingkaran',teks:`“Semua ${s} ${p}.”`,why:'Ingkaran “semua … ” adalah “ada … yang tidak”. Satu contoh yang tidak sudah cukup.'},mkOpts([
-      {t:`Ada ${s} yang ${np}.`,ok:1},{t:`Semua ${s} ${np}.`,j:'J4'},{t:`Tidak ada ${s} yang ${p}.`,j:'J4'},{t:`Ada ${s} yang ${p}.`,j:'J4'}]));
-    return Object.assign({sk:'N3',label:'Ingkaran',teks:`“Ada ${s} yang ${p}.”`,why:'Ingkaran “ada … yang …” adalah “semua … tidak …”.'},mkOpts([
-      {t:`Semua ${s} ${np}.`,ok:1},{t:`Ada ${s} yang ${np}.`,j:'J4'},{t:`Semua ${s} ${p}.`,j:'J4'},{t:`Sebagian ${s} ${p}.`,j:'J4'}]))},
-  kalib(){const[s,p,np,x]=pickFresh(QB,'q');const f=rnd(['A','B','C','D','E']);const O=['Pasti benar','Belum tentu','Pasti salah'];let teks,k,why,jw=['J6',null,'J6'];
-    if(f==='A'){teks=`Semua ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${p}.`;k=0;why='Semua anggota kelompok punya sifat itu, dan ia anggota kelompok. Pasti benar.';jw=[null,'J6','J6']}
-    if(f==='B'){teks=`Semua ${s} ${p}.\n${x} ${p}.\n\nSimpulan: ${x} termasuk ${s}.`;k=1;why='Yang punya sifat itu bisa saja dari luar kelompok. Belum tentu (membalik arah).';jw=['J1',null,'J6']}
-    if(f==='C'){teks=`Semua ${s} ${p}.\n${x} ${np}.\n\nSimpulan: ${x} termasuk ${s}.`;k=2;why='Kalau ia anggota kelompok, ia pasti punya sifat itu. Karena tidak, ia pasti bukan anggota.';jw=['J6','J6',null]}
-    if(f==='D'){teks=`Sebagian ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${p}.`;k=1;why='“Sebagian” tidak menjamin anggota tertentu. Belum tentu.';jw=['J4',null,'J6']}
-    if(f==='E'){teks=`Tidak ada ${s} yang ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${p}.`;k=2;why='Tidak ada anggota yang punya sifat itu, jadi simpulan pasti salah.';jw=['J6','J6',null]}
-    return{sk:f==='D'?'N3':'N4',label:'Seberapa pasti?',teks,opsi:O,kunci:k,j:jw,why}},
-  /* --- bentuk baru: konsep sama, wujud soal berbeda --- */
-  hanyaJika(){const{P,Q}=pq();return Object.assign({sk:'N2',label:'Pernyataan yang setara',teks:wadah(`${cap(P.pos)} hanya jika ${Q.pos}.`),
-    why:'“p hanya jika q” berarti q syarat perlu: kalau p terjadi, q pasti terjadi. Jadi setara dengan “jika p, maka q”, bukan kebalikannya.'},mkOpts([
-    {t:`Jika ${P.pos}, maka ${Q.pos}.`,ok:1},{t:`Jika ${Q.pos}, maka ${P.pos}.`,j:'J1'},{t:`Jika ${P.neg}, maka ${Q.neg}.`,j:'J2'},{t:`${cap(P.pos)} dan ${Q.neg}.`,j:'J3'}]))},
-  atauJika(){const{P,Q}=pq();return Object.assign({sk:'N2',label:'Pernyataan yang setara',teks:wadah(`${cap(P.neg)} atau ${Q.pos}.`),
-    why:'“Bukan p atau q” setara dengan “jika p, maka q”: begitu p terjadi, pilihan yang tersisa hanya q.'},mkOpts([
-    {t:`Jika ${P.pos}, maka ${Q.pos}.`,ok:1},{t:`Jika ${Q.pos}, maka ${P.pos}.`,j:'J1'},{t:`Jika ${P.neg}, maka ${Q.pos}.`,j:'J3'},{t:`${cap(P.pos)} dan ${Q.neg}.`,j:'J3'}]))},
-  kecuali(){const{P,Q}=pq();return Object.assign({sk:'N2',label:'Setara, KECUALI',teks:wadah(`Jika ${P.pos}, maka ${Q.pos}.`)+'\n\nSemua pernyataan berikut setara dengan aturan itu, KECUALI …',
-    why:'Kontraposisi, “bukan p atau q”, “p hanya jika q”, dan “tidak mungkin p tetapi bukan q” semuanya setara. Konvers (dibalik) dan invers (sama-sama diingkari) tidak setara.'},
-    mkOpts([RNG()<.5?{t:`Jika ${Q.pos}, maka ${P.pos}.`,ok:1}:{t:`Jika ${P.neg}, maka ${Q.neg}.`,ok:1}].concat(shuffle([{t:`Jika ${Q.neg}, maka ${P.neg}.`},{t:`${cap(P.neg)} atau ${Q.pos}.`},{t:`Tidak mungkin ${P.pos} tetapi ${Q.neg}.`},{t:`${cap(P.pos)} hanya jika ${Q.pos}.`}]).slice(0,3))))},
-  /* opsi "belum dapat dipastikan" dibuat sependek opsi lain, dan kadang menjadi kunci (varian ketiga),
-     supaya tidak berlaku pola "opsi paling panjang pasti salah" */
-  rantai(){const A=rnd(RANTAI),T=(i,n)=>A[i][n],v=RNG();
-    if(v<.4)return Object.assign({sk:'N2',label:'Dua aturan, satu fakta',
-    teks:`Jika ${T(0,0)}, maka ${T(1,0)}.\nJika ${T(1,0)}, maka ${T(2,0)}.\nDiketahui: ${T(0,0)}.\n\nSimpulan yang PASTI BENAR adalah …`,
-    why:'Rantai p→q→r dengan p terjadi: q terjadi, lalu r terjadi (modus ponens dua kali).'},mkOpts([
-    {t:`${cap(T(2,0))}.`,ok:1},{t:`${cap(T(2,1))}.`,j:'J6'},{t:`${cap(T(1,0))}, tetapi ${T(2,1)}.`,j:'J3'},{t:'Akhir rantai belum dapat dipastikan.',j:'J13'}]));
-    if(v<.75)return Object.assign({sk:'N2',label:'Dua aturan, satu fakta',
-    teks:`Jika ${T(0,0)}, maka ${T(1,0)}.\nJika ${T(1,0)}, maka ${T(2,0)}.\nDiketahui: ${T(2,1)}.\n\nSimpulan yang PASTI BENAR tentang awal rantai adalah …`,
-    why:'Rantai p→q→r memberi p→r. Karena r tidak terjadi, p pasti tidak terjadi (modus tollens).'},mkOpts([
-    {t:`${cap(T(0,1))}.`,ok:1},{t:`${cap(T(0,0))}.`,j:'J6'},{t:`${cap(T(0,0))}, tetapi ${T(1,1)}.`,j:'J3'},{t:'Awal rantai belum dapat dipastikan.',j:'J13'}]));
-    return Object.assign({sk:'N2',label:'Dua aturan, satu fakta',
-    teks:`Jika ${T(0,0)}, maka ${T(1,0)}.\nJika ${T(1,0)}, maka ${T(2,0)}.\nDiketahui: ${T(2,0)}.\n\nSimpulan yang PASTI BENAR tentang awal rantai adalah …`,
-    why:'Akhir rantai yang terjadi tidak memastikan awalnya: r bisa terjadi karena hal lain. Menyimpulkan p dari r berarti membalik implikasi.'},mkOpts([
-    {t:'Awal rantai belum dapat dipastikan.',ok:1},{t:`${cap(T(0,0))}.`,j:'J1'},{t:`${cap(T(1,0))}.`,j:'J1'},{t:`${cap(T(0,1))}.`,j:'J2'}]))},
-  kalib5(){const[s,p,np,x]=pickFresh(QB,'q');const f=rnd(['A','B','C','D','E']);let teks,k,why;
-    if(f==='A'){teks=`Semua ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${p}.`;k=0;why='Anggota kelompok pasti punya sifat kelompoknya. Pasti benar.'}
-    if(f==='B'){teks=`Sebagian ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${p}.`;k=1;why='Subjeknya dibahas dan tidak bertentangan, tetapi “sebagian” tidak menjamin anggota tertentu. Mungkin benar.'}
-    if(f==='C'){teks=`Tidak ada ${s} yang ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${p}.`;k=2;why='Bertentangan langsung dengan informasi. Pasti salah.'}
-    if(f==='B'&&RNG()<.5){teks=`Sebagian ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${np}.`}
-    if(f==='C'&&RNG()<.5){teks=`Semua ${s} ${p}.\n${x} ${np}.\n\nSimpulan: ${x} termasuk ${s}.`;why='Kalau ia anggota kelompok, ia pasti punya sifat itu. Karena tidak, simpulan bahwa ia anggota pasti salah.'}
-    if(f==='D'){teks=`Semua ${s} ${p}.\n${x} termasuk ${s}.\n\nSimpulan: ${x} ${rnd(LUAR)}.`;k=3;why='Informasinya sama sekali tidak menyentuh hal ini. Tidak relevan.'}
-    if(f==='E'){teks=`Sebagian ${s} ${p}.\n\nSimpulan: ${rnd(['Lebih dari separuh','Sebagian besar','Paling sedikit tiga','Kurang dari sepuluh'])} ${s} ${p}.`;k=4;why='Topiknya dibahas, tetapi “sebagian” tidak menyebut berapa banyak, jadi jumlahnya tidak bisa dinilai. Memilih “mungkin benar” adalah jebakan J13.'}
-    const j=KS_OPSI.map((_,i)=>i===k?null:((i===1&&k===4)||(i===4&&k===1))?'J13':'J6');
-    return{sk:'N4',label:'Kualitas simpulan · 5 opsi baku',teks,opsi:KS_OPSI,kunci:k,j,why}}
-};
-/* kartu WARM dipakai mini game (Satu Bukti). Pemanasan kilat di sesi harian dihapus di R2. */
 
 /* ================= PAKET CONTOH ================= */
 const CONTOH={versi:2,tgl:'contoh',kasus:{keterampilan:'N2',tahap:1,konteks:'chat grup',judul:'Rapat OSIS sore ini',
@@ -1120,129 +958,9 @@ function tebakWarn(o){const W=[];const huruf=[];
 function weekLog(days=7){const from=addDays(today(),-(days-1));return S.log.filter(x=>x.t>=from)}
 function accBySkill(log){const m={};log.filter(x=>x.src==='kasus'||x.src==='jembatan').forEach(x=>{(m[x.sk]||(m[x.sk]={b:0,n:0})).n++;if(x.ok)m[x.sk].b++});return m}
 function topTraps(log,n=3){const c={};log.forEach(x=>{if(x.j&&TRAPS[x.j])c[x.j]=(c[x.j]||0)+1});return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,n)}
-function lastPlannedSkill(){const ids=Object.keys(S.paket).filter(k=>k!=='contoh').sort();if(ids.length&&S.paket[ids[ids.length-1]].kasus)return S.paket[ids[ids.length-1]].kasus.keterampilan;
-  const k=S.log.filter(x=>x.src==='kasus').pop();return k?k.sk:null}
 function nextStart(){const ids=Object.keys(S.paket).filter(k=>/^\d/.test(k)).sort();const t=today();
   let d=ids.length?addDays(ids[ids.length-1],1):t;if(d<t)d=t;if(d===t&&S.sesi[t]&&(S.sesi[t].fase>=2||S.sesi[t].paketId))d=addDays(t,1);return d}
-function buildPlan(n,start){
-  const order=Object.keys(SKILLS);const last=lastPlannedSkill();let idx=last?(order.indexOf(last)+1)%8:0;
-  const acc=accBySkill(weekLog(7));let weak=null,wv=1;for(const k in acc){const a=acc[k].b/acc[k].n;if(acc[k].n>=3&&a<.7&&a<wv){wv=a;weak=k}}
-  const seq=[];if(weak&&weak!==last)seq.push(weak);while(seq.length<n){const k=order[idx];idx=(idx+1)%8;if(seq[seq.length-1]!==k)seq.push(k)}
-  const recent=new Set();Object.keys(S.paket).forEach(k=>{if(k>=addDays(start,-10)&&S.paket[k].kasus)recent.add(S.paket[k].kasus.konteks)});
-  let ci=Math.floor(Math.random()*8);const plan=[];
-  for(let i=0;i<n;i++){let c=null;for(let t=0;t<8;t++){const cand=KONTEKS[(ci+t)%8];if(!recent.has(cand)){c=cand;ci=(ci+t+1)%8;break}}
-    if(!c){c=KONTEKS[ci%8];ci++}recent.add(c);if(recent.size>=8)recent.clear();
-    const sk=seq[i],th=S.skills[sk].tahap,tg=addDays(start,i);plan.push({tgl:tg,sk,tahap:th,konteks:c,bentuk:BENTUK[th],mut:mutasi(tg)})}
-  /* target huruf kunci: tersebar rata dan acak, supaya posisi kunci tidak bisa ditebak */
-  const deck=(k,m)=>{let d=[];while(d.length<m)d=d.concat(shuffle([...Array(k).keys()]));return d};
-  const J=deck(5,n*4),K=deck(4,n*2),P=deck(4,n*4);
-  plan.forEach((p,i)=>{let a=J.slice(i*4,i*4+3);if(new Set(a).size===1)a[2]=(a[2]+2)%5;p.kJem=a;p.kKas=K.slice(i*2,i*2+2);p.kPem=P.slice(i*4,i*4+4)});
-  return plan}
 const HURUF=i=>String.fromCharCode(65+i);
-/* kerangka yang sudah dipakai paket lain: dikirim ke Claude supaya tidak diulang */
-function kerangkaTerpakai(start){const ids=Object.keys(S.paket).filter(k=>/^\d/.test(k)&&k>=addDays(start,-21)).sort().slice(-14);const L=[];
-  ids.forEach(k=>{const p=S.paket[k];const j=(p.jembatan||[]).map(q=>String(q.perintah||'').replace(/\s+/g,' ').slice(0,60)).filter(Boolean);
-    L.push(`${k}: kasus “${String(p.kasus&&p.kasus.judul||'').slice(0,50)}”${j.length?'; jembatan: '+j.map(x=>`“${x}”`).join(', '):''}`)});return L}
-const BENTUK_TAB={
- N1:['Asumsi yang mendasari argumen; simpulan utama','Argumen dalam laporan atau cerita; informasi tambahan agar simpulan TEPAT','Dua tokoh menafsirkan data yang sama; asumsi yang TIDAK diperlukan'],
- N2:['Implikasi, modus tollens, silogisme hipotetis tertulis rapi; ingkaran; pernyataan setara','Cerita bertokoh 5–8 kalimat dengan dan, atau, jika, dan kalimat pengalih; "kesimpulan PALING TEPAT"','Aturan lomba, syarat pendaftaran, atau jadwal; tiga aturan; "simpulan yang TIDAK sah" atau "pernyataan setara"'],
- N3:['Silogisme "semua" dan "sebagian"; ingkaran kuantor','Kuantor di dalam cerita ("setiap", "tidak semua", "ada yang"); dua "sebagian"','Aturan dengan pengecualian (catatan kecil); "PASTI SALAH"'],
- N4:['Kualitas simpulan 5 opsi baku, premis pendek','Cerita + kualitas simpulan; urutan dan posisi 4 syarat "PASTI BENAR"','Beberapa simpulan dinilai sekaligus (bs); urutan 5 syarat dengan satu syarat bersyarat'],
- N5:['Generalisasi pengamatan; sebab-akibat PALING MUNGKIN','Contoh sesuai definisi; kesamaan dua definisi; analogi','Definisi dua syarat dengan contoh yang hampir memenuhi; pilih 2 simpulan (bs)'],
- N6:['"Makin … makin …" sebab-akibat PALING MUNGKIN; penjelasan perbedaan dua kondisi','Dua pengamatan berlawanan (tidak ada hubungan); pemoderasi; penjelasan fenomena berubah','Penelitian peserta vs nonpeserta: informasi tambahan atau kelemahannya (sampel, alat ukur)'],
- N7:['Memperkuat atau memperlemah pernyataan pejabat atau ahli','Data dan dua pakar (opsi baku); tabel memperlemah (bs); strategi PALING EFEKTIF dengan kendala','Pernyataan yang TIDAK memperlemah; strategi dengan dua kendala'],
- N8:['Tren selang-seling; persen terbalik; bilangan paling mendekati; tabel 3 seri × 5 periode','Persen bertingkat dua kategori; tabel berbobot; kelipatan waktu; kecukupan data versi PU','Data sebagai struk, jadwal, atau catatan; tabel dengan satu sel kosong; syarat minimum mencapai target']};
-const BENTUK_NOTE=['','gaya UTBK 2020–2025. Stimulus 2–4 kalimat, logika terlihat jelas.','gaya UTBK 2026. Stimulus 2–6 kalimat di dalam cerita (cerita bertokoh PU-D6 boleh sampai 8), ada 1–2 kalimat pengalih.','perkiraan 2027. Situasi nyata utuh: aturan berlapis, data tidak lengkap, atau dua pendapat.'];
-const TETANGGA={N1:['N7','N4'],N2:['N3','N4'],N3:['N2','N4'],N4:['N2','N3'],N5:['N6','N1'],N6:['N5','N7'],N7:['N1','N6'],N8:['N4','N6']};
-/* prompt versi 3 (kasus + 3 jembatan): tidak dipakai lagi sejak R1, diganti buildPromptV4; dihapus saat R9 */
-function buildPrompt(n,start){
-  const plan=buildPlan(n,start);const tr=topTraps(weekLog(14).filter(x=>x.src!=='game'));
-  const L=[];
-  L.push('Kamu adalah pembuat paket latihan untuk aplikasi "Nalar Harian": latihan logika subtes Penalaran Umum (PU) UTBK-SNBT, 15 menit sehari, yang berangkat dari situasi nyata lalu menyeberang ke soal UTBK.');
-  L.push(`Buat paket untuk ${n} hari sesuai rencana di bawah. Setiap hari berisi: 1 kasus, 3 soal jembatan, 4 kartu pemanasan, dan 1 ronde Detektif Chat. Balas HANYA dengan satu blok kode JSON yang valid, tanpa teks lain di luar blok.`);
-  L.push('Masalah yang harus dihindari: soal yang kuncinya bisa ditebak tanpa bernalar, dan soal yang terasa sama dari hari ke hari. Dua bagian "Anti-tebak" dan "Kesegaran harian" di bawah wajib dipatuhi.');
-  L.push('\n## Rencana per hari');
-  plan.forEach(p=>L.push(`- ${p.tgl} · ${p.sk} (${SKILLS[p.sk]}) · Tahap ${p.tahap} (${TAHAP[p.tahap]}) · konteks: ${p.konteks}\n  bentuk eksperimen (jembatan 3): ${fmtMut(p.mut)}\n  target kunci: kasus langkah 2 = ${HURUF(p.kKas[0])}, langkah 3 = ${HURUF(p.kKas[1])} · jembatan 1–3 = ${p.kJem.map(HURUF).join(', ')} · pemanasan 1–4 = ${p.kPem.map(HURUF).join(', ')}`));
-  L.push('\n## Profil pengguna');
-  L.push('- Siswa persiapan UTBK-SNBT 2027, target jurusan non-saintek.');
-  L.push('- Tahap per keterampilan saat ini: '+Object.keys(SKILLS).map(k=>`${k} T${S.skills[k].tahap}`).join(', ')+'.');
-  L.push(tr.length?'- Jebakan yang paling sering menjerat 14 hari terakhir: '+tr.map(([k,c])=>`${k} ${TRAPS[k]} (${c}x)`).join(', ')+'. Sisipkan pengecoh berlabel jebakan ini bila cocok.':'- Belum ada data jebakan; sebar jebakan secara merata.');
-  L.push('\n## Peta keterampilan');Object.keys(SKILLS).forEach(k=>L.push(`- ${k} ${SKILLS[k]}: ${SKILL_DESC[k]}`));
-  L.push('\n## Bentuk UTBK (acuan, bukan cetakan)');
-  const seen=new Set();
-  plan.forEach(p=>{const key=p.sk+p.tahap;if(seen.has(key))return;seen.add(key);const nx=Math.min(p.tahap+1,3);
-    L.push(`${p.sk}, Tahap ${p.tahap}:`);
-    L.push(`- Jembatan 1, bentuk "${BENTUK[p.tahap]}" (${BENTUK_NOTE[p.tahap]}) Pilih salah satu: ${BENTUK_TAB[p.sk][p.tahap-1]}.`);
-    L.push(`- Jembatan 2, bentuk "${BENTUK[nx]}" (${BENTUK_NOTE[nx]}) Pilih salah satu: ${BENTUK_TAB[p.sk][nx-1]}.`+(nx===p.tahap?' Pakai wadah dan kata tanya yang berbeda dari jembatan 1.':''));
-    const tg=TETANGGA[p.sk];L.push(`- Jembatan 1 atau 2 boleh memakai keterampilan tetangga: ${tg.map(t=>`${t} (${BENTUK_TAB[t][p.tahap-1]})`).join(' atau ')}.`);L.push('')});
-  L.push('## Anti-tebak (wajib)');
-  [ 'Posisi kunci mengikuti "target kunci" di Rencana (A = indeks 0). Bila opsinya baku atau berurutan tetap (kualitas simpulan, dua pakar, kecukupan data, kalibrasi), susun stimulus atau simpulannya sehingga jawaban benarnya jatuh di huruf target. Bila target benar-benar tidak masuk akal untuk soal itu, boleh pindah huruf, tetapi dalam satu hari kunci tidak boleh semuanya sama.',
-    'Semua opsi satu soal sejajar: struktur kalimat, kelas kata, dan tingkat kerincian sama, dan sama-sama memakai istilah dari stimulus. Selisih jumlah kata opsi terpanjang dan terpendek paling banyak 30% (opsi angka pada soal hitungan dan opsi baku dikecualikan). Kunci menjadi opsi terpanjang paling banyak 1 dari 5 soal; kunci boleh, dan sering sebaiknya, menjadi salah satu opsi terpendek. Aplikasi menolak paket yang kuncinya terlalu sering menjadi opsi terpanjang.',
-    'Kata mutlak ("pasti", "semua", "selalu", "satu-satunya") dan kata lunak ("mungkin", "sebagian", "cenderung", "belum tentu") muncul di kunci maupun pengecoh. Kunci tidak boleh menjadi satu-satunya opsi yang berhati-hati.',
-    'Setiap pengecoh salah karena tepat satu kesalahan nalar dan terdengar meyakinkan bagi siswa yang membaca cepat. Setiap pengecoh diberi nama kesalahannya (J1–J13) di "jebakan_opsi"; null hanya pada kunci. Aplikasi menolak pengecoh tanpa label. Tidak ada opsi konyol, lucu, jelas di luar topik, atau yang bisa dicoret tanpa membaca stimulus.',
-    'Kunci tidak boleh satu-satunya opsi yang mengulang frasa penting stimulus; pengecoh juga memakai frasa stimulus. Hindari pola "dua opsi saling berlawanan, salah satunya kunci".',
-    'Opsi "tidak dapat disimpulkan", "tidak dapat dinilai", atau "tidak cukup" kadang menjadi kunci, kadang pengecoh. Di kasus, vonis kalibrasi tidak selalu "mungkin benar".',
-    'Kalimat pengalih (di kasus dan Detektif) satu topik dengan ceritanya: menyebut tokoh, tempat, waktu, atau angka yang sama, tetapi tidak memengaruhi simpulan. Jangan memakai obrolan yang jelas lain topik (cuaca, makanan, film, wifi).',
-    'Langkah "tandai": klaim tidak selalu di kalimat terakhir; letakkan klaim di awal, tengah, atau akhir secara bergantian antarhari.',
-    'Soal "bs": pola kunci tidak seragam (2–3 true dari 5, urutannya acak), dan pernyataan true dan false sama panjang dan sama gayanya. Pada "Pilih 2 simpulan" tepat dua bernilai true; aplikasi menolak bila tidak.',
-    'Tes tutup-stimulus: baca opsinya saja tanpa stimulus. Bila kunci bisa ditebak dari bentuk opsinya, tulis ulang opsinya.'
-  ].forEach(x=>L.push('- '+x));
-  L.push('\n## Kesegaran harian (wajib)');
-  L.push('- Tiap hari memakai tokoh, latar, angka, dan susunan kalimat baru. Jangan mengganti nama saja pada kerangka yang sama.');
-  L.push('- Tiga jembatan dalam satu hari memakai tiga kata tanya berbeda. Pasangan jenis langkah 2 dan 3 kasus, serta kata tanya jembatan 1 dan 2, tidak boleh sama dengan hari sebelumnya.');
-  L.push('- Jembatan 3 setiap hari adalah soal eksperimen 2027, apa pun tahapnya: susun dari kombinasi "bentuk eksperimen" hari itu di Rencana, lalu tulis "bentuk":"2027" dan "eksperimen":true. Jangan menyalin salah satu bentuk di bagian Bentuk UTBK.');
-  L.push('- Kasus menyajikan kalimatnya dalam wadah hari itu bila cocok dengan konteksnya.');
-  L.push('- Kata tanya negatif (TIDAK, KECUALI, PALING) ditulis kapital, seperti di soal UTBK.');
-  const kt=kerangkaTerpakai(start);
-  if(kt.length){L.push('- Kerangka yang sudah dipakai paket sebelumnya (jangan diulang, termasuk dengan nama lain):');kt.forEach(x=>L.push('  - '+x))}
-  L.push('\n## Pemanasan dan Detektif Chat (isi baru tiap hari)');
-  L.push('- "pemanasan": tepat 4 kartu cepat (dijawab ±20 detik) untuk N2–N4, di luar keterampilan kasus hari itu boleh. Tiap kartu: "keterampilan", "label" (2–4 kata), "teks" 1–3 kalimat, 4 "opsi", "kunci" sesuai target, "jebakan_opsi" sepanjang opsi, "pembahasan" 1–2 kalimat.');
-  L.push('  - Aplikasi sudah punya kartu bawaan: ingkaran "dan/atau/jika", kontraposisi, "hanya jika", silogisme "semua/sebagian/tidak ada", modus ponens/tollens. Buat bentuk lain: "kecuali", "tanpa … tidak …", "paling sedikit/tidak semua", rantai tiga aturan, aturan dengan pengecualian, dua pernyataan yang bertentangan, mana yang PASTI SALAH, mana yang TIDAK setara, dan sejenisnya. Empat kartu satu hari memakai empat bentuk berbeda.');
-  L.push('- "detektif": tepat 1 ronde obrolan grup untuk mini game Detektif Chat. Isi: "judul", "pesan" 4–6 baris berupa ["Nama","isi pesan"], "pengalih" (indeks satu pesan pengalih yang satu topik), "simpulan", "v" (0 = pasti benar, 1 = belum tentu, 2 = pasti salah), "why" (≤3 kalimat), dan "cek" {"opsi":[4 hal yang bisa dicek, semuanya satu topik],"kunci":indeks yang PALING menentukan}.');
-  L.push('  - Vonis "v" berganti antarhari; dalam satu kiriman, ketiga vonis muncul kira-kira sama sering. Jangan selalu "belum tentu".');
-  L.push('\n## Opsi baku (salin persis bila bentuknya dipakai)');
-  L.push('- Opsi baku tidak boleh diacak, diringkas, atau diberi kata tambahan; urutan A–E tetap. Bila ada target huruf kunci, atur stimulus atau simpulannya, bukan urutan opsinya. Aplikasi menolak opsi baku yang berubah.');
-  L.push('- Kualitas simpulan: A. Simpulan tersebut pasti benar. · B. Simpulan tersebut mungkin benar. · C. Simpulan tersebut pasti salah. · D. Simpulan tidak relevan dengan informasi yang diberikan. · E. Simpulan tidak dapat dinilai karena informasi tidak cukup.');
-  L.push('- Data dan dua pakar: A. Memperkuat pernyataan X. · B. Memperlemah pernyataan X. · C. Memperkuat pernyataan Y. · D. Memperlemah pernyataan Y. · E. Tidak relevan dengan pernyataan X dan Y.');
-  L.push('- Kecukupan data versi PU (pernyataan i dan ii): '+CUKUP_OPSI.map((o,i)=>String.fromCharCode(65+i)+'. '+o).join(' · '));
-  L.push('- Tabel memperlemah: jenis "bs", 5 pernyataan, label B = MEMPERLEMAH, S = TIDAK MEMPERLEMAH.');
-  L.push('- Pilih 2 simpulan: jenis "bs", 5 simpulan, label B = DIDUKUNG, S = TIDAK DIDUKUNG, tepat dua B.');
-  L.push('\n## Arti kalibrasi (kasus dan jembatan)');
-  L.push('- pasti benar: selalu benar menurut informasi.');
-  L.push('- mungkin benar: tidak bertentangan dengan informasi dan subjeknya dibahas, tetapi tidak dipastikan.');
-  L.push('- pasti salah: bertentangan dengan informasi.');
-  L.push('- tidak dapat disimpulkan (di kasus) = tidak relevan atau tidak dapat dinilai (di jembatan): simpulan membahas hal yang tidak disentuh informasi, atau informasinya sama sekali tidak cukup.');
-  L.push('\n## Daftar jebakan');L.push('- '+Object.keys(TRAPS).map(k=>`${k} ${TRAPS[k]}`).join(' · '));
-  L.push('\n## Aturan isi');
-  L.push('- Bahasa Indonesia. Kasus terasa sehari-hari; soal jembatan bergaya UTBK.');
-  L.push('- Semua nama orang, sekolah, toko, dan lembaga fiktif. Jangan memakai tokoh, merek, atau kutipan nyata.');
-  L.push('- Teks kasus, jembatan, dan Detektif terasa ditulis orang sungguhan, bukan AI: isi spesifik (angka, jam, tempat, nama lembaga fiktif), panjang kalimat bervariasi, gaya bahasa sesuai wadahnya (chat santai, pengumuman resmi, laporan ringkas). Pembuka langsung ke isi; penutup berupa fakta atau pendapat narasumber fiktif. Hindari "Di era modern ini", "Dalam kehidupan sehari-hari", "Seiring perkembangan zaman", "memainkan peran penting", "tidak dapat dimungkiri", "penting untuk dicatat", "hal ini menunjukkan bahwa", kalimat yang terus dibuka "Selain itu", "Oleh karena itu", atau "Dengan demikian", deretan tiga kata sifat, tanda pisah panjang (—) berlebihan, pertanyaan retoris, dan penutup yang menasihati.');
-  L.push('- Jangan memberi nomor atau huruf pada kalimat atau aturan di stimulus, misalnya (1), (2), 1., (a), (b). Soal PU UTBK memakai paragraf atau cerita biasa; nomor kalimat hanya dipakai di PPU dan PBM. Pengecualian: pernyataan (i) dan (ii) pada soal kecukupan data. Aplikasi menolak paket yang melanggar.');
-  L.push('- Stimulus jembatan 2–6 kalimat. Hanya cerita bertokoh (PU-D6) yang boleh sampai 8 kalimat. Aplikasi menolak stimulus lebih dari 8 kalimat.');
-  L.push('- Kasus: 3–7 kalimat pendek di "kalimat". Tepat 3 langkah: (1) Bongkar, (2) Nilai, (3) Putuskan.');
-  L.push('  - Langkah 1: "tandai" ("peran" sepanjang "kalimat"; nilai "klaim", "alasan", "contoh", "pengalih"; minimal satu "klaim") atau "bentuk".');
-  L.push('  - Langkah 2: "sah", "celah", "kalibrasi", atau "baca_angka".');
-  L.push('  - Langkah 3: "perlu_dicek", "penjelasan", "kalibrasi", atau "keputusan".');
-  L.push('  - Langkah selain "tandai" memakai 4 "opsi" dan "kunci" (indeks mulai 0). Opsi kalibrasi selalu ["pasti benar","mungkin benar","pasti salah","tidak dapat disimpulkan"].');
-  L.push('  - Untuk N8 atau konteks survei/grafik, boleh tambahkan "tabel": {"kolom":[...],"baris":[[...]]}.');
-  L.push('- Jembatan: tepat 3 soal. Jenis "pg": 5 opsi, satu "kunci", "jebakan_opsi" wajib dan sepanjang opsi (null pada kunci, J1–J13 pada setiap pengecoh). Jenis "bs": 3–5 "pernyataan", "kunci" berupa daftar true/false, "label_b" dan "label_s", serta satu "jebakan". Jenis tiap soal mengikuti bentuknya; jembatan 3 mengikuti format eksperimen hari itu.');
-  L.push('- Kunci boleh berupa simpulan sah yang lebih lemah (misalnya "beberapa" alih-alih "semua"), asalkan tepat satu opsi yang sah.');
-  L.push('- Pembahasan maksimal 3 kalimat: mengapa kunci benar dan jebakan utama pengecoh.');
-  L.push('\n## Cek sebelum mengirim');
-  ['Setiap kunci diperiksa ulang; untuk deduktif, setiap opsi dicek dengan tabel kebenaran.','Tepat satu opsi sah; tidak ada dua opsi yang sama-sama bisa dibela.','Posisi kunci sesuai target; selisih jumlah kata opsi paling banyak 30%; kunci menjadi opsi terpanjang paling banyak 1 dari 5 soal.','Tidak ada nomor atau huruf kalimat di stimulus; stimulus jembatan 2–6 kalimat (cerita bertokoh PU-D6 sampai 8).','Tes tutup-stimulus lolos untuk setiap soal, kartu, dan langkah kasus.','Opsi baku disalin persis.','Label jebakan sesuai kesalahan yang benar-benar diwakili opsi itu.','Jembatan 1 dan 2 sesuai bagian "Bentuk UTBK"; jembatan 3 memakai keempat sumbu kombinasi hari itu dan berlabel "eksperimen":true.','Tidak ada dua hari dalam kiriman ini, atau kerangka di daftar "sudah dipakai", yang memakai kerangka soal yang sama walau namanya diganti.','Kasus, jembatan, pemanasan, dan Detektif tidak memakai cerita yang sama.'].forEach((x,i)=>L.push(`${i+1}. ${x}`));
-  const p0=plan[0];
-  L.push('\n## Bentuk JSON');
-  L.push(JSON.stringify({versi:3,paket:[{tgl:p0.tgl,kasus:{keterampilan:p0.sk,tahap:p0.tahap,konteks:p0.konteks,judul:'…',kalimat:['…','…','…'],tabel:{kolom:['…','…'],baris:[['…','…']]},
-    langkah:[{jenis:'tandai',perintah:'Tandai peran setiap kalimat.',peran:['klaim','pengalih','alasan'],pembahasan:'…'},
-      {jenis:'celah',perintah:'…',opsi:['…','…','…','…'],kunci:p0.kKas[0],pembahasan:'…'},
-      {jenis:'penjelasan',perintah:'…',opsi:['…','…','…','…'],kunci:p0.kKas[1],pembahasan:'…'}],jebakan:'J8',pembahasan:'…'},
-   jembatan:[{jenis:'pg',keterampilan:p0.sk,bentuk:p0.bentuk,teks:'…',perintah:'…',opsi:['…','…','…','…','…'],kunci:p0.kJem[0],jebakan_opsi:[0,1,2,3,4].map(i=>i===p0.kJem[0]?null:['J8','J6','J11','J9','J13'][i]),pembahasan:'…'},
-    {jenis:'bs',keterampilan:'N7',bentuk:'2026',teks:'…',perintah:'…',pernyataan:['…','…','…','…','…'],kunci:[false,true,false,true,false],label_b:'MEMPERLEMAH',label_s:'TIDAK MEMPERLEMAH',jebakan:'J11',pembahasan:'…'},
-    {jenis:'pg',keterampilan:p0.sk,bentuk:'2027',eksperimen:true,teks:'…',perintah:'…',opsi:['…','…','…','…','…'],kunci:p0.kJem[2],jebakan_opsi:[0,1,2,3,4].map(i=>i===p0.kJem[2]?null:['J1','J4','J6','J13','J3'][i]),pembahasan:'…'}],
-   pemanasan:[{keterampilan:'N2',label:'…',teks:'…',opsi:['…','…','…','…'],kunci:p0.kPem[0],jebakan_opsi:[0,1,2,3].map(i=>i===p0.kPem[0]?null:['J1','J2','J3','J6'][i]),pembahasan:'…'}],
-   detektif:[{judul:'…',pesan:[['Nama','…'],['Nama','…'],['Nama','…'],['Nama','…']],pengalih:2,simpulan:'…',v:2,why:'…',cek:{opsi:['…','…','…','…'],kunci:1}}]}]}));
-  L.push('(Contoh hanya menunjukkan bentuk JSON. "pemanasan" berisi 4 kartu; contoh di atas memuat 1 saja. Jenis "pg"/"bs" tiap jembatan mengikuti bentuknya. "tabel" boleh dihilangkan bila tidak perlu.)');
-  return L.join('\n')}
 const CUKUP_OPSI=['Pernyataan (i) SAJA cukup untuk menjawab pertanyaan, tetapi pernyataan (ii) SAJA tidak cukup.','Pernyataan (ii) SAJA cukup untuk menjawab pertanyaan, tetapi pernyataan (i) SAJA tidak cukup.','DUA pernyataan BERSAMA-SAMA cukup untuk menjawab pertanyaan, tetapi SATU pernyataan SAJA tidak cukup.','SALAH SATU pernyataan SAJA cukup untuk menjawab pertanyaan.','Pernyataan (i) dan pernyataan (ii) TIDAK CUKUP untuk menjawab pertanyaan.'];
 const KS_OPSI=['Simpulan tersebut pasti benar.','Simpulan tersebut mungkin benar.','Simpulan tersebut pasti salah.','Simpulan tidak relevan dengan informasi yang diberikan.','Simpulan tidak dapat dinilai karena informasi tidak cukup.'];
 
@@ -1476,10 +1194,9 @@ let route='hari-ini';
 function nav(r){clearInterval(gTimer);{const ss=S.sesi[today()];if(ss&&JEM)jemJeda(ss)}if(r==='hari-ini'&&route==='hari-ini'){const s=S.sesi[today()];if(s&&diMisi(s)&&!s.selesai){leavePart();return}}if(r!=='eb')EBR=null;route=r;try{history.replaceState(null,'','#'+r)}catch(e){location.hash=r}G=null;render();window.scrollTo(0,0)}
 function renderTabs(){$('#tabs').innerHTML=TABS.map(([k,l,p])=>`<button class="${route===k?'on':''} ${yk(TABC[k])}" style="--c:${TABC[k]}" data-act="nav" data-v="${k}">${svg(p)}<span>${l}</span>${k==='eb'&&ebBadge()?`<i class="bdg">${ebBadge()}</i>`:''}</button>`).join('')}
 function render(){
-  wkApply();
   $('#sub').textContent=tglPanjang(today());
   renderTabs();
-  const V={'hari-ini':vHari,main:vMain,peta:vPeta,rekap:vRekap,eb:vEb,jurnal:vJurnal,paket:vPaket,mingguan:vMingguan}[route]||vHari;
+  const V={'hari-ini':vHari,main:vMain,peta:vPeta,rekap:vRekap,eb:vEb,jurnal:vJurnal,paket:vPaket}[route]||vHari;
   const hr=hero();$('#view').innerHTML=(hr||'<div class="gap-top"></div>')+V();afterRender();
 }
 let afterFns=[];function after(f){afterFns.push(f)}function afterRender(){const f=afterFns;afterFns=[];f.forEach(x=>x())}
@@ -1536,8 +1253,8 @@ function partRow(i,name,info,s,c,nomor){const k=i+1,st=s.selesai||s.done[k]?'don
 function vHari(){
   const t=today(),s=sesi(t);
   if(!s.selesai)siapkanV4(s);
-  if(s.fase===1){s.fase=0;save()} /* misi pemanasan sudah dihapus (R2) */
-  if(((s.fase>=2&&s.fase<=4)||s.fase===6)&&!s.selesai)return partBar(s)+[null,null,vKas,vJem,vKalimat,null,vUlang][s.fase](s);
+  if(s.fase===1||s.fase===4){s.fase=0;save()} /* misi pemanasan (R2) dan satu kalimat nalar (R9) sudah dihapus */
+  if(((s.fase>=2&&s.fase<=4)||s.fase===6)&&!s.selesai)return partBar(s)+[null,null,vKas,vJem,null,null,vUlang][s.fase](s);
   const pid=getPaketId(s),pk=pid?S.paket[pid]:null,v4=isV4(pk);
   const kasInfo=pk&&pk.kasus?`${pk.kasus.keterampilan} · ${esc(pk.kasus.judul||'')}`:'paket belum ada';
   const stok=Object.keys(S.paket).filter(k=>/^\d/.test(k)&&!S.paket[k].dipakai).length;
@@ -1562,10 +1279,8 @@ function vHari(){
     <div>
       ${v4?'':partRow(1,'Kasus hari ini','7 menit · '+kasInfo,s,COL.kas,1)}
       ${v4?partRow(2,'Set PU','±20 menit · Deduktif 10 + Induktif 10 · 60 detik per soal',s,COL.jem,1):partRow(2,'Jembatan UTBK','4 menit · 3 soal',s,COL.jem,2)}
-      ${partRow(3,'Satu kalimat nalar','1 menit · boleh dilewati',s,COL.kal,v4?2:3)}
-      ${s.ulangIds&&s.ulangIds.length?partRow(5,'Ulang varian Error Book',`${s.ulangIds.length} soal · ±${s.ulangIds.length} menit · skor terpisah dari 20 soal`,s,'var(--purple)',v4?3:4):''}
+      ${s.ulangIds&&s.ulangIds.length?partRow(5,'Ulang varian Error Book',`${s.ulangIds.length} soal · ±${s.ulangIds.length} menit · skor terpisah dari 20 soal`,s,'var(--purple)',v4?2:3):''}
     </div>
-    ${v4?'':`<div class="tiny muted" style="margin-top:10px;padding-top:9px;border-top:2px dashed var(--edge)"><b style="color:var(--text)">Bentuk hari ini</b> · ${mutPendek(t).map(esc).join(' · ')}</div>`}
     <div class="tiny muted" style="margin-top:8px">Ketuk satu misi untuk memilih, atau kerjakan berurutan.</div>
     <button class="btn p w" style="margin-top:10px" data-act="mulai">${wajib(s).some(i=>s.done[i]&&!(v4&&i===2))?'Lanjut: '+partNama(nextPart(s),s):'Mulai berurutan'}</button></div>`;
     if(!pk)h+=`<div class="glass card small"><b>Belum ada paket soal.</b> <span class="muted">Buat paket dengan menyalin prompt ke proyek Claude “Nalar Harian”, lalu tempel JSON-nya di halaman Paket.</span>
@@ -1573,7 +1288,6 @@ function vHari(){
   h+=ebKartuHari();
   h+=`<button class="glass card row sp" style="width:100%;text-align:left" data-act="nav" data-v="main"><span class="row"><span class="pn" style="width:30px;height:26px;border-radius:6px;background:var(--red);border:2px solid var(--line);display:grid;place-items:center;color:#fff">${svg(TABS[1][2]).replace('<svg','<svg width="16" height="16"')}</span><span><span style="font-weight:600;display:block">Mini game pendamping</span><span class="tiny muted">Untuk waktu luang. Tidak menggantikan sesi.</span></span></span><span style="font-weight:700">›</span></button>`;
   const sx=S.sesi[today()];if(sx&&(sx.fase>0||sx.selesai||Object.keys(sx.done||{}).length||sx.pem.n||sx.kas.n||sx.jem.n))h+=`<div style="text-align:center;margin:4px 0 8px"><button class="btn sm" data-act="askResetToday">↺ Reset progres hari ini</button></div>`;
-  h+=wkBanner('hari');
   return h}
 
 /* ================= PENGENALAN MODE ================= */
@@ -1581,21 +1295,15 @@ const SESI_INTRO={
  2:{judul:'Kasus hari ini',c:'var(--red)',langkah:['Baca kejadiannya sampai habis.','Jawab 3 langkah: Bongkar, Nilai, Putuskan.'],tombol:'Mulai kasus'},
  3:{judul:'Jembatan UTBK',c:'var(--blue)',langkah:['3 soal bergaya UTBK.','Soal benar/salah: semua baris harus tepat.'],tombol:'Mulai soal'}};
 const GAME_INTRO={
- geser:['Sambung ubin jika–maka dari Fakta sampai Pintu.','Ubin palsu = −1 nyawa.'],
- gerbang:['Kamu hanya melihat satu sisi koper.','Bayangkan isi sisi lainnya. Kalau koper itu bisa melanggar aturan, buka. Kalau pasti aman, loloskan.','Salah pilih −1 nyawa. Nyawa terisi lagi tiap level.'],
  venn:['Pilih alat, lalu ketuk daerah: arsir = pasti kosong, × = pasti ada isinya.','Tekan Cek. Kalau salah, kamu diberi tahu kalimat mana yang belum tepat.','Lalu nilai simpulannya: pasti benar, mungkin benar, atau pasti salah.'],
- sakelar:['Tiap lampu = satu kejadian di cerita. Kabel p → q = “jika p, maka q”.','Pasang token 💡 ya, ● tidak, atau ? di tiap lampu, lalu alirkan listrik.'],
- bukti:['Benar atau salah?','Kalau bisa, buktikan dengan satu kotak.'],
  detektif:['Ketuk pesan pengalih.','Lalu jawab soal simpulannya.'],
- kasir:['Dana Rp500.000 untuk 6 barang.','Ketuk promo termurah, atau lewati.'],
  hakim:['Baca informasinya, lalu nilai simpulannya.','20 detik per ronde.'],
  cukup:['Beli petunjuk seperlunya (1 koin).','Jawab begitu informasinya cukup.'],
- kursi:['Seret lima orang ke tempatnya sampai semua kartu hijau.','Lalu jawab soalnya.'],
  tren:['Temukan polanya.','Seret batu yang tepat ke celah.']};
 function introCard(judul,c,langkah,act,v,tombol){return`<div class="glass card has-st intro2">${studs(4,c)}<span class="lbl ${yk(c)?'':'w'}" style="--lc:${c}">${judul}</span>
   <ol class="steps2" style="margin-top:8px">${langkah.map(x=>`<li>${x}</li>`).join('')}</ol>
   <button class="btn p w" style="margin-top:14px" data-act="${act}"${v!=null?` data-v="${v}"`:''}>${tombol}</button></div>`}
-function sesiIntro(s,f){if(s.intro&&s.intro[f])return'';const x=SESI_INTRO[f];return introCard(x.judul,x.c,x.langkah,'sesiGo',f,x.tombol)}
+function sesiIntro(s,f){if((s.intro&&s.intro[f])||(S.introLihat&&S.introLihat[f]))return'';const x=SESI_INTRO[f];return introCard(x.judul,x.c,x.langkah,'sesiGo',f,x.tombol)}
 
 const verdict=s=>{const m=String(s||'').match(/<b[^>]*>.*?<\/b>/);return m?`<div class="verdict">${m[0]}</div>`:''};
 function markOpts(sel,chosen,kunci){document.querySelectorAll(sel+' .opt').forEach((b,j)=>{b.disabled=true;if(j===kunci)b.classList.add('ok');else if(j===chosen)b.classList.add('bad');else b.classList.add('dim')})}
@@ -1658,7 +1366,7 @@ function vJem(s){const p=s.paketId&&S.paket[s.paketId];if(!p)return`<div class="
     <p class="small muted">Soal jembatan diambil dari paket yang sama dengan kasus. Tempel paket di halaman Paket, atau lewati dulu.</p>
     <div class="opts"><button class="btn" data-act="nav" data-v="paket">Buka halaman Paket</button><button class="btn" data-act="skipJem">Lewati jembatan hari ini</button></div></div>`;
   const v4=isV4(p);
-  if(v4){if(!(s.intro&&s.intro[3]))return introCard('Set PU','var(--blue)',['20 soal: Deduktif 10, lalu Induktif 10.','Waktu resmi 60 detik per soal. Soal benar/salah: semua baris harus tepat.'],'sesiGo',3,'Mulai soal')}
+  if(v4){if(!(s.intro&&s.intro[3])&&!(S.introLihat&&S.introLihat['v4']))return introCard('Set PU','var(--blue)',['20 soal: Deduktif 10, lalu Induktif 10.','Waktu resmi 60 detik per soal. Soal benar/salah: semua baris harus tepat.'],'sesiGo',3,'Mulai soal')}
   else{const it=sesiIntro(s,3);if(it)return it}
   if(!JEM)JEM={i:v4?(s.jemI||0):0,answered:false,bs:{}};const Q=soalPaket(p);
   if(v4&&JEM.i>=Q.length)return`<div class="glass card"><div class="lbl">Set PU</div><h2>Semua soal sudah dikerjakan</h2><button class="btn p w" style="margin-top:10px" data-act="jemSelesai">Selesai · kembali ke misi</button></div>`;
@@ -1715,12 +1423,6 @@ function varianJawab(s,ok,jw){const q=varianDari(s,ULG.id),x=S.salah.find(y=>y.i
   else{x.box=0;x.due=addDays(today(),1);x.perlu=true;x.ulang=1;x.salah=(x.salah||1)+1}
   save();render()}
 
-/* --- satu kalimat --- */
-function vKalimat(s){return`<span class="lbl w" style="--lc:var(--green);margin-left:2px">Satu kalimat nalar</span><div class="glass card has-st" style="margin-top:16px">${studs(3,COL.kal)}<div class="cap">Boleh dilewati</div><h2>Klaim apa yang kamu dengar hari ini?</h2>
-  <p class="small muted">Tulis klaimnya dan apakah alasannya cukup. Contoh: “Kata teman, jalur X paling gampang karena tiga kakak kelas lolos. Alasannya belum cukup, sampelnya kecil.”</p>
-  <textarea id="kal" style="margin-top:8px" placeholder="Klaim … alasannya … cukup/tidak karena …"></textarea>
-  <div class="row" style="margin-top:10px"><button class="btn" data-act="finish" data-v="0" style="flex:1">Lewati</button><button class="btn p" data-act="finish" data-v="1" style="flex:2">Simpan</button></div></div>`}
-function finishSesi(simpan){const t=today();if(simpan){const v=($('#kal')||{}).value||'';if(v.trim())S.jurnal.push({t,teks:v.trim()})}donePart(4)}
 
 /* ================= PETA ================= */
 /* ================= REKAP KESIAPAN (kesiapan-2027 §2) =================
@@ -1924,108 +1626,21 @@ function savePaket(){const m=$('#pmsg');let o;try{o=parsePaste($('#pjson').value
   toast(n+' paket tersimpan');render();if(skip)setTimeout(()=>toast(skip+' dilewati: tanggalnya sudah terpakai'),2300);
   if(W.length){const m2=$('#pmsg');if(m2)m2.innerHTML=`<div class="fb" style="border-color:var(--warn)"><b>Tersimpan, tetapi ada pola yang mudah ditebak:</b><br>${W.slice(0,6).map(esc).join('<br>')}<br><span class="muted">Minta Claude memperbaiki hari tersebut, lalu tempel ulang (tanggal yang sama akan ditimpa).</span></div>`}}
 
-/* ================= PAKET MINI GAME MINGGUAN =================
-   Bank kata beberapa mini game diganti tiap minggu (Senin–Minggu) lewat prompt → JSON dari proyek Claude.
-   Tanpa paket minggu ini, game memakai bank bawaan. Status juga ditulis ke kunci bersama
-   "paketMingguan:nalar-harian" supaya Progres Harian bisa mengingatkan. */
-const WK_SHARE='paketMingguan:nalar-harian';
-const WK_BANK={rantai:()=>RANTAI,pengalih:()=>L_PENGALIH,bandara:()=>BANDARA,venn:()=>VENN_SET,hakim:()=>HAKIM_SET,luar:()=>LUAR,ukuran:()=>CUKUP_UKURAN};
-const WK_MIN={rantai:6,pengalih:4,bandara:4,venn:6,hakim:6,luar:5,ukuran:3};
-const WK_GAME=['Lampu Berantai','Rantai Kunci','Inspektur Bandara','Arsir Venn','Hakim Simpulan','Beli Petunjuk'];
-let WK_BASE=null,WK_ON='';
-function wkMon(t){const d=new Date(t+'T12:00:00');d.setDate(d.getDate()-(d.getDay()+6)%7);return ymd(d)}
-function wkInfo(){const t=today(),cur=wkMon(t),nxt=addDays(cur,7),dow=(new Date(t+'T12:00:00').getDay()+6)%7,W=S.wk||{};
-  const has=k=>!!W[k],status=!has(cur)?'telat':has(nxt)?'siap':dow>=4?'segera':'aman';
-  return{t,cur,nxt,akhir:addDays(cur,6),status,target:has(cur)?nxt:cur,has}}
-function wkApply(){const I=wkInfo(),key=I.cur+'|'+Object.keys(S.wk||{}).join();if(key===WK_ON)return;WK_ON=key;
-  if(!WK_BASE){WK_BASE={};for(const k in WK_BANK)WK_BASE[k]=WK_BANK[k]().slice()}
-  const p=(S.wk||{})[I.cur];
-  for(const k in WK_BANK){const B=WK_BANK[k](),src=p&&Array.isArray(p.isi[k])&&p.isi[k].length?p.isi[k]:WK_BASE[k];B.splice(0,B.length,...JSON.parse(JSON.stringify(src)))}
-  /* buang paket yang sudah lewat lebih dari 2 minggu */
-  let ch=false;for(const k in (S.wk||{}))if(k<addDays(I.cur,-14)){delete S.wk[k];ch=true}if(ch)save();
-  try{localStorage.setItem(WK_SHARE,JSON.stringify({app:'nalar-harian',nama:'Nalar Harian',minggu:Object.keys(S.wk||{}).sort(),diperbarui:I.t}))}catch(e){}}
-function wkBanner(where){const I=wkInfo();
-  if(I.status==='siap'||I.status==='aman'){if(where!=='main')return'';
-    return`<p class="tiny muted" style="margin:-6px 2px 12px">Paket mini game minggu ini terpasang · ${I.status==='siap'?'stok minggu depan siap':'ganti paket paling lambat '+tglPanjang(I.akhir)} · <a href="#mingguan" data-act="nav" data-v="mingguan">kelola</a></p>`}
-  const telat=I.status==='telat',c=telat?'var(--red)':'var(--orange)';
-  return`<div class="glass card has-st">${studs(3,c)}${tl(telat?'Paket mini game terlambat':'Saatnya ganti paket mini game',c)}
-    <p class="small" style="margin-top:4px">${telat?'Paket minggu ini ('+tglPendek(I.cur)+'–'+tglPendek(I.akhir)+') belum ada, jadi mini game memakai soal bawaan.':'Paket minggu depan (mulai '+tglPanjang(I.nxt)+') belum ada. Siapkan paling lambat '+tglPanjang(I.akhir)+'.'}</p>
-    <button class="btn sm p" style="margin-top:8px" data-act="nav" data-v="mingguan">Buat paket mingguan</button></div>`}
-function wkUsed(){const out={};Object.keys(S.wk||{}).sort().slice(-2).forEach(k=>{const p=S.wk[k].isi;
-  (out.rantai=out.rantai||[]).push(...(p.rantai||[]).map(a=>a[0][0]+' → '+a[3][0]));(out.bandara=out.bandara||[]).push(...(p.bandara||[]).map(b=>b.aturan));
-  (out.venn=out.venn||[]).push(...(p.venn||[]).map(v=>v.join(' / ')));(out.hakim=out.hakim||[]).push(...(p.hakim||[]).map(h=>h.g1+' / '+h.g2))});return out}
-function wkPrompt(target){const U=wkUsed(),L=[];
-  L.push(`PAKET MINI GAME MINGGUAN · Nalar Harian · minggu ${tglPanjang(target)} sampai ${tglPanjang(addDays(target,6))}`);
-  L.push('','Tugas: tulis bank kata baru untuk mini game logika PU (pejuang UTBK-SNBT 2027). Konteks kehidupan siswa SMA dan warga sehari-hari di Indonesia, beragam (sekolah, rumah, pasar, transportasi, organisasi, olahraga, daring). Jangan memakai merek atau tokoh terkenal.');
-  L.push('','Balas HANYA dengan satu objek JSON (boleh di dalam blok ```json). Bentuknya:');
-  L.push(`{"versi":1,"jenis":"mini-mingguan","minggu":"${target}",`);
-  L.push(' "rantai":[ 8 rantai, tiap rantai = 4 kejadian berurutan sebab-akibat, tiap kejadian = ["kejadian","ingkarannya"] ],');
-  L.push(' "pengalih":[ 5 kalimat lengkap yang tidak berhubungan dengan sebab-akibat apa pun, diakhiri titik ],');
-  L.push(' "bandara":[ 6 aturan koper bandara {"aturan","p","np","q","nq","P":[],"NP":[],"Q":[],"NQ":[]} ],');
-  L.push(' "venn":[ 8 trio kelompok ["kelompok A","kelompok B","kelompok C"] ],');
-  L.push(' "hakim":[ 7 set {"g1","g2","g3","g4"} ],');
-  L.push(' "luar":[ 6 sifat orang yang tidak berhubungan dengan kelompok mana pun ],');
-  L.push(' "ukuran":[ 4 jenis nilai/skor yang bisa diurutkan ] }');
-  L.push('','Aturan per bagian:');
-  L.push('- rantai: huruf kecil di awal (kecuali nama orang/tempat), tanpa titik. Harus terbaca wajar sebagai "Jika <kejadian 1>, maka <kejadian 2>." dan juga "<Kejadian 1> hanya jika <kejadian 2>." Ingkaran memakai "tidak"/"belum"/"bukan" yang tepat (contoh: ["listrik padam","listrik tidak padam"]). Tiap rantai satu cerita dengan tokoh/tempat sendiri; urutan sebab-akibat masuk akal tetapi tidak wajib benar di dunia nyata.');
-  L.push('- bandara: "aturan" = "Jika <p>, maka <q>." p, np, q, nq huruf kecil tanpa titik, diawali "koper …" atau keterangan koper; np ingkaran p, nq ingkaran q. P/NP/Q/NQ = label singkat yang tertera di koper ("Tujuan: Bali", "Stiker: merah"); P memenuhi p, NP tidak memenuhi p, Q memenuhi q, NQ tidak memenuhi q. NP minimal 2 label. Label tidak boleh ambigu.');
-  L.push('- venn: kata benda jamak tanpa awalan "semua", huruf kecil, terbaca wajar dalam "Semua <A> adalah <B>." dan "Sebagian <B> bukan <C>." Ketiga kelompok boleh beririsan di dunia nyata.');
-  L.push('- hakim: terbaca wajar sebagai "Semua <g1> adalah <g2>.", "Sebagian <g2> <g3>.", "Tidak ada <g2> yang <g4>." g1 dan g2 kelompok orang (kata benda), g3 dan g4 kegiatan/keadaan (diawali kata kerja/sifat). Huruf kecil, tanpa titik.');
-  L.push('- luar: terbaca wajar sebagai "<Nama> <sifat>." (contoh: "suka makan bakso"). Huruf kecil, tanpa titik.');
-  L.push('- ukuran: terbaca wajar sebagai "<Ukuran> Rani lebih tinggi daripada <ukuran> Bayu." dan "Rani mendapat <ukuran> tertinggi." (contoh: "skor kuis"). Huruf kecil.');
-  L.push('- Jangan ada kunci jawaban, penjelasan, atau kalimat lain di luar JSON.');
-  const av=[['rantai','rantai'],['bandara','aturan bandara'],['venn','trio venn'],['hakim','set hakim']].filter(([k])=>U[k]&&U[k].length);
-  if(av.length){L.push('','Sudah dipakai 2 minggu terakhir, jangan diulang atau dimirip-miripkan:');av.forEach(([k,n])=>L.push(`- ${n}: ${U[k].slice(0,12).join('; ')}`))}
-  return L.join('\n')}
-function wkValidate(o){const E=[],str=x=>typeof x==='string'&&x.trim().length>0,arr=Array.isArray;
-  if(!o||typeof o!=='object')return['Bukan objek JSON.'];
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(o.minggu||'')||wkMon(o.minggu)!==o.minggu)E.push('"minggu" harus tanggal hari Senin (YYYY-MM-DD).');
-  for(const k in WK_MIN)if(!arr(o[k])||o[k].length<WK_MIN[k])E.push(`"${k}" minimal ${WK_MIN[k]} butir.`);
-  if(E.length)return E;
-  o.rantai.forEach((r,i)=>{if(!arr(r)||r.length!==4||!r.every(e=>arr(e)&&e.length===2&&str(e[0])&&str(e[1])&&e[0].trim()!==e[1].trim()))E.push(`rantai ${i+1}: harus 4 pasang ["kejadian","ingkaran"] yang berbeda.`)});
-  o.pengalih.forEach((s,i)=>{if(!str(s)||!/[.!]$/.test(s.trim()))E.push(`pengalih ${i+1}: kalimat lengkap diakhiri titik.`)});
-  o.bandara.forEach((b,i)=>{if(!b||!['aturan','p','np','q','nq'].every(f=>str(b[f]))||!['P','NP','Q','NQ'].every(f=>arr(b[f])&&b[f].length&&b[f].every(str)))E.push(`bandara ${i+1}: kolom aturan, p, np, q, nq, P, NP, Q, NQ wajib terisi.`);else if(!/^Jika /.test(b.aturan))E.push(`bandara ${i+1}: "aturan" diawali "Jika".`)});
-  o.venn.forEach((v,i)=>{if(!arr(v)||v.length!==3||!v.every(str)||new Set(v).size<3)E.push(`venn ${i+1}: harus 3 kelompok berbeda.`)});
-  o.hakim.forEach((h,i)=>{if(!h||!['g1','g2','g3','g4'].every(f=>str(h[f])))E.push(`hakim ${i+1}: g1, g2, g3, g4 wajib terisi.`)});
-  ['luar','ukuran'].forEach(k=>o[k].forEach((s,i)=>{if(!str(s))E.push(`${k} ${i+1}: kosong.`)}));
-  return E}
-function wkClean(o){const t=s=>s.trim().replace(/\s+/g,' '),lo=s=>t(s).replace(/[.]$/,'');const isi={};
-  isi.rantai=o.rantai.map(r=>r.map(e=>[lo(e[0]),lo(e[1])]));isi.pengalih=o.pengalih.map(t);
-  isi.bandara=o.bandara.map(b=>({aturan:t(b.aturan),p:lo(b.p),np:lo(b.np),q:lo(b.q),nq:lo(b.nq),P:b.P.map(t),NP:b.NP.map(t),Q:b.Q.map(t),NQ:b.NQ.map(t)}));
-  isi.venn=o.venn.map(v=>v.map(lo));isi.hakim=o.hakim.map(h=>({g1:lo(h.g1),g2:lo(h.g2),g3:lo(h.g3),g4:lo(h.g4)}));isi.luar=o.luar.map(lo);isi.ukuran=o.ukuran.map(lo);return isi}
-function wkSave(){const m=$('#wkmsg');let o;try{o=parsePaste($('#wkjson').value)}catch(e){m.innerHTML=`<div class="fb" style="border-color:var(--bad)"><b>JSON tidak terbaca.</b> ${esc(e.message)}</div>`;return}
-  const E=wkValidate(o);if(E.length){m.innerHTML=`<div class="fb" style="border-color:var(--bad)"><b>${E.length} masalah:</b><br>${E.slice(0,8).map(esc).join('<br>')}</div>`;return}
-  const I=wkInfo();if(o.minggu<I.cur){m.innerHTML=`<div class="fb" style="border-color:var(--bad)"><b>Minggu ${esc(o.minggu)} sudah lewat.</b> Salin prompt baru dari atas.</div>`;return}
-  S.wk=S.wk||{};const ada=!!S.wk[o.minggu];S.wk[o.minggu]={dibuat:I.t,isi:wkClean(o)};save();WK_ON='';wkApply();
-  toast(`Paket minggu ${tglPendek(o.minggu)} ${ada?'diganti':'tersimpan'}`);render()}
-function vMingguan(){const I=wkInfo(),W=S.wk||{},ks=Object.keys(W).filter(k=>k>=I.cur).sort();
-  let h=`<div class="row sp" style="margin:0 2px 18px"><button class="btn sm" data-act="nav" data-v="main">‹ Main</button>${tl('Paket mingguan','var(--purple)',1)}<span style="width:76px"></span></div>`;
-  h+=wkBanner('page');
-  h+=`<div class="glass card has-st">${studs(3)}${tl('Jadwal ganti')}<p class="small muted">Satu paket berlaku Senin–Minggu untuk ${WK_GAME.join(', ')}. Ganti paling lambat hari Minggu; mulai Jumat app mengingatkan bila paket minggu depan belum ada.</p>
-    <div class="kv"><span class="muted">Minggu ini (${tglPendek(I.cur)}–${tglPendek(I.akhir)})</span><b>${I.has(I.cur)?'terpasang':'bank bawaan'}</b></div>
-    <div class="kv"><span class="muted">Minggu depan (mulai ${tglPendek(I.nxt)})</span><b>${I.has(I.nxt)?'siap':'belum ada'}</b></div></div>`;
-  h+=`<div class="glass card has-st">${studs(3)}${tl('1 · Salin prompt')}<p class="small muted">Untuk minggu ${tglPendek(I.target)}–${tglPendek(addDays(I.target,6))}. Jalankan di proyek Claude “Nalar Harian”.</p>
-    <button class="btn p w" style="margin-top:8px" data-act="wkCopy" data-v="${I.target}">Salin prompt mingguan</button>${I.target!==I.cur?`<button class="btn sm" style="margin-top:8px" data-act="wkCopy" data-v="${I.cur}">Ganti paket minggu ini</button>`:''}</div>`;
-  h+=`<div class="glass card has-st">${studs(3)}${tl('2 · Tempel JSON dari Claude')}<textarea id="wkjson" placeholder='{"versi":1,"jenis":"mini-mingguan","minggu":"${I.target}", … }'></textarea><button class="btn p w" style="margin-top:8px" data-act="wkSave">Cek & simpan</button><div id="wkmsg"></div></div>`;
-  if(ks.length)h+=`<div class="glass card has-st">${studs(3)}${tl('Tersimpan')}<div class="list" style="margin-top:6px">${ks.map(k=>`<div class="it"><span class="chip">${tglPendek(k)}</span><div style="flex:1;min-width:0" class="small">${W[k].isi.rantai.length} rantai · ${W[k].isi.bandara.length} aturan · ${W[k].isi.venn.length} venn · ${W[k].isi.hakim.length} hakim<div class="tiny muted">dibuat ${tglPendek(W[k].dibuat)}</div></div><button class="btn sm" data-act="wkDel" data-v="${k}">Hapus</button></div>`).join('')}</div></div>`;
-  return h}
+/* ================= PAKET MINI GAME MINGGUAN: dihapus di R9 =================
+   Mini game memakai bank bawaan. Key bersama "paketMingguan:nalar-harian" dihapus sekali saat aplikasi dibuka,
+   supaya Progres Harian tidak lagi mengingatkan ganti paket mingguan. */
+try{localStorage.removeItem('paketMingguan:nalar-harian')}catch(e){}
 
 /* ================= MINI GAME ================= */
 let G=null,gTimer=null;
 const GAMES=[
- {id:'venn',c:'var(--teal)',nama:'Arsir Venn',sk:'N3 · N4',desc:'Gambar kalimat di diagram dengan panduan, lalu nilai simpulannya.',ic:'<circle cx="9" cy="10" r="5"/><circle cx="15" cy="10" r="5"/><circle cx="12" cy="15" r="5"/>'},
- {id:'sakelar',c:'var(--indigo)',nama:'Lampu Berantai',sk:'N2',desc:'Cerita jadi rangkaian lampu p → q. Tebak mana yang pasti terjadi.',ic:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>'},
-  {id:'geser',c:'var(--yellow)',nama:'Rantai Kunci',sk:'N2',desc:'Sambung ubin jika–maka sampai pintu terbuka. Awas ubin palsu.',ic:'<path d="M4 12h16M14 6l6 6-6 6M10 6 4 12l6 6"/>'},
- {id:'gerbang',c:'var(--red)',nama:'Inspektur Bandara',sk:'N2',desc:'Koper lewat di ban berjalan. Buka yang mungkin melanggar aturan.',ic:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18"/>'},
-{id:'bukti',c:'var(--blue)',nama:'Satu Bukti',sk:'N3',desc:'Benar atau salah? Buktikan dengan satu kotak.',ic:'<circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/>'},
- {id:'detektif',c:'var(--green)',nama:'Detektif Chat',sk:'N1 · N4',desc:'Temukan pesan pengalih, lalu nilai simpulannya.',ic:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>'},
- {id:'kasir',c:'var(--orange)',nama:'Belanja Hemat',sk:'N8',desc:'Dana Rp500 ribu. Pilih promo tepat, isi keranjang sebanyak mungkin.',ic:'<path d="M3 7h18l-2 11H5z"/><path d="M8 7a4 4 0 0 1 8 0"/>'},
- {id:'hakim',c:'var(--sky)',nama:'Hakim Simpulan',sk:'N4',desc:'Lima opsi baku kualitas simpulan. 20 detik per ronde.',ic:'<path d="M12 3v18M6 7h12M4 14l2.5-6 2.5 6a2.5 2.5 0 0 1-5 0zM15 14l2.5-6 2.5 6a2.5 2.5 0 0 1-5 0zM8 21h8"/>'},
- {id:'cukup',c:'var(--pink)',nama:'Beli Petunjuk',sk:'N8 · N4',desc:'Beli petunjuk seperlunya, jawab saat sudah cukup. Hemat koin.',ic:'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>'},
- {id:'kursi',c:'var(--lime)',nama:'Kursi Rapat',sk:'N4 · N2',desc:'Dudukkan lima orang di meja sampai semua kartu syarat menyala.',ic:'<rect x="2.5" y="9" width="5" height="6" rx="1"/><rect x="9.5" y="9" width="5" height="6" rx="1"/><rect x="16.5" y="9" width="5" height="6" rx="1"/><path d="M3 19h18"/>'},
- {id:'tren',c:'var(--purple)',nama:'Lompat Batu',sk:'N8',desc:'Seberangi sungai: temukan batu angka yang hilang.',ic:'<path d="M3 17l5-6 4 4 4-7 5 5"/>'}];
+ {id:'venn',c:'var(--teal)',nama:'Arsir Venn',sk:'PU-DED-3',desc:'Gambar kalimat di diagram dengan panduan, lalu nilai simpulannya.',ic:'<circle cx="9" cy="10" r="5"/><circle cx="15" cy="10" r="5"/><circle cx="12" cy="15" r="5"/>'},
+ {id:'detektif',c:'var(--green)',nama:'Detektif Chat',sk:'PU-DED-5 · PU-DED-4',desc:'Temukan pesan pengalih, lalu nilai simpulannya.',ic:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>'},
+ {id:'hakim',c:'var(--sky)',nama:'Hakim Simpulan',sk:'PU-DED-4',desc:'Lima opsi baku kualitas simpulan. 20 detik per ronde.',ic:'<path d="M12 3v18M6 7h12M4 14l2.5-6 2.5 6a2.5 2.5 0 0 1-5 0zM15 14l2.5-6 2.5 6a2.5 2.5 0 0 1-5 0zM8 21h8"/>'},
+ {id:'cukup',c:'var(--pink)',nama:'Beli Petunjuk',sk:'PU-KUA-5',desc:'Beli petunjuk seperlunya, jawab saat sudah cukup. Hemat koin.',ic:'<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>'},
+ {id:'tren',c:'var(--purple)',nama:'Lompat Batu',sk:'PU-KUA-2',desc:'Seberangi sungai: temukan batu angka yang hilang.',ic:'<path d="M3 17l5-6 4 4 4-7 5 5"/>'}];
 function vMain(){if(G)return vGame();
-  return`<p class="intro">Pendamping waktu luang. Bentuk soal berganti tiap ronde.</p>${wkBanner('main')}
+  return`<p class="intro">Pendamping waktu luang setelah sesi. Bentuk soal berganti tiap ronde.</p>
   <div class="grid2">${GAMES.map(g=>`<button class="tile ${yk(g.c)}" style="--c:${g.c}" data-act="gStart" data-v="${g.id}">${studs(3,g.c)}<span class="ic">${svg(g.ic)}</span><b>${g.nama}</b><span class="tiny">${g.desc}</span><span class="best">${g.sk} · terbaik ${S.games[g.id]?S.games[g.id].best:0}</span></button>`).join('')}</div>`}
 function gDone(score,max,field){clearInterval(gTimer);const r=S.games[G.id]||(S.games[G.id]={best:0,main:0});r.main++;const f=field||'best';const nb=score>(r[f]||0);if(nb)r[f]=score;save();G.over={score,max,nb,field:f};render()}
 const gc=()=>GAMES.find(x=>x.id===G.id).c;
@@ -2034,282 +1649,20 @@ function gVar(list,i){const k=list.join('|');G._vo=G._vo||{};if(!G._vo[k]){const
 const bchip=()=>'';
 const gst=()=>studs(4,gc());
 function gHead(extra){const hud=G._hud;G._hud=false;const g=GAMES.find(x=>x.id===G.id);return`<div class="row sp" style="margin:0 2px 18px"><button class="btn sm" data-act="gBack">‹ Main</button><span class="lbl ${yk(g.c)?'':'w'}" style="--lc:${g.c};margin:0">${g.nama}</span>${extra||'<span style="width:60px"></span>'}</div>${hud?gHudRow():''}`}
-function vGame(){if(G.intro){const g=GAMES.find(x=>x.id===G.id);return gHead()+introCard(g.nama,g.c,GAME_INTRO[G.id]||[],'gGo',null,'Mulai main')+(G.id==='geser'?`<div style="text-align:center"><button class="btn sm" data-act="gCepat">⚡ Mode cepat: Geser Setara 60 detik</button></div>`:'')}
+function vGame(){if(G.intro){const g=GAMES.find(x=>x.id===G.id);return gHead()+introCard(g.nama,g.c,GAME_INTRO[G.id]||[],'gGo',null,'Mulai main')}
   if(G.over){const o=G.over,sc=o.max?o.score/o.max:Math.min(1,o.score/15),nb=Math.max(1,Math.round(sc*10));
   return gHead()+`<div class="glass card has-st" style="text-align:center;padding:24px 16px">${gst()}<div class="cap">Selesai</div><div class="big">${o.score}${o.max?'<span class="muted" style="font-size:24px">/'+o.max+'</span>':''}</div><div class="small muted" style="margin-top:4px">${o.nb?'<span class="chip y">Rekor baru!</span>':'Terbaik: '+(S.games[G.id][o.field||'best']||0)}${o.field==='cepat'?'<br><span class="tiny">Mode cepat</span>':''}</div>
   <div class="mtower" style="justify-content:center;margin-top:14px">${[...Array(nb)].map((_,i)=>`<span class="b new" style="--c:${gc()};animation-delay:${i*60}ms"></span>`).join('')}</div>
-  <div class="row" style="justify-content:center;margin-top:16px"><button class="btn" data-act="gBack">Kembali</button><button class="btn p" ${G.mode==='cepat'?'data-act="gCepat"':`data-act="gAgain"`}>Main lagi</button></div></div>`}
-  return({geser:()=>G.mode==='cepat'?vGeser():vRantai(),gerbang:vBandara,bukti:vBukti,venn:vVenn,sakelar:vLampu,detektif:vDetektif,kasir:vBelanja,hakim:vHakim,cukup:vCukup,kursi:vKursi,tren:vTren})[G.id]()}
+  <div class="row" style="justify-content:center;margin-top:16px"><button class="btn" data-act="gBack">Kembali</button><button class="btn p" data-act="gAgain">Main lagi</button></div></div>`}
+  return({venn:vVenn,detektif:vDetektif,hakim:vHakim,cukup:vCukup,tren:vTren})[G.id]()}
 function startGame(id){clearInterval(gTimer);G={id,intro:true};render()}
 function initGame(id){clearInterval(gTimer);G={id};
-  if(id==='geser'){const r=S.games.geser;if(r&&r.cepat===undefined){r.cepat=r.best||0;save()}G.round=0;G.n=6;G.lives=3;G.score=0;newRantaiRound()}
-  if(id==='gerbang'){G.rules=shuffle(BANDARA).slice(0,3);G.lv=0;G.lives=3;G.score=0;newBandaraLevel()}
   if(id==='venn'){G.round=0;G.score=0;G.n=5;G.lives=3;newVennRound()}
-  if(id==='sakelar'){G.i=0;G.score=0;G.n=6;G.lives=3;G.combo=0;newLampu()}
-  if(id==='bukti'){G.i=0;G.score=0;G.n=8;G.lives=3;G.combo=0;newBukti()}
   if(id==='detektif'){G.rounds=detRounds();G.i=0;G.score=0;G.step=0;G.pick=null;G.ans=null;G.lives=3;G.combo=0}
-  if(id==='kasir'){G.bonus=0;newBelanja()}
   if(id==='hakim'){G.i=0;G.score=0;G.n=8;G.lives=3;G.combo=0;newHakim()}
   if(id==='cukup'){G.round=0;G.n=6;G.coins=10;newCukupRound()}
-  if(id==='kursi'){G.i=0;G.score=0;G.n=4;G.valid=false;newKursi();G.ans=null;G.place=[null,null,null,null,null];G.selName=null;G.msg=''}
   if(id==='tren'){G.i=0;G.score=0;G.n=8;G.lives=3;G.combo=0;G.cur=genTren();G.ans=null}
   render()}
-
-/* --- Rantai Kunci (id 'geser') --- */
-const RANTAI=[
- [['hujan deras','hujan tidak deras'],['lapangan becek','lapangan tidak becek'],['upacara dipindah ke aula','upacara tidak dipindah ke aula'],['kursi aula ditata ulang','kursi aula tidak ditata ulang']],
- [['alarm Gilang mati','alarm Gilang tidak mati'],['Gilang bangun kesiangan','Gilang tidak bangun kesiangan'],['Gilang ketinggalan bus','Gilang tidak ketinggalan bus'],['Gilang terlambat ke sekolah','Gilang tidak terlambat ke sekolah']],
- [['Dina rutin latihan soal','Dina tidak rutin latihan soal'],['nilai try out Dina naik','nilai try out Dina tidak naik'],['Dina masuk kelas unggulan','Dina tidak masuk kelas unggulan'],['Dina mendapat jadwal mentoring','Dina tidak mendapat jadwal mentoring']],
- [['listrik padam','listrik tidak padam'],['wifi sekolah mati','wifi sekolah tidak mati'],['kelas daring dibatalkan','kelas daring tidak dibatalkan'],['tugas dikumpulkan besok','tugas tidak dikumpulkan besok']],
- [['promo berlaku','promo tidak berlaku'],['harga sepatu turun','harga sepatu tidak turun'],['Lala membeli sepatu','Lala tidak membeli sepatu'],['tabungan Lala berkurang','tabungan Lala tidak berkurang']],
- [['tim debat menang di semifinal','tim debat tidak menang di semifinal'],['tim debat masuk final','tim debat tidak masuk final'],['tim debat berangkat ke Surabaya','tim debat tidak berangkat ke Surabaya'],['sekolah menyewa bus','sekolah tidak menyewa bus']],
- [['kuota pendaftar terpenuhi','kuota pendaftar tidak terpenuhi'],['pendaftaran ditutup lebih awal','pendaftaran tidak ditutup lebih awal'],['Bayu tidak sempat mendaftar','Bayu sempat mendaftar'],['Bayu mencari lomba lain','Bayu tidak mencari lomba lain']]];
-const rkT=(A,s)=>A[s.i][s.n?1:0];
-const rkSt=(A,a,b)=>`Jika ${rkT(A,a)}, maka ${rkT(A,b)}.`;
-const rkEq=(a,b)=>a.i===b.i&&a.n===b.n;
-function rkKind(t){if(!t.a.n&&!t.b.n&&t.b.i>t.a.i)return'ok';if(t.a.n&&t.b.n&&t.a.i>t.b.i)return'ok';if(!t.a.n&&!t.b.n&&t.b.i<t.a.i)return'J1';if(t.a.n&&t.b.n&&t.a.i<t.b.i)return'J2';return'x'}
-/* aturan yang sama, ditulis dalam bentuk berbeda */
-function rkPhr(A,a,b,f){const P=rkT(A,a),Q=rkT(A,b),nP=rkT(A,{i:a.i,n:1-a.n}),nQ=rkT(A,{i:b.i,n:1-b.n});
-  return f==='hanya'?`${cap(P)} hanya jika ${Q}.`:f==='atau'?`${cap(nP)} atau ${Q}.`:f==='mustahil'?`Tidak mungkin ${P}, tetapi ${nQ}.`:`Jika ${P}, maka ${Q}.`}
-const RK_FORM={jika:'aturan jika–maka',hanya:'aturan “hanya jika”',atau:'aturan “atau”',mustahil:'aturan “tidak mungkin”'};
-const RK_Q={pasti:'PASTI BENAR',kecuali:'KECUALI',ingkaran:'ingkaran'};
-function genRantai(lv,form,qt){form=form||'jika';qt=qt||'pasti';const A=rnd(RANTAI);const k=lv===3?4:3;const rules=[];for(let i=0;i<k-1;i++)rules.push({a:{i,n:0},b:{i:i+1,n:0}});
-  const contra=lv>=2;const fact=contra?{i:k-1,n:1}:{i:0,n:0},goal=contra?{i:0,n:1}:{i:k-1,n:0};
-  const tiles=[];for(let i=0;i<k-1;i++)tiles.push(contra?{a:{i:i+1,n:1},b:{i,n:1}}:{a:{i,n:0},b:{i:i+1,n:0}});
-  if(lv===3)tiles.push({a:{i:k-1,n:1},b:{i:1,n:1}});
-  const fakes=[];for(let i=0;i<k-1;i++){fakes.push({a:{i:i+1,n:0},b:{i,n:0}});fakes.push({a:{i,n:1},b:{i:i+1,n:1}})}
-  const nf=lv===1?2:3;const T=shuffle(tiles.concat(shuffle(fakes).slice(0,nf))).map((t,id)=>Object.assign({id,kind:rkKind(t)},t));
-  const ru=rules.map(r=>rkPhr(A,r.a,r.b,form));
-  const last=k-1;const C=x=>cap(x);
-  const L0=rkT(A,{i:0,n:0}),L1=rkT(A,{i:1,n:0}),Ll=rkT(A,{i:last,n:0}),N0=rkT(A,{i:0,n:1}),N1=rkT(A,{i:1,n:1}),Nl=rkT(A,{i:last,n:1});
-  if(qt==='kecuali'){const q=Object.assign({perintah:'Semua pernyataan berikut PASTI BENAR berdasarkan aturan di atas, KECUALI …',why:'Rantai p→q→r memberi p→r beserta kontraposisinya, juga setiap mata rantai. Membalik arah (r→p) tidak sah (J1).'},
-      mkOpts([{t:`Jika ${Ll}, maka ${L0}.`,ok:1},{t:`Jika ${L0}, maka ${Ll}.`},{t:`Jika ${Nl}, maka ${N0}.`},{t:`Jika ${L0}, maka ${L1}.`},{t:`Jika ${N1}, maka ${N0}.`}]));
-    return{A,ru,fact,goal,T,q,form,qt}}
-  if(qt==='ingkaran'){const q=Object.assign({perintah:`Dari aturan di atas didapat “Jika ${L0}, maka ${Ll}.” Ingkaran pernyataan itu adalah …`,why:'Ingkaran “jika p, maka r” adalah “p dan bukan r”: syaratnya terjadi, akibatnya tidak.'},
-      mkOpts([{t:`${C(L0)} dan ${Nl}.`,ok:1},{t:`Jika ${N0}, maka ${Nl}.`,j:'J2'},{t:`${C(N0)} dan ${Ll}.`,j:'J3'},{t:`Jika ${Ll}, maka ${L0}.`,j:'J1'},{t:`${C(N0)} atau ${Ll}.`,j:'J3'}]));
-    return{A,ru,fact,goal,T,q,form,qt}}
-  const items=contra?[{t:`Jika ${rkT(A,{i:last,n:1})}, maka ${rkT(A,{i:0,n:1})}.`,ok:1},{t:`Jika ${rkT(A,{i:0,n:1})}, maka ${rkT(A,{i:last,n:1})}.`,j:'J2'},{t:`Jika ${rkT(A,{i:last,n:0})}, maka ${rkT(A,{i:0,n:0})}.`,j:'J1'},{t:`${C(rkT(A,{i:0,n:0}))} dan ${rkT(A,{i:last,n:1})}.`,j:'J3'},{t:`Jika ${rkT(A,{i:1,n:0})}, maka ${rkT(A,{i:0,n:0})}.`,j:'J1'}]
-    :[{t:`Jika ${rkT(A,{i:0,n:0})}, maka ${rkT(A,{i:last,n:0})}.`,ok:1},{t:`Jika ${rkT(A,{i:last,n:0})}, maka ${rkT(A,{i:0,n:0})}.`,j:'J1'},{t:`Jika ${rkT(A,{i:0,n:1})}, maka ${rkT(A,{i:last,n:1})}.`,j:'J2'},{t:`${C(rkT(A,{i:0,n:0}))} dan ${rkT(A,{i:last,n:1})}.`,j:'J3'},{t:`Jika ${rkT(A,{i:1,n:1})}, maka ${rkT(A,{i:0,n:0})}.`,j:'J6'}];
-  return{A,ru,fact,goal,T,form,qt,q:Object.assign({perintah:'Berdasarkan aturan di atas, pernyataan yang PASTI BENAR adalah …',why:'Aturan berantai p→q→r memberi p→r, dan kontraposisinya bukan r → bukan p.'},mkOpts(items))}}
-function newRantaiRound(){G.round++;G.lv=G.round<=2?1:G.round<=4?2:3;
-  const B=roundLv('geser',G.round-1,G.n),ax=gAx(B.lv);G.tgn=B.tantangan;
-  G.cur=genRantai(G.lv,ax[0]?gVar(['hanya','atau','mustahil'],G.round):'jika',ax[1]?gVar(['kecuali','ingkaran'],G.round):'pasti');G.chain=[];G.used=new Set();G.phase='build';G.msg='';G.ans=null}
-function rkState(){const c=G.cur;return G.chain.length?c.T[G.chain[G.chain.length-1]].b:c.fact}
-function rkTap(id){if(G.phase!=='build'||G.used.has(id))return;const c=G.cur,t=c.T[id],st=rkState();
-  if(t.kind!=='ok'){G.lives--;G.used.add(id);G.msg=`<div class="fb small"><b style="color:var(--bad)">Ubin palsu! −1 nyawa.</b> “${esc(rkSt(c.A,t.a,t.b))}” ${t.kind==='J1'?'membalik arah aturan (konvers, J1)':'menyangkal anteseden (invers, J2)'}, jadi tidak sah.</div>`;
-    if(G.lives<=0){G.phase='close';G.msg+=`<div class="fb small"><b style="color:var(--bad)">Nyawa habis.</b></div>`}return render()}
-  if(!rkEq(t.a,st)){G.msg=`<div class="fb small"><b style="color:var(--warn)">Tidak nyambung.</b> Ubin ini sah, tetapi harus dimulai dari “${esc(rkT(c.A,st))}”.</div>`;return render()}
-  G.chain.push(id);G.used.add(id);G.msg='';
-  if(rkEq(t.b,c.goal)){G.phase='open';G.score+=2;setTimeout(()=>{if(G&&G.id==='geser'&&G.phase==='open'){G.phase='close';render()}},900)}
-  render()}
-function vRantai(){const c=G.cur,A=c.A,st=rkState();const hearts=[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('');
-  let h=gHead(gHud())+`<div class="glass card has-st">${gst()}
-  <div class="row sp"><div class="cap" style="margin:0">Ronde ${G.round}/${G.n} · Level ${G.lv}${G.tgn?' · tantangan':''}</div><span class="tiny muted">Skor ${G.score}</span></div>
-  <div class="row wrapf" style="gap:5px;margin-top:6px">${bchip(RK_FORM[c.form])}${bchip('soal '+RK_Q[c.qt])}</div>
-  <div class="cap" style="margin-top:8px">Aturan</div>${c.ru.map((r,i)=>`<div class="vline"><span class="rkn">${i+1}</span><span>${esc(r)}</span></div>`).join('')}
-  <div class="rkgoal"><div><span class="cap" style="margin:0">Fakta</span><b>${esc(cap(rkT(A,c.fact)))}</b></div><div class="door ${G.phase!=='build'&&G.phase!=='close'||G.phase==='close'&&rkEq(st,c.goal)?'open':''}"><span class="lock">${rkEq(st,c.goal)?'🔓':'🔒'}</span><span><span class="cap" style="margin:0">Pintu</span><b>${esc(cap(rkT(A,c.goal)))}</b></span></div></div>
-  <div class="cap" style="margin-top:12px">Rantaimu</div><div class="chainv"><span class="node f">${esc(cap(rkT(A,c.fact)))}</span>${G.chain.map(id=>`<span class="arr">→</span><span class="node">${esc(cap(rkT(A,c.T[id].b)))}</span>`).join('')}${G.phase==='build'?'<span class="arr">→</span><span class="node q">?</span>':''}</div>`;
-  if(G.phase==='build'){
-    h+=`<div class="cap" style="margin-top:12px">Ubin</div><div class="tiles">${c.T.map(t=>`<button class="tile2 ${G.used.has(t.id)?(G.chain.includes(t.id)?'in':'dead'):''}" data-act="rkTap" data-v="${t.id}" ${G.used.has(t.id)?'disabled':''}>${esc(rkSt(A,t.a,t.b))}</button>`).join('')}</div>
-    ${G.msg}<div class="row" style="margin-top:10px"><button class="btn sm" data-act="rkUndo" ${G.chain.length?'':'disabled'}>↶ Urungkan</button></div>`}
-  else if(G.phase==='open')h+=`<div class="fb small"><b style="color:var(--ok)">Pintu terbuka! +2.</b></div>`;
-  else{const q=c.q;h+=G.msg+`<div style="font-weight:600;margin-top:12px">${esc(q.perintah)}</div>
-    <div class="opts">${q.opsi.map((o,i)=>{let cl='';if(G.ans!=null)cl=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${cl}" data-act="rkAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
-    if(G.ans!=null)h+=`<div class="fb small">${G.ans===q.kunci?'<b style="color:var(--ok)">+2.</b> ':'<b style="color:var(--bad)">Belum tepat. −1 nyawa.</b> '}${esc(q.why)}${q.j[G.ans]&&TRAPS[q.j[G.ans]]?` <span class="chip bad">Jebakan: ${TRAPS[q.j[G.ans]]}</span>`:''}</div>
-     <button class="btn p w" style="margin-top:10px" data-act="rkNext">${G.lives>0&&G.round<G.n?'Ronde berikutnya':'Lihat skor'}</button>`}
-  return h+'</div>'}
-function startCepat(){clearInterval(gTimer);G={id:'geser',mode:'cepat',end:Date.now()+60000,score:0,n:0,cur:genGeser()};gTimer=setInterval(()=>{const l=Math.max(0,G.end-Date.now());const e=$('#gtime');if(e)e.textContent=Math.ceil(l/1000)+' dtk';if(l<=0)gDone(G.score,0,'cepat')},250);render()}
-
-/* --- Geser Setara (mode cepat Rantai Kunci) --- */
-function genGeser(){const{P,Q}=pq();const bh=Math.random()<.35;const base=bh?`${cap(P.pos)} hanya jika ${Q.pos}.`:`Jika ${P.pos}, maka ${Q.pos}.`;let t=rnd(['kontra','kontra','disj','konv','inv','neg','hanyaS','hanyaK']);if(bh&&t==='hanyaS')t='kontra';
-  const M={kontra:[`Jika ${Q.neg}, maka ${P.neg}.`,true,'Kontraposisi: setara.'],disj:[`${cap(P.neg)} atau ${Q.pos}.`,true,'“Bukan p atau q” setara dengan “jika p maka q”.'],
-   konv:[`Jika ${Q.pos}, maka ${P.pos}.`,false,'Konvers (dibalik): tidak setara · J1.'],inv:[`Jika ${P.neg}, maka ${Q.neg}.`,false,'Invers: tidak setara · J2.'],neg:[`${cap(P.pos)} dan ${Q.neg}.`,false,'Ini ingkarannya, bukan pernyataan setara.'],
-   hanyaS:[`${cap(P.pos)} hanya jika ${Q.pos}.`,true,'“p hanya jika q” sama dengan “jika p, maka q”.'],hanyaK:[`${cap(Q.pos)} hanya jika ${P.pos}.`,false,'“q hanya jika p” berarti “jika q, maka p”: arahnya terbalik · J1.']};
-  return{base,teks:M[t][0],setara:M[t][1],why:M[t][2]}}
-function vGeser(){const c=G.cur;after(bindSwipe);return gHead(`<span class="chip" id="gtime">60 dtk</span>`)+`<div class="row sp small muted" style="padding:0 2px"><span>Skor ${G.score}</span><span>${G.n} kartu</span></div>
-  <div class="swipe"><div class="glass scard" id="scard">${studs(4,gc())}<div class="base">Apakah setara dengan: “${esc(c.base)}”</div><div style="font-weight:600">${esc(c.teks)}</div></div></div>
-  <div class="row"><button class="btn" style="flex:1" data-act="geser" data-v="0">‹ Tidak setara</button><button class="btn p" style="flex:1" data-act="geser" data-v="1">Setara ›</button></div>
-  <div class="fb small" id="gfb" style="${G.last?'':'visibility:hidden'}">${G.last||'·'}</div>`}
-function bindSwipe(){const el=$('#scard');if(!el)return;let x0=null,dx=0;
-  el.onpointerdown=e=>{x0=e.clientX;dx=0;el.style.transition='none';el.setPointerCapture(e.pointerId)};
-  el.onpointermove=e=>{if(x0===null)return;dx=e.clientX-x0;el.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`};
-  el.onpointerup=()=>{if(x0===null)return;x0=null;el.style.transition='';if(Math.abs(dx)>70)answerGeser(dx>0);else el.style.transform=''}}
-function answerGeser(v){if(!G||G.id!=='geser'||G.mode!=='cepat'||G.over)return;const c=G.cur,ok=v===c.setara;G.n++;if(ok)G.score++;
-  G.last=`${ok?'<b style="color:var(--ok)">✓</b>':'<b style="color:var(--bad)">✗</b>'} ${esc(c.why)}`;
-  const el=$('#scard');if(el){el.style.transform=`translateX(${v?420:-420}px) rotate(${v?20:-20}deg)`;el.style.opacity='0'}
-  G.cur=genGeser();setTimeout(()=>{if(G&&G.id==='geser'&&!G.over)render()},180)}
-
-/* --- Penjaga Gerbang --- */
-const GERBANG=[
- {aturan:'Jika peserta kelas 12, maka wajib membawa kartu pelajar.',ket:'Tiap kartu satu peserta: satu sisi kelas, sisi lain kartu pelajar.',kartu:['Kelas 12','Kelas 11','Bawa kartu','Tanpa kartu']},
- {aturan:'Jika memesan menu paket, maka mendapat minuman gratis.',ket:'Tiap kartu satu struk: satu sisi menu, sisi lain minuman.',kartu:['Menu paket','Menu satuan','Dapat minuman','Tanpa minuman']},
- {aturan:'Jika sudah membayar, maka namanya tercantum di daftar peserta.',ket:'Tiap kartu satu pendaftar: satu sisi status bayar, sisi lain daftar.',kartu:['Sudah bayar','Belum bayar','Ada di daftar','Tidak di daftar']},
- {aturan:'Jika satu sisi kartu huruf vokal, maka sisi lainnya angka genap.',ket:'Satu sisi huruf, sisi lain angka.',kartu:['E','K','4','7']},
- {aturan:'Jika tiketnya VIP, maka penonton duduk di baris depan.',ket:'Tiap kartu satu penonton: satu sisi tiket, sisi lain kursi.',kartu:['Tiket VIP','Tiket reguler','Baris depan','Baris belakang']},
- {aturan:'Jika pesanan di atas Rp50.000, maka ongkirnya gratis.',ket:'Tiap kartu satu pesanan: satu sisi total belanja, sisi lain ongkir.',kartu:['Rp72.000','Rp38.000','Ongkir gratis','Ongkir Rp9.000']},
- {aturan:'Jika ikut lomba debat, maka sudah mengisi formulir izin.',ket:'Tiap kartu satu siswa: satu sisi lomba, sisi lain formulir.',kartu:['Ikut debat','Ikut futsal','Formulir terisi','Formulir kosong']},
- {aturan:'Jika hari Minggu, maka perpustakaan tutup.',ket:'Tiap kartu satu hari: satu sisi nama hari, sisi lain status perpustakaan.',kartu:['Minggu','Rabu','Tutup','Buka']}];
-/* --- Belanja Hemat (id 'kasir') --- */
-const BT_BELANJA=20000;
-const BRG_EMO={'Sepatu':'👟','Tas sekolah':'🎒','Jaket':'🧥','Headphone':'🎧','Paket buku':'📚','Jam tangan':'⌚'};
-const rb=n=>(n/1000).toLocaleString('id-ID')+'rb';
-function tagParts(l){let m;
-  if(m=l.match(/^Diskon (\d+)% \+ (\d+)%$/))return{k:'DISKON',b:`${m[1]}%`,s:`+ ${m[2]}% lagi`};
-  if(m=l.match(/^Diskon (\d+)%, lalu potong Rp([\d.]+)$/))return{k:'DISKON',b:`${m[1]}%`,s:`lalu −${rb(+m[2].replace(/\./g,''))}`};
-  if(m=l.match(/^Diskon (\d+)%$/))return{k:'DISKON',b:`${m[1]}%`,s:''};
-  if(m=l.match(/^Potongan Rp([\d.]+)$/))return{k:'POTONGAN',b:`−${rb(+m[1].replace(/\./g,''))}`,s:''};
-  return{k:'PROMO',b:esc(l),s:''}}
-function genBarang(){let q=null;for(let t=0;t<50;t++){q=genKasir();if(q&&q.P<=200000)return q}return q}
-/* soal penutup: 2 dari 3 bentuk, berganti tiap hari & tiap main */
-const BQ={
- bert(){const P=rnd([120,150,200,250,300])*1000,a=rnd([10,20,25,30]),b=rnd([10,20,25]);const ok=P*(1-a/100)*(1-b/100);
-   const it=[{t:fmtRp(ok),ok:1},{t:fmtRp(P*(1-(a+b)/100)),j:'J12'},{t:fmtRp(P*(1-a/100)),j:'J5'},{t:fmtRp(P*(a+b)/100),j:'J12'},{t:fmtRp(P*(1-a/100)*(b/100)),j:'J12'}];
-   if(new Set(it.map(x=>x.t)).size<5)return null;
-   return Object.assign({teks:`Sebuah ${rnd(['jaket','tas','sepatu','headphone'])} seharga ${fmtRp(P)} mendapat diskon ${a}% lalu diskon lagi ${b}% dari harga setelah diskon pertama.`,perintah:'Harga yang harus dibayar adalah …',why:'Diskon bertingkat dihitung dari harga yang sudah turun, bukan dijumlahkan.'},mkOpts(it))},
- balik(){let P,d,Y;do{d=rnd([20,25,40,50]);P=rnd([8,10,12,16,20,24])*10000;Y=P*(1-d/100)}while(Y%1000);
-   const it=[{t:fmtRp(P),ok:1},{t:fmtRp(Y*(1+d/100)),j:'J12'},{t:fmtRp(Y*(1-d/100)),j:'J12'},{t:fmtRp(Y+d*1000),j:'J11'},{t:fmtRp(P+Y*d/100),j:'J12'}];
-   if(new Set(it.map(x=>x.t)).size<5)return null;
-   return Object.assign({teks:`Setelah didiskon ${d}%, harga sebuah buku paket menjadi ${fmtRp(Y)}.`,perintah:'Harga buku paket sebelum diskon adalah …',why:'Harga awal = harga akhir ÷ (100% − diskon), bukan harga akhir ditambah persen diskonnya.'},mkOpts(it))},
- urut(){const P=rnd([100,120,150,200,250])*1000,d=rnd([10,20,25]),x=rnd([10,20,30])*1000;
-   const it=[{t:fmtRp(x*d/100),ok:1},{t:fmtRp(x),j:'J12'},{t:'Rp0 (sama saja)',j:'J6'},{t:fmtRp(P*d/100),j:'J12'},{t:fmtRp(x*(1-d/100)),j:'J12'}];
-   if(new Set(it.map(z=>z.t)).size<5)return null;
-   return Object.assign({teks:`Sebuah ${rnd(['jaket','tas','sepatu'])} seharga ${fmtRp(P)} mendapat diskon ${d}% dan potongan ${fmtRp(x)}. Kasir A memotong ${fmtRp(x)} dulu, baru memberi diskon. Kasir B memberi diskon dulu, baru memotong ${fmtRp(x)}.`,perintah:'Selisih harga yang dibayar di kedua kasir adalah …',
-     why:`Kasir A: (${fmtRp(P)} − ${fmtRp(x)}) × ${100-d}%. Kasir B: ${fmtRp(P)} × ${100-d}% − ${fmtRp(x)}. Selisihnya ${d}% × ${fmtRp(x)}, jadi urutan memang berpengaruh.`},mkOpts(it))}};
-function belanjaQ(){const lv=gLv('kasir'),ks=lv===1?['bert','balik']:lv===2?shuffle(['urut',rnd(['bert','balik'])]):['urut','balik'];
-  return ks.map(k=>{let q=null;for(let t=0;t<40&&!q;t++)q=BQ[k]();return q})}
-function newBelanja(){clearInterval(gTimer);G.dana=500000;const nm=shuffle(BARANG);G.items=[...Array(6)].map((_,i)=>Object.assign(genBarang(),{item:nm[i%nm.length]}));G.k=0;G.cart=[];G.phase='shop';G.res=null;G.qs=null;G.qi=0;G.ans=null;belanjaTimer()}
-function belanjaTimer(){clearInterval(gTimer);G.kend=Date.now()+BT_BELANJA;gTimer=setInterval(()=>{if(!G||G.id!=='kasir'||G.phase!=='shop')return;const l=Math.max(0,G.kend-Date.now());const e=$('#btime');if(e)e.style.width=(l/BT_BELANJA*100)+'%';if(l<=0)belanjaPick(-1)},100)}
-function belanjaPick(i){if(G.phase!=='shop')return;clearInterval(gTimer);const it=G.items[G.k],min=Math.min(...it.pr.map(x=>x.f));let msg,ok=true;
-  if(i===-2){msg=`Barang dilewati.${min<=G.dana?` Promo termurah sebenarnya ${fmtRp(min)}.`:''}`}
-  else if(i===-1){ok=false;msg='<b style="color:var(--bad)">Waktu habis</b>, barang terlewat.'}
-  else{const f=it.pr[i].f;if(f>G.dana){ok=false;msg=`<b style="color:var(--bad)">Uang tidak cukup.</b> Harga dengan promo itu ${fmtRp(f)}, sisa danamu ${fmtRp(G.dana)}.`}
-    else{G.dana-=Math.round(f);G.cart.push({n:it.item,f});ok=f===min;msg=ok?`<b style="color:var(--ok)">Pilihan paling hemat!</b> Dibayar ${fmtRp(f)}.`:`<b style="color:var(--bad)">Terbeli, tapi kurang hemat.</b> Dibayar ${fmtRp(f)}; promo termurah ${fmtRp(min)} (rugi ${fmtRp(f-min)}).`}}
-  G.res={i,msg,ok};G.phase='reveal';render();if(ok&&i>=0)setTimeout(()=>{if(G&&G.id==='kasir'&&G.phase==='reveal')belanjaNext()},1400)}
-function belanjaNext(){if(G.phase!=='reveal')return;G.k++;if(G.k>=G.items.length){G.phase='quiz';G.qs=belanjaQ();G.qi=0;G.ans=null;return render()}G.phase='shop';G.res=null;render();belanjaTimer()}
-function belanjaSkor(){return G.cart.length*10+Math.floor(G.dana/10000)+(G.bonus||0)}
-function vBelanja(){let h=gHead(`<span class="coin">${fmtRp(G.dana)}</span>`)+`<div class="glass card has-st">${gst()}`;
-  h+=`<div class="row sp"><div class="cap" style="margin:0">${G.phase==='quiz'?'Soal penutup':`Barang ${G.k+1}/${G.items.length}`}</div><span class="tiny muted">Skor ${belanjaSkor()}</span></div>
-`;
-  if(G.phase==='shop'||G.phase==='reveal'){const it=G.items[G.k],min=Math.min(...it.pr.map(x=>x.f)),rv=G.phase==='reveal';
-    h+=`<div class="shelf"><div class="pemo">${BRG_EMO[it.item]||'🛍️'}</div><div class="pname">${esc(it.item)}</div><div class="pprice">${fmtRp(it.P)}</div></div>
-    ${rv?'':`<div class="bar" style="margin-top:8px"><i id="btime" style="width:100%"></i></div>`}
-
-    <div class="tags">${it.pr.map((x,i)=>{let c='';if(rv)c=x.f===min?'ok':i===G.res.i?'bad':'dim';const t=tagParts(x.l);return`<button class="ptag2 ${c}" data-act="bPick" data-v="${i}" ${rv?'disabled':''}><span class="hole"></span><span class="tk">${t.k}</span><span class="tb">${t.b}</span>${t.s?`<span class="ts">${t.s}</span>`:''}${rv?`<span class="tf">${fmtRp(x.f)}</span>`:''}</button>`}).join('')}</div>`;
-    if(rv)h+=`<div class="fb small">${G.res.msg}<br><span class="muted">${it.pr.map(x=>`${esc(x.l)}: ${x.why} = ${fmtRp(x.f)}`).join('<br>')}</span></div>${G.res.ok&&G.res.i>=0?'':'<button class="btn p w" style="margin-top:10px" data-act="bNext">Lanjut</button>'}`;
-    else h+=`<button class="btn w" style="margin-top:10px" data-act="bPick" data-v="-2">Lewati barang ini</button>`}
-  else{const q=G.qs[G.qi];
-    h+=`${stimBox(q.teks,10)}<div class="qask">${esc(q.perintah)}</div>
-    <div class="opts">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="bAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
-    if(G.ans!=null)h+=`<div class="fb small">${G.ans===q.kunci?'<b style="color:var(--ok)">+5.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}${esc(q.why||'')}${q.j[G.ans]&&TRAPS[q.j[G.ans]]?` <span class="chip bad">Jebakan: ${TRAPS[q.j[G.ans]]}</span>`:''}</div>
-     <button class="btn p w" style="margin-top:10px" data-act="bQNext">${G.qi<G.qs.length-1?'Soal berikutnya':'Lihat skor'}</button>`}
-  return h+'</div>'}
-
-/* --- Inspektur Bandara (id 'gerbang') --- */
-const BANDARA=[
- {aturan:'Jika koper bertujuan Bali, maka koper berstiker hijau.',p:'koper bertujuan Bali',np:'koper tidak bertujuan Bali',q:'koper berstiker hijau',nq:'koper tidak berstiker hijau',P:['Tujuan: Bali'],NP:['Tujuan: Medan','Tujuan: Lombok','Tujuan: Batam'],Q:['Stiker: hijau'],NQ:['Stiker: merah','Stiker: kuning']},
- {aturan:'Jika koper berisi cairan, maka koper disegel plastik.',p:'koper berisi cairan',np:'koper tidak berisi cairan',q:'koper disegel plastik',nq:'koper tidak disegel plastik',P:['Isi: cairan'],NP:['Isi: pakaian','Isi: buku','Isi: sepatu'],Q:['Segel plastik: ada'],NQ:['Segel plastik: tidak ada']},
- {aturan:'Jika koper milik penumpang kelas bisnis, maka koper berlabel prioritas.',p:'koper milik penumpang kelas bisnis',np:'koper bukan milik penumpang kelas bisnis',q:'koper berlabel prioritas',nq:'koper tidak berlabel prioritas',P:['Kelas: bisnis'],NP:['Kelas: ekonomi'],Q:['Label: prioritas'],NQ:['Label: biasa']},
- {aturan:'Jika berat koper lebih dari 20 kg, maka bagasi tambahan sudah dibayar.',p:'berat koper lebih dari 20 kg',np:'berat koper tidak lebih dari 20 kg',q:'bagasi tambahan sudah dibayar',nq:'bagasi tambahan belum dibayar',P:['Berat: 23 kg','Berat: 27 kg'],NP:['Berat: 15 kg','Berat: 18 kg'],Q:['Struk bagasi: lunas'],NQ:['Struk bagasi: belum bayar']},
- {aturan:'Jika koper berisi baterai cadangan, maka koper dibawa ke kabin.',p:'koper berisi baterai cadangan',np:'koper tidak berisi baterai cadangan',q:'koper dibawa ke kabin',nq:'koper tidak dibawa ke kabin',P:['Isi: baterai cadangan'],NP:['Isi: oleh-oleh','Isi: pakaian'],Q:['Masuk: kabin'],NQ:['Masuk: bagasi']},
- {aturan:'Jika koper ikut penerbangan internasional, maka koper berstempel bea cukai.',p:'koper ikut penerbangan internasional',np:'koper tidak ikut penerbangan internasional',q:'koper berstempel bea cukai',nq:'koper tidak berstempel bea cukai',P:['Rute: Singapura','Rute: Tokyo'],NP:['Rute: Surabaya','Rute: Makassar'],Q:['Stempel bea cukai: ada'],NQ:['Stempel bea cukai: tidak ada']}];
-/* Satu sisi koper tersembunyi. Tanpa jatah buka: setiap keputusan salah −1 nyawa, nyawa diisi ulang tiap level.
-   Waktu per koper lebih longgar; pembahasan menjelaskan alasannya setelah menjawab. */
-const BT=[0,9000,8000,7000],BN=[0,5,6,6],BD_LV=['','','',''];
-function genKoper(r,lv){const n=BN[lv];for(let t=0;t<400;t++){const L=[];for(let i=0;i<n;i++){const v=rnd(['P','NP','Q','NQ']);let hid;
-    if(v==='P')hid=Math.random()<.45?'NQ':'Q';else if(v==='NQ')hid=Math.random()<.45?'P':'NP';else if(v==='NP')hid=rnd(['Q','NQ']);else hid=rnd(['P','NP']);
-    L.push({v,hid,vt:rnd(r[v]),ht:rnd(r[hid]),need:v==='P'||v==='NQ',bad:(v==='P'&&hid==='NQ')||(v==='NQ'&&hid==='P')})}
-  const need=L.filter(x=>x.need).length,bad=L.filter(x=>x.bad).length;
-  if((need>=2&&need<=4&&bad>=1&&L.some(x=>!x.need)&&new Set(L.map(x=>x.v)).size>=3))return L}}
-function bdPhr(r,f){return f==='hanya'?`${cap(r.p)} hanya jika ${r.q}.`:f==='atau'?`Setiap koper: ${r.np} atau ${r.q}.`:f==='dilarang'?`Dilarang: ${r.p}, tetapi ${r.nq}.`:r.aturan}
-const BD_FORM={jika:'aturan jika–maka',hanya:'aturan “hanya jika”',atau:'aturan “atau”',dilarang:'aturan larangan'};
-function bdRuleBox(r){return`<div class="rule2"><span class="rk">JIKA</span><span class="rc">${esc(cap(r.p))}</span><span class="rk">MAKA WAJIB</span><span class="rc">${esc(cap(r.q))}</span></div>`}
-function bdWhy(r,x){return{P:`Syaratnya terpenuhi (${r.p}), jadi wajib ${r.q}. Sisi lain bisa saja tidak, maka wajib dibuka.`,
-  NP:`Syaratnya tidak terpenuhi (${r.np}), jadi aturan tidak berlaku. Loloskan.`,
-  Q:`Yang wajib sudah terpenuhi (${r.q}), jadi pasti aman. Loloskan.`,
-  NQ:`Yang wajib tidak terpenuhi (${r.nq}). Kalau ternyata ${r.p}, itu melanggar, maka wajib dibuka.`}[x.v]}
-function newBandaraLevel(){G.lv++;G.lives=3;G.rule=G.rules[G.lv-1];{const B=roundLv('gerbang',G.lv-1,3);G.tgn=B.tantangan;G.ax=gAx(B.lv)}G.form=G.ax[0]?gVar(['hanya','atau','dilarang'],G.lv):'jika';G.ruleTxt=bdPhr(G.rule,G.form);G.kop=genKoper(G.rule,G.lv);G.k=0;G.phase='belt';G.last=null;G.stat={ok:0,n:0};G.cq=null;G.ans=null;bandaraTimer()}
-function bandaraTimer(){clearInterval(gTimer);G.kend=Date.now()+BT[G.lv];gTimer=setInterval(()=>{if(!G||G.id!=='gerbang'||G.phase!=='belt')return;const l=Math.max(0,G.kend-Date.now());const e=$('#ktime');if(e)e.style.width=(l/BT[G.lv]*100)+'%';if(l<=0)bandaraDecide(false,true)},100)}
-function bandaraDecide(open,auto){if(G.phase!=='belt')return;clearInterval(gTimer);const x=G.kop[G.k],r=G.rule;let ok,pts=0,msg;
-  {ok=open===x.need;pts=ok?(open&&x.bad?2:1):0;
-    const head=ok?(open?(x.bad?'Pelanggaran ketemu! +2.':'Tepat dibuka. +1.'):'Tepat diloloskan. +1.'):(auto?'Waktu habis. ':'')+(open?'Tidak perlu dibuka. −1 nyawa.':x.bad?'Pelanggar lolos! −1 nyawa.':'Seharusnya dibuka. −1 nyawa.');
-    msg=`<b style="color:var(--${ok?'ok':'bad'})">${head}</b> ${esc(bdWhy(r,x))}${open||!ok?` <span class="muted">Sisi lain: “${esc(x.ht)}”.</span>`:''}`}
-  if(!ok)G.lives--;G.score+=pts;G.stat.n++;if(ok)G.stat.ok++;G.last={ok,msg,open,x};G.phase='reveal';render();
-  if(ok)setTimeout(()=>{if(G&&G.id==='gerbang'&&G.phase==='reveal'&&G.last&&G.last.x===x)bandaraNext()},1500)}
-function bandaraNext(){if(G.phase!=='reveal')return;if(G.lives<=0){G.phase='close';G.cq=bandaraQ(G.rule);return render()}
-  G.k++;if(G.k>=G.kop.length){G.phase='close';G.cq=bandaraQ(G.rule);return render()}G.phase='belt';G.last=null;render();bandaraTimer()}
-function bandaraQ(r){const t=G.ax&&G.ax[1]?'kecuali':gVar(['setara','ingkaran','tollens'],G.lv);const C=s=>cap(s);const at=G.ruleTxt||r.aturan;
-  if(t==='kecuali')return Object.assign({perintah:`Semua pernyataan berikut setara dengan aturan “${at}”, KECUALI …`},mkOpts([{t:`Jika ${r.q}, maka ${r.p}.`,ok:1},{t:`Jika ${r.nq}, maka ${r.np}.`},{t:`Jika ${r.p}, maka ${r.q}.`},{t:`${C(r.np)} atau ${r.q}.`},{t:`Tidak mungkin ${r.p}, tetapi ${r.nq}.`}]));
-  if(t==='setara')return Object.assign({perintah:`Pernyataan yang setara dengan aturan “${at}” adalah …`},mkOpts([{t:`Jika ${r.nq}, maka ${r.np}.`,ok:1},{t:`Jika ${r.q}, maka ${r.p}.`,j:'J1'},{t:`Jika ${r.np}, maka ${r.nq}.`,j:'J2'},{t:`${C(r.p)} dan ${r.nq}.`,j:'J3'},{t:`${C(r.p)} atau ${r.nq}.`,j:'J3'}]));
-  if(t==='ingkaran')return Object.assign({perintah:`Ingkaran dari aturan “${at}” adalah …`},mkOpts([{t:`${C(r.p)} dan ${r.nq}.`,ok:1},{t:`Jika ${r.np}, maka ${r.nq}.`,j:'J2'},{t:`Jika ${r.q}, maka ${r.p}.`,j:'J1'},{t:`${C(r.np)} dan ${r.q}.`,j:'J3'},{t:`${C(r.np)} atau ${r.q}.`,j:'J3'}]));
-  return Object.assign({perintah:`Aturan: “${at}” Diketahui: ${r.nq}. Simpulan yang pasti benar adalah …`},mkOpts([{t:`${C(r.np)}.`,ok:1},{t:`${C(r.p)}.`,j:'J6'},{t:`${C(r.q)}.`,j:'J5'},{t:'Tidak dapat disimpulkan apa pun tentang koper itu.',j:'J13'},{t:`${C(r.np)} dan ${r.q}.`,j:'J3'}]))}
-function vBandara(){const r=G.rule;const hearts=[0,1,2].map(i=>`<span class="heart ${i<G.lives?'':'off'}">♥</span>`).join('');
-  let h=gHead(gHud())+`<div class="glass card has-st">${gst()}
-  <div class="row sp"><div class="cap" style="margin:0">Level ${G.lv}/3${G.tgn?' · tantangan':''}</div><span class="tiny muted">Skor ${G.score}</span></div>
-  ${G.form&&G.form!=='jika'?`<div class="rule" style="margin-top:8px">${esc(G.ruleTxt)}</div><div class="tiny muted" style="margin-top:6px">Artinya sama dengan:</div>`:''}
-  ${bdRuleBox(r)}`;
-  if(G.phase==='belt'||G.phase==='reveal'){const x=G.kop[G.k],rev=G.phase==='reveal',both=false;
-    const second=rev&&(G.last.open||!G.last.ok)?`<span class="khid">${esc(x.ht)}</span>`:'<span class="kq">?</span>';
-    h+=`<div class="row sp" style="margin-top:10px"><span class="tiny muted">Koper ${G.k+1}/${G.kop.length}</span></div>
-    <div class="belt"><div class="kop ${rev?(G.last.ok?'okk':'badk'):'slide'}">
-      <div class="khandle"></div><div class="kbody"><span class="ktag">${esc(x.vt)}</span>${second}</div></div>
-      ${G.k+1<G.kop.length?'<div class="kop next"><div class="khandle"></div><div class="kbody"></div></div>':''}</div>`;
-    if(rev)h+=`<div class="fb small">${G.last.msg}</div>${G.last.ok?'':'<button class="btn p w" style="margin-top:10px" data-act="iNext">Lanjut</button>'}`;
-    else h+=`
-    <div class="small" style="font-weight:600;margin-top:10px;text-align:center">${both?'Apakah koper ini melanggar aturan?':'Mungkinkah koper ini melanggar aturan?'}</div>
-    <div class="bar" style="margin-top:8px"><i id="ktime" style="width:100%"></i></div>
-    <div class="row" style="margin-top:10px"><button class="btn" style="flex:1;flex-direction:column;height:auto;padding:7px 4px;line-height:1.2" data-act="iPass">Loloskan<span class="tiny muted" style="font-weight:600">${both?'aman':'pasti aman'}</span></button><button class="btn p" style="flex:1;flex-direction:column;height:auto;padding:7px 4px;line-height:1.2" data-act="iOpen">${both?'Tahan':'Buka'}<span class="tiny" style="font-family:Rubik,sans-serif;font-weight:600;opacity:.75">${both?'melanggar':'mungkin melanggar'}</span></button></div>`}
-  else{const q=G.cq;
-    h+=`<div style="font-weight:600;margin-top:12px">${esc(q.perintah)}</div>
-    <div class="opts">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="iAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
-    if(G.ans!=null)h+=`<div class="fb small">${G.ans===q.kunci?'<b style="color:var(--ok)">+2.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}“Jika p, maka q” = “jika bukan q, maka bukan p”. Ingkarannya: “p dan bukan q”.<br><span class="muted">Koper tepat ${G.stat.ok}/${G.stat.n}. Yang wajib dibuka: sisi “${esc(r.P[0])}” dan sisi “${esc(r.NQ[0])}”.</span>${q.j[G.ans]&&TRAPS[q.j[G.ans]]?` <span class="chip bad">Jebakan: ${TRAPS[q.j[G.ans]]}</span>`:''}</div>
-     <button class="btn p w" style="margin-top:10px" data-act="iLvl">${G.lives>0&&G.lv<3?'Level berikutnya':'Lihat skor'}</button>`}
-  return h+'</div>'}
-
-/* --- Satu Bukti (id 'bukti') ---
-   Kuantor lewat bukti nyata: satu kotak cukup untuk membantah "semua"/"tidak ada"
-   atau membuktikan "ada"/"tidak semua". */
-const BK_HEWAN=[['kucing','🐱'],['anjing','🐶'],['kelinci','🐰']];
-const BK_WARNA=[['merah','#fbd8d6','#ef5f5a'],['biru','#d6e5fb','#4b8ae8'],['kuning','#fff1bd','#e0b400']];
-const bkIn=(x,g)=>g.t==='k'?x.k===g.v:x.c===g.v;
-function bkTruth(q){const S=q.tiles.filter(x=>bkIn(x,q.s)),P=x=>bkIn(x,q.p);return{semua:S.every(P),tidakada:!S.some(P),ada:S.some(P),tidaksemua:S.some(x=>!P(x))}[q.f]}
-function bkW(q,x){if(!bkIn(x,q.s))return false;const p=bkIn(x,q.p);return(q.f==='semua'||q.f==='tidaksemua')?!p:p}
-const bkNeedW=(q,t)=>(q.f==='semua'||q.f==='tidakada')?!t:t;
-function bkText(q,ph){const kS=q.s.t==='k',S=kS?BK_HEWAN[q.s.v][0]:'kotak '+BK_WARNA[q.s.v][0];
-  const P=kS?'berada di kotak '+BK_WARNA[q.p.v][0]:'berisi '+BK_HEWAN[q.p.v][0],Pn='tidak '+P;
-  const V={semua:[`Semua ${S} ${P}.`,`Setiap ${S} ${P}.`,`Tidak ada ${S} yang ${Pn}.`],tidakada:[`Tidak ada ${S} yang ${P}.`,`Semua ${S} ${Pn}.`],
-    ada:[`Ada ${S} yang ${P}.`,`Sebagian ${S} ${P}.`,`Paling sedikit satu ${S} ${P}.`],tidaksemua:[`Tidak semua ${S} ${P}.`,`Ada ${S} yang ${Pn}.`,`Sebagian ${S} ${Pn}.`]}[q.f];
-  return cap(V[ph<0?1+Math.floor(Math.random()*(V.length-1)):ph%V.length])}
-function genBukti(i){const B=roundLv('bukti',i,G.n||8),ax=gAx(B.lv);G.tgn=B.tantangan;const f=gVar(['semua','tidakada','ada','tidaksemua'],i),target=Math.random()<.5;let last=null;
-  for(let t=0;t<400;t++){const tiles=[...Array(9)].map(()=>({k:ri(0,2),c:ri(0,2)})),rev=!!ax[1];
-    const s=rev?{t:'c',v:ri(0,2)}:{t:'k',v:ri(0,2)},p=rev?{t:'k',v:ri(0,2)}:{t:'c',v:ri(0,2)};
-    const nS=tiles.filter(x=>bkIn(x,s)).length;if(nS<2||nS>5)continue;
-    const q={tiles,s,p,f};q.truth=bkTruth(q);q.txt=bkText(q,ax[0]?-1:0);last=q;if(q.truth===target)return q}
-  return last}
-function newBukti(){clearInterval(gTimer);G.cur=genBukti(G.i);G.phase='judge';G.pick=null;G.fb='';G.showW=false;G.bonus1=0;G.end=Date.now()+20000;
-  gTimer=setInterval(()=>{if(!G||G.id!=='bukti')return;const l=Math.max(0,G.end-Date.now());const e=$('#gtime');if(e)e.textContent=Math.ceil(l/1000)+' dtk';
-    if(l<=0&&(G.phase==='judge'||G.phase==='proof'))bkEnd(false,'<b style="color:var(--bad)">Waktu habis.</b>')},250)}
-function bkEnd(ok,fb){clearInterval(gTimer);gRec('bukti',ok===true);if(ok===true)gHit(true);else if(ok===false)gHit(false);else{G.combo=0;G.bonus1=0}
-  G.fb=fb;G.phase='done';G.showW=bkNeedW(G.cur,G.cur.truth);S.log.push({t:today(),src:'game',sk:'N3',ok:ok?1:0,j:ok?null:'J4'});save();render()}
-function bkVerdict(v){if(G.phase!=='judge')return;const q=G.cur;
-  if(v!==q.truth)return bkEnd(false,`<b style="color:var(--bad)">Belum tepat.</b> Pernyataan ini ${q.truth?'BENAR':'SALAH'}. ${bkNeedW(q,q.truth)?'Buktinya bergaris hijau.':q.truth?'Tidak ada kotak yang membantahnya.':'Tidak ada kotak yang cocok.'}`);
-  if(bkNeedW(q,v)){G.phase='proof';return render()}
-  bkEnd(true,`<b style="color:var(--ok)">Tepat!</b> ${q.truth?'Tidak ada kotak yang membantahnya.':'Tidak ada kotak yang cocok.'}`)}
-function bkTile(i){if(G.phase!=='proof')return;const q=G.cur;G.pick=i;G.pickOk=bkW(q,q.tiles[i]);
-  if(G.pickOk)bkEnd(true,'<b style="color:var(--ok)">Terbukti!</b> Satu kotak sudah cukup.');else bkEnd(null,'<b style="color:var(--warn)">Itu bukan bukti.</b> Yang tepat bergaris hijau.')}
-function vBukti(){
-  if(G.phase==='quiz'){const c=G.qs[G.qi];let h=gHead(`<span class="chip">${G.qi+1}/2</span>`)+`<div class="glass card has-st">${gst()}<div class="cap">${esc(c.label)}</div><div class="stim" style="font-weight:600">${esc(c.teks)}</div>
-    <div class="opts">${c.opsi.map((o,i)=>{let cl='';if(G.ans!=null)cl=i===c.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${cl}" data-act="bkAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
-    if(G.ans!=null)h+=`<div class="fb small">${G.ans===c.kunci?'<b style="color:var(--ok)">+2.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}${esc(c.why)}</div><button class="btn p w" style="margin-top:10px" data-act="bkQNext">${G.qi<G.qs.length-1?'Berikutnya':'Lihat skor'}</button>`;
-    return h+'</div>'}
-  const q=G.cur;let h=gHead(gHud(`<span class="chip" id="gtime">20 dtk</span>`))+`<div class="glass card has-st">${gst()}
-  <div class="row sp"><div class="cap" style="margin:0">Ronde ${G.i+1}/${G.n}${G.tgn?' · tantangan':''}</div><span class="tiny muted">Skor ${G.score}</span></div>
-  <div class="bkst">${esc(q.txt)}</div>
-  <div class="bkgrid ${G.phase==='proof'?'live':''}">${q.tiles.map((x,i)=>{let c='';if(G.pick===i)c=G.pickOk?'ok':'bad';else if(G.phase==='done'&&G.showW&&bkW(q,x))c='hint';
-    return`<button class="bkt ${c}" style="background:${BK_WARNA[x.c][1]};border-color:${BK_WARNA[x.c][2]}" data-act="bkTile" data-v="${i}" ${G.phase==='proof'?'':'disabled'} aria-label="${BK_HEWAN[x.k][0]} di kotak ${BK_WARNA[x.c][0]}">${BK_HEWAN[x.k][1]}</button>`}).join('')}</div>`;
-  if(G.phase==='judge')h+=`<div class="row" style="margin-top:14px"><button class="btn" style="flex:1" data-act="bkV" data-v="0">Salah</button><button class="btn p" style="flex:1" data-act="bkV" data-v="1">Benar</button></div>`;
-  else if(G.phase==='proof')h+=`<div class="verdict" style="display:block;text-align:center;margin-top:12px"><b>Tepat!</b> Ketuk satu kotak sebagai bukti.</div>`;
-  else h+=`<div class="fb small">${G.fb}${gBonusTxt()}</div><button class="btn p w" style="margin-top:10px" data-act="bkNext">${gLanjut(G.i<G.n-1)?'Berikutnya':'Soal penutup'}</button>`;
-  return h+'</div>'}
 
 /* ===== bentuk mini game (dokumen proyek): Dasar → Geser → 2027, naik bila 8 dari 10 terakhir benar;
    satu ronde tantangan per sesi (memakai bentuk berikutnya), letaknya bergeser tiap hari ===== */
@@ -2404,72 +1757,6 @@ function vVenn(){const q=G.cur,N=q.N,hearts=[0,1,2].map(i=>`<span class="heart $
     if(G.ans!=null)h+=`<div class="fb small">${G.ans===q.kunci?'<b style="color:var(--ok)">+2.</b> ':'<b style="color:var(--bad)">Belum tepat. −1 nyawa.</b> '}${rd.why} <span class="muted">(Daerah ${kn} = daerah yang dibahas simpulan.)</span></div><button class="btn p w" style="margin-top:10px" data-act="vNext">${G.lives>0&&G.round<G.n?'Berikutnya':'Lihat skor'}</button>`}
   return h+'</div>'}
 
-/* --- Lampu Berantai (id 'sakelar', nama data lama tetap) ---
-   Tiap lampu = satu kejadian dalam cerita; panah = "jika…, maka…" (p → q).
-   Tebak tiap lampu: nyala (pasti terjadi), mati (pasti tidak), atau ? (belum tentu), lalu nyalakan. */
-const L_PENGALIH=['Hari itu Bu Sari membawa kue untuk kelas.','Kantin sedang ramai seperti biasa.','Grup kelas juga membahas jadwal libur.','Cuaca sore itu cukup cerah.'];
-function lpStatus(k,rules,f){const rows=[];for(let m=0;m<(1<<k);m++){const v=i=>!!((m>>i)&1);if(rules.every(([a,b])=>!v(a)||v(b))&&v(f.i)===f.v)rows.push(m)}
-  return[...Array(k).keys()].map(i=>{const t=rows.map(m=>!!((m>>i)&1));return t.every(Boolean)?'on':t.every(x=>!x)?'off':'?'})}
-function genLampu(lv,kF){for(let t=0;t<200;t++){const A=rnd(RANTAI),k=kF||(lv===1?3:lv===2?ri(3,4):4),rules=[];for(let i=0;i<k-1;i++)rules.push([i,i+1]);
-    const fi=ri(0,k-1),fv=Math.random()<.5,st=lpStatus(k,rules,{i:fi,v:fv});
-    if(!st.some((s,i)=>i!==fi&&s!=='?'))continue;if((lv>=2||kF)&&!st.some((s,i)=>i!==fi&&s==='?'))continue;
-    const forms=rules.map(()=>lv===3?rnd(['jika','hanya','mustahil','atau']):'jika');if(lv===2)forms[ri(0,forms.length-1)]='hanya';
-    let lines=rules.map((r,j)=>rkPhr(A,{i:r[0],n:0},{i:r[1],n:0},forms[j]));if(lv>=2)lines=shuffle(lines);if(lv===3)lines.splice(ri(1,lines.length),0,rnd(L_PENGALIH));
-    return{A,k,rules,fi,fv,st,lv,story:lines.join(' ')+` Ternyata, ${A[fi][fv?0:1]}.`}}}
-function newLampu(){const L=roundLv('sakelar',G.i,G.n);G.cur=genLampu(L.lv);G.cur.tantangan=L.tantangan;
-  G.pred=G.cur.st.map((_,i)=>i===G.cur.fi?(G.cur.fv?'on':'off'):null);G.tok=G.tok||'on';G.phase='play';G.fb='';G.bonus1=0}
-function lpRun(){if(G.phase!=='play')return;const q=G.cur,ok=G.pred.every((p,i)=>p===q.st[i]);G.phase='done';gHit(ok);gRec('sakelar',ok);
-  S.log.push({t:today(),src:'game',sk:'N2',ok:ok?1:0,j:ok?null:'J1'});save();
-  G.fb=ok?'<b style="color:var(--ok)">+1.</b> Semua lampu tepat.':'<b style="color:var(--bad)">Ada yang meleset. −1 nyawa.</b> “Terjadi” mengalir maju (p → q). “Tidak terjadi” mengalir mundur (~q → ~p). Arah sebaliknya: belum tentu.';render()}
-function lpQuiz(){const lv=Math.max(2,gLv('sakelar'));for(let t=0;t<100;t++){const q=genLampu(lv,4);if(!q)continue;const good=[],bad=[];
-  for(let i=0;i<4;i++){if(i===q.fi)continue;const pos=cap(q.A[i][0])+'.',neg=cap(q.A[i][1])+'.';if(q.st[i]==='on'){good.push(pos);bad.push(neg)}else if(q.st[i]==='off'){good.push(neg);bad.push(pos)}else bad.push(pos,neg)}
-  if(!good.length||bad.length<4)continue;const k=rnd(good),it=shuffle([k,...shuffle(bad).slice(0,4)]);
-  return{teks:q.story,perintah:'Simpulan yang PASTI BENAR adalah …',opsi:it,kunci:it.indexOf(k),why:'Dari fakta, “terjadi” mengalir maju mengikuti aturan, “tidak terjadi” mengalir mundur. Selain itu, belum tentu.'}}}
-/* --- tampilan sirkuit: bohlam, kabel, token puzzle --- */
-const TOKL={on:'💡 ya',off:'● tidak','?':'? belum tentu'};
-function bulb(s){const on=s==='on',off=s==='off',un=s==='?',no=s==='none';
-  return`<svg viewBox="0 0 40 48" class="bulb ${s==='?'?'unk':s}"><path d="M20 3a14 14 0 0 0-8.2 25.4c1.6 1.2 2.6 3 2.6 5V36h11.2v-2.6c0-2 1-3.8 2.6-5A14 14 0 0 0 20 3z" fill="${on?'#ffd24f':off?'#5b6d99':no?'rgba(255,255,255,.12)':'#eef2f9'}" stroke="${on?'#fff3b0':off?'#8f9cb8':no?'#8fa0c8':'#b9c6de'}" stroke-width="2.3" ${no||un?'stroke-dasharray="4 3"':''}/>
-  <rect x="14" y="37" width="12" height="4" rx="1.5" fill="#9aa6bf"/><rect x="15.5" y="42" width="9" height="3.5" rx="1.5" fill="#7f8cab"/>
-  ${on?'<path d="M15.5 21l4.5 6 4.5-6" stroke="#b07d00" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>':''}
-  ${off?'<path d="M15 16l10 10M25 16l-10 10" stroke="#c9d2e6" stroke-width="2.4" stroke-linecap="round"/>':''}
-  ${un?'<text x="20" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="#8f9cb8">?</text>':''}${no?'<text x="20" y="24" text-anchor="middle" font-size="18" font-weight="700" fill="#8fa0c8">+</text>':''}</svg>`}
-const lpLeft=(q,t)=>q.st.filter((s,i)=>i!==q.fi&&s===t).length-G.pred.filter((p,i)=>i!==q.fi&&p===t).length;
-function lpPut(i){const q=G.cur;if(G.phase!=='play'||i===q.fi)return;
-  if(G.pred[i]===G.tok){G.pred[i]=null;return render()}
-  if(q.lv===1&&lpLeft(q,G.tok)<=0)return toast('Token '+TOKL[G.tok]+' habis');
-  G.pred[i]=G.tok;render()}
-function bindLamp(){document.querySelectorAll('.ltok').forEach(el=>{let sx=0,sy=0,moved=false,ghost=null,pid=null;
-  el.onpointerdown=e=>{sx=e.clientX;sy=e.clientY;moved=false;pid=e.pointerId;el.setPointerCapture(pid)};
-  el.onpointermove=e=>{if(pid!==e.pointerId)return;if(!moved&&Math.hypot(e.clientX-sx,e.clientY-sy)<6)return;
-    if(!moved){moved=true;ghost=document.createElement('span');ghost.className='lghost';ghost.textContent=el.dataset.v==='on'?'💡':el.dataset.v==='off'?'●':'?';document.body.appendChild(ghost)}
-    ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';document.querySelectorAll('.lnode.drop').forEach(n=>n.classList.remove('drop'));
-    const t=document.elementFromPoint(e.clientX,e.clientY),n=t&&t.closest('[data-node]');if(n)n.classList.add('drop')};
-  el.onpointerup=e=>{if(ghost){ghost.remove();ghost=null}pid=null;if(!moved)return;window._noClick=Date.now();
-    const t=document.elementFromPoint(e.clientX,e.clientY),n=t&&t.closest('[data-node]');G.tok=el.dataset.v;if(n)lpPut(+n.dataset.node);else render()};
-  el.onpointercancel=()=>{if(ghost){ghost.remove();ghost=null}pid=null}})}
-function vLampu(){
-  if(G.phase==='quiz'){const c=G.qq;let h=gHead()+`<div class="glass card has-st">${gst()}<div class="cap">Soal penutup</div><div class="lstory">${esc(c.teks)}</div><div style="font-weight:600;margin-top:10px">${esc(c.perintah)}</div>
-    <div class="opts">${c.opsi.map((o,i)=>{let cl='';if(G.ans!=null)cl=i===c.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${cl}" data-act="lpQA" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
-    if(G.ans!=null)h+=`<div class="fb small">${G.ans===c.kunci?'<b style="color:var(--ok)">+2.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}${esc(c.why)}</div><button class="btn p w" style="margin-top:10px" data-act="lpQEnd">Lihat skor</button>`;
-    return h+'</div>'}
-  const q=G.cur,run=G.phase==='done',V='pqrs',step=.45,reach=i=>q.st[i]!=='?';
-  const dl=i=>i===q.fi?0:reach(i)?Math.abs(i-q.fi)*step+.3:q.k*step+.2,last=Math.max(...[...Array(q.k).keys()].map(dl));
-  if(!run)after(bindLamp);
-  let h=gHead(gHud())+`<div class="glass card has-st">${gst()}${gCap(G.i+1,G.n,G.tgn)}<div class="lstory">${esc(q.story)}</div><div class="lboard">`;
-  for(let i=0;i<q.k;i++){const fact=i===q.fi,s=run?q.st[i]:fact?(q.fv?'on':'off'):(G.pred[i]||'none'),wrong=run&&!fact&&G.pred[i]!==q.st[i];
-    h+=`<div class="lnode ${run?'run':''} ${wrong?'wrong':''} ${fact?'fact':''}" style="--d:${dl(i)}s" data-node="${i}" ${!run&&!fact?`data-act="lpPut" data-v="${i}"`:''}>
-      <div class="lbulb">${bulb(s)}${fact?'<span class="lsrc">⚡</span>':''}</div>
-      <div class="lcard"><span class="lb">${V[i]}</span><span class="lt">${esc(cap(q.A[i][0]))}</span>${fact?'<span class="lf">fakta</span>':run?`<span class="lk ${wrong?'n':'y'}">${wrong?'✗':'✓'}</span>`:''}${wrong?`<span class="lyou">tebakanmu: ${TOKL[G.pred[i]]}</span>`:''}</div></div>`;
-    if(i<q.k-1){const dn=q.fv&&i>=q.fi,up=!q.fv&&i+1<=q.fi,flow=run&&(dn||up),d=dn?(i-q.fi)*step:(q.fi-i-1)*step;
-      h+=`<div class="lwire ${flow?'flow '+(dn?'dn':'up'):''}" style="--d:${d}s"><i></i><small>${V[i]} → ${V[i+1]}</small></div>`}}
-  h+='</div>';
-  if(!run){const all=G.pred.every((p,i)=>i===q.fi||p);
-    h+=`<div class="ltray">${['on','off','?'].map(t=>{const rem=q.lv===1?lpLeft(q,t):null;return`<button class="ltok ${G.tok===t?'sel':''}" data-act="lpTok" data-v="${t}" ${rem!==null&&rem<=0?'data-empty="1"':''}><span>${t==='on'?'💡':t==='off'?'●':'?'}</span><b>${t==='on'?'ya':t==='off'?'tidak':'belum tentu'}</b>${rem!==null?`<i>×${Math.max(0,rem)}</i>`:''}</button>`}).join('')}</div>
-    <button class="btn p w" style="margin-top:12px" data-act="lpRun" ${all?'':'disabled'}>⚡ Alirkan listrik</button>`}
-  else{const ok=G.pred.every((p,i)=>i===q.fi||p===q.st[i]);
-    h+=`${ok?`<div class="lwin" style="--d:${last}s">⭐⭐⭐ Rangkaian sempurna!</div>`:''}<div class="fb small">${G.fb}${gBonusTxt()}</div><button class="btn p w" style="margin-top:10px" data-act="lpNext">${gLanjut(G.i<G.n-1)?'Berikutnya':'Soal penutup'}</button>`}
-  return h+'</div>'}
-
 /* --- Detektif Chat --- */
 const DETEKTIF=[
  {judul:'Rapat OSIS',pesan:[['Bayu','Rapat hari ini batal kalau Pak Hadi tidak bisa hadir.'],['Rina','Tadi aku lihat mobil Pak Hadi di parkiran.'],['Dimas','Kantin hari ini ada menu baru lho.'],['Rina','Berarti rapatnya pasti jadi!']],pengalih:2,simpulan:'Rapat hari ini pasti jadi.',v:1,why:'Aturan hanya bilang: Pak Hadi tidak hadir → batal. Mobilnya ada belum tentu ia bisa hadir, dan kalaupun hadir, aturan tidak menjamin rapat jadi (J2).'},
@@ -2518,28 +1805,6 @@ function vDetektif(){const r=G.rounds[G.i],O=['Pasti benar','Belum tentu','Pasti
     h+=`<div style="margin-top:12px">${bchip(cek?'soal: PALING perlu dicek':'soal: nilai simpulan')}</div><div class="small" style="margin-top:6px;font-weight:600">Simpulan: “${esc(r.simpulan)}”${cek?'<br>Yang PALING perlu dicek?':''}</div><div class="opts">${OO.map((o,i)=>{let c='';if(G.ans!==null)c=i===key?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="dAns" data-v="${i}" ${G.ans!==null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`}).join('')}</div>`;
     if(G.ans!==null)h+=`<div class="fb">${esc(r.why)}${gBonusTxt()}</div><button class="btn p w" style="margin-top:10px" data-act="dNext">${gLanjut(G.i<G.rounds.length-1)?'Grup berikutnya':'Lihat skor'}</button>`}
   return h+'</div>'}
-
-/* --- Kasir Jebakan --- */
-const BARANG=['Sepatu','Tas sekolah','Jaket','Headphone','Paket buku','Jam tangan'];
-function genKasir(){const types=['bert','tunggal','potong','dp'];let res=null;
-  for(let t=0;t<400;t++){const P=rnd([80,100,120,150,180,200,250,300])*1000;
-    const pick=Math.random()<.75?['bert',...shuffle(['tunggal','potong','dp']).slice(0,2)]:shuffle(types).slice(0,3);
-    const pr=pick.map(k=>{if(k==='bert'){const a=rnd([10,15,20,25,30]),b=rnd([10,15,20,25]);return{l:`Diskon ${a}% + ${b}%`,f:P*(1-a/100)*(1-b/100),why:`${fmtRp(P)} × ${100-a}% × ${100-b}%`}}
-      if(k==='tunggal'){const c=rnd([20,25,30,35,40,45]);return{l:`Diskon ${c}%`,f:P*(1-c/100),why:`${fmtRp(P)} × ${100-c}%`}}
-      if(k==='potong'){const x=Math.round(P*(.2+Math.random()*.25)/5000)*5000;return{l:`Potongan ${fmtRp(x)}`,f:P-x,why:`${fmtRp(P)} − ${fmtRp(x)}`}}
-      const d=rnd([10,15,20]),y=rnd([5000,10000,15000,20000]);return{l:`Diskon ${d}%, lalu potong ${fmtRp(y)}`,f:P*(1-d/100)-y,why:`${fmtRp(P)} × ${100-d}% − ${fmtRp(y)}`}});
-    const s=pr.map(x=>x.f).sort((a,b)=>a-b);if(s[1]-s[0]<1000)continue;res={P,pr,item:rnd(BARANG)};if((s[2]-s[0])/P<=.12)return res}
-  return res}
-function newKasir(){G.cur=genKasir();G.ans=null;G.end=Date.now()+15000;clearInterval(gTimer);gTimer=setInterval(()=>{const l=Math.max(0,G.end-Date.now());const e=$('#gtime');if(e)e.textContent=Math.ceil(l/1000)+' dtk';if(l<=0&&G.ans===null)answerKasir(-1)},250)}
-function vKasir(){const q=G.cur,min=Math.min(...q.pr.map(x=>x.f));
-  let h=gHead(`<span class="chip" id="gtime">15 dtk</span>`)+`<div class="glass card has-st">${gst()}<div class="row sp"><div class="cap" style="margin:0">Soal ${G.i+1}/${G.n}</div><span class="tiny muted">Skor ${G.score}</span></div>
-  <div style="font-weight:600;margin-top:4px">${q.item} seharga ${fmtRp(q.P)}. Promo mana yang paling murah?</div><div class="promos">${q.pr.map((x,i)=>{let c='';if(G.ans!==null)c=x.f===min?'ok':i===G.ans?'bad':'';
-    return`<button class="promo ${c}" data-act="kAns" data-v="${i}" ${G.ans!==null?'disabled':''}><span>${esc(x.l)}</span>${G.ans!==null?`<span class="small">${fmtRp(x.f)}</span>`:''}</button>`}).join('')}</div>`;
-  if(G.ans!==null){h+=`<div class="fb small">${G.ans===-1?'<b style="color:var(--bad)">Waktu habis.</b><br>':''}${q.pr.map(x=>`${esc(x.l)}: ${x.why} = <b>${fmtRp(x.f)}</b>`).join('<br>')}${q.pr.some(x=>x.l.includes('+'))?'<br><span class="muted">Diskon bertingkat dihitung dari harga yang sudah turun, bukan dijumlahkan (J12).</span>':''}</div>
-   <button class="btn p w" style="margin-top:10px" data-act="kNext">${G.i<G.n-1?'Berikutnya':'Lihat skor'}</button>`}
-  return h+'</div>'}
-function answerKasir(i){if(G.ans!==null)return;clearInterval(gTimer);G.ans=i;const min=Math.min(...G.cur.pr.map(x=>x.f));if(i>=0&&G.cur.pr[i].f===min)G.score++;render()}
-
 
 /* --- nyawa & kombo (Hakim, Detektif, Tren) --- */
 function gHit(ok){if(ok){G.combo=(G.combo||0)+1;G.bonus1=G.combo>=3?1:0;G.score+=1+G.bonus1}else{G.combo=0;G.bonus1=0;G.lives--}}
@@ -2637,83 +1902,6 @@ function vCukup(){const c=G.cur,N=c.N,K=c.K;
       <button class="btn p w" style="margin-top:10px" data-act="cNext">${G.coins>0&&G.round<G.n?'Ronde berikutnya':'Lihat skor'}</button>`}}
   return h+'</div>'}
 
-/* --- Kursi Rapat --- */
-const PERMS5=(()=>{const out=[];const go=(a,r)=>{if(!r.length){out.push(a);return}r.forEach((x,i)=>go(a.concat([x]),r.filter((_,j)=>j!==i)))};go([],[0,1,2,3,4]);return out})();
-function kEval(p,c){const r=k=>p.indexOf(k);switch(c.f){
-  case'pos':return r(c.a)===c.k;case'notPos':return r(c.a)!==c.k;case'left':return r(c.a)<r(c.b);case'imm':return r(c.a)+1===r(c.b);
-  case'adj':return Math.abs(r(c.a)-r(c.b))===1;case'notAdj':return Math.abs(r(c.a)-r(c.b))!==1;case'end':return r(c.a)===0||r(c.a)===4}}
-/* dua wadah untuk logika yang sama: kursi berjajar atau jadwal lima hari */
-const HARI5=['Senin','Selasa','Rabu','Kamis','Jumat'];
-const KLAY={meja:{judul:'MEJA RAPAT',slot:k=>String(k+1),chip:'denah kursi'},jadwal:{judul:'JADWAL PRESENTASI',slot:k=>HARI5[k].slice(0,3),chip:'jadwal 5 hari'}};
-const KQ={pasti:'PASTI BENAR',mustahil:'TIDAK MUNGKIN',syarat:'bersyarat “jika …”'};
-function kText(c,N,L){if(L==='jadwal'){const a=N[c.a],b=N[c.b];return{pos:`${a} presentasi pada hari ${HARI5[c.k]}.`,notPos:`${a} tidak presentasi pada hari ${HARI5[c.k]}.`,left:`${a} presentasi lebih awal daripada ${b} (tidak harus berurutan).`,imm:`${a} presentasi tepat sehari sebelum ${b}.`,adj:`${a} dan ${b} presentasi pada hari yang berurutan.`,notAdj:`${a} dan ${b} tidak presentasi pada hari yang berurutan.`,end:`${a} presentasi pada hari pertama atau terakhir.`}[c.f]}
-  return kTextMeja(c,N)}
-function kTextMeja(c,N){const a=N[c.a],b=N[c.b];return{pos:`${a} duduk di kursi ${c.k+1}.`,notPos:`${a} tidak duduk di kursi ${c.k+1}.`,left:`${a} duduk di sebelah kiri ${b} (tidak harus bersebelahan).`,imm:`${a} duduk tepat di sebelah kiri ${b}.`,adj:`${a} duduk bersebelahan dengan ${b}.`,notAdj:`${a} tidak duduk bersebelahan dengan ${b}.`,end:`${a} duduk di salah satu ujung.`}[c.f]}
-const kKey=c=>c.f+':'+c.a+':'+(c.b??'')+':'+(c.k??'');
-function genKursi(L,qt){L=L||'meja';qt=qt||'pasti';for(let t=0;t<900;t++){const N=shuffle(NAMA).slice(0,5);const n=ri(3,4);const cons=[];
-    for(let i=0;i<n;i++){const f=rnd(['left','imm','adj','notAdj','end','pos','notPos']);const c={f,a:ri(0,4)};if(['left','imm','adj','notAdj'].includes(f)){do{c.b=ri(0,4)}while(c.b===c.a)}if(f==='pos'||f==='notPos')c.k=ri(0,4);cons.push(c)}
-    const sols=PERMS5.filter(p=>cons.every(c=>kEval(p,c)));if(sols.length<2||sols.length>6)continue;
-    const cand=[];for(let a=0;a<5;a++){for(let k=0;k<5;k++)cand.push({f:'pos',a,k});cand.push({f:'end',a});for(let b=0;b<5;b++)if(b!==a){cand.push({f:'left',a,b});if(a<b)cand.push({f:'adj',a,b})}}
-    const ck=new Set(cons.map(kKey));
-    const must=cand.filter(c=>!ck.has(kKey(c))&&sols.every(p=>kEval(p,c))&&!(c.f==='adj'&&cons.some(x=>x.f==='imm'&&((x.a===c.a&&x.b===c.b)||(x.a===c.b&&x.b===c.a))))&&!(c.f==='left'&&cons.some(x=>x.f==='imm'&&x.a===c.a&&x.b===c.b)));
-    const maybe=cand.filter(c=>sols.some(p=>kEval(p,c))&&!sols.every(p=>kEval(p,c)));
-    const pack=(key,pool,extra)=>{const items=shuffle([{c:key,ok:1},...shuffle(pool).slice(0,4).map(c=>({c}))]);
-      return Object.assign({N,cons,sols,L,qt,show:sols,opsi:items.map(x=>kText(x.c,N,L)),kunci:items.findIndex(x=>x.ok)},extra)};
-    if(qt==='mustahil'){
-      const never=cand.filter(c=>sols.every(p=>!kEval(p,c))&&!cons.some(x=>(x.f==='notPos'&&c.f==='pos'&&x.a===c.a&&x.k===c.k)||(x.f==='notAdj'&&c.f==='adj'&&((x.a===c.a&&x.b===c.b)||(x.a===c.b&&x.b===c.a)))));
-      if(!never.length||maybe.length<4)continue;
-      return pack(rnd(never),maybe,{perintah:'Pernyataan yang TIDAK MUNGKIN benar adalah …',note:'TIDAK MUNGKIN berarti salah di semua susunan itu; opsi lain benar di sebagian susunan.'})}
-    if(qt==='syarat'){
-      const conds=shuffle(cand.filter(c=>c.f==='pos'&&!ck.has(kKey(c)))).filter(c=>{const sub=sols.filter(p=>kEval(p,c));return sub.length>=2&&sub.length<sols.length});
-      let made=null;
-      for(const c0 of conds){const sub=sols.filter(p=>kEval(p,c0)),only=PERMS5.filter(p=>kEval(p,c0));
-        const mS=cand.filter(c=>kKey(c)!==kKey(c0)&&!ck.has(kKey(c))&&sub.every(p=>kEval(p,c))&&!sols.every(p=>kEval(p,c))&&!only.every(p=>kEval(p,c)));
-        const yS=cand.filter(c=>sub.some(p=>kEval(p,c))&&!sub.every(p=>kEval(p,c)));
-        if(mS.length&&yS.length>=4){made=pack(rnd(mS),yS,{show:sub,perintah:`Jika ${kText(c0,N,L).replace(/\.$/,'')}, pernyataan yang PASTI BENAR adalah …`,note:`Dengan syarat tambahan itu, tinggal ${sub.length} susunan. PASTI BENAR berarti benar di semua susunan tersebut.`});break}}
-      if(!made)continue;return made}
-    if(!must.length||maybe.length<4)continue;
-    return pack(rnd(must),maybe,{perintah:'Pernyataan yang PASTI BENAR adalah …',note:'PASTI BENAR berarti benar di semua susunan itu.'})}
-  return null}
-function newKursi(){const B=roundLv('kursi',G.i,G.n),ax=gAx(B.lv);G.tgn=B.tantangan;G.cur=genKursi(ax[0]?'jadwal':'meja',ax[1]?gVar(['mustahil','syarat'],G.i):'pasti')||genKursi('meja','pasti')}
-function kuDrop(name,from,cx,cy){const el=document.elementFromPoint(cx,cy);const seat=el&&el.closest('.seat');
-  if(seat){const k=+seat.dataset.v;const occ=G.place[k];const old=G.place.indexOf(name);if(old>=0)G.place[old]=null;
-    if(occ!==null&&occ!==name&&from!==null)G.place[from]=occ;G.place[k]=name}
-  else if(from!==null)G.place[from]=null;
-  G.selName=null;G.msg='';render()}
-function bindKursi(){document.querySelectorAll('.nm,.seat.f').forEach(el=>{let sx=0,sy=0,moved=false,ghost=null,pid=null;
-  const isSeat=el.classList.contains('seat');const name=isSeat?G.place[+el.dataset.v]:+el.dataset.v;const from=isSeat?+el.dataset.v:null;
-  el.onpointerdown=e=>{sx=e.clientX;sy=e.clientY;moved=false;pid=e.pointerId;el.setPointerCapture(pid)};
-  el.onpointermove=e=>{if(pid!==e.pointerId||!el.hasPointerCapture(pid))return;if(!moved&&Math.hypot(e.clientX-sx,e.clientY-sy)<6)return;
-    if(!moved){moved=true;ghost=document.createElement('span');ghost.className='nm ghostnm';ghost.innerHTML=kAv(name,G.cur.N)+'<span>'+esc(G.cur.N[name])+'</span>';document.body.appendChild(ghost);el.style.opacity='.35'}
-    ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px'};
-  el.onpointerup=e=>{if(ghost){ghost.remove();ghost=null}if(moved){window._noClick=Date.now();kuDrop(name,from,e.clientX,e.clientY)}pid=null};
-  el.onpointercancel=()=>{if(ghost){ghost.remove();ghost=null}el.style.opacity='';pid=null}})}
-function kAv(i,N,sm){return`<span class="kav${sm?' sm':''}" style="background:${AVC[i%AVC.length]}">${esc(N[i][0])}</span>`}
-function kCard(c,N,L){const A=kAv(c.a,N,1),B=c.b!=null?kAv(c.b,N,1):'';
-  if(L==='jadwal'){const d=c.k!=null?HARI5[c.k]:'';return{pos:[`${A}<span class="kic">📅${d.slice(0,3)}</span>`,`hari ${d}`],notPos:[`${A}<span class="kic no">📅${d.slice(0,3)}</span>`,`bukan hari ${d}`],
-   left:[`${A}<span class="kic">⋯</span>${B}`,`lebih awal dari (boleh berjarak)`],imm:[`${A}${B}`,`tepat sehari sebelum`],adj:[`${A}<span class="kic">⇄</span>${B}`,`berurutan dengan`],
-   notAdj:[`${A}<span class="kic no">⇄</span>${B}`,`tidak berurutan dengan`],end:[`<span class="kic">⇤</span>${A}<span class="kic">⇥</span>`,`hari pertama atau terakhir`]}[c.f]}
-  return{pos:[`${A}<span class="kic">🪑${c.k+1}</span>`,`duduk di kursi ${c.k+1}`],notPos:[`${A}<span class="kic no">🪑${c.k+1}</span>`,`bukan kursi ${c.k+1}`],
-   left:[`${A}<span class="kic">⋯</span>${B}`,`di kiri (boleh berjarak)`],imm:[`${A}${B}`,`tepat di kiri`],adj:[`${A}<span class="kic">⇄</span>${B}`,`bersebelahan`],
-   notAdj:[`${A}<span class="kic no">⇄</span>${B}`,`tidak bersebelahan`],end:[`<span class="kic">⇤</span>${A}<span class="kic">⇥</span>`,`di salah satu ujung`]}[c.f]}
-function kState(c){const inv=[c.a].concat(c.b!=null?[c.b]:[]);if(inv.some(x=>!G.place.includes(x)))return'wait';
-  if(c.f==='notPos'||c.f==='notAdj'||c.f==='left'||c.f==='adj'||c.f==='imm'||c.f==='pos'||c.f==='end')return kEval(G.place,c)?'on':'off';return'wait'}
-function vKursi(){const q=G.cur,N=q.N;if(G.ans==null&&!G.valid)after(bindKursi);
-  const st=q.cons.map(kState);const full=!G.place.includes(null);const ok=full&&st.every(x=>x==='on');
-  if(ok&&!G.valid){G.valid=true;G.score+=1}
-  let h=gHead()+`<div class="glass card has-st">${gst()}${gCap(G.i+1,G.n,G.tgn)}
-  <div class="row wrapf" style="gap:5px;margin-bottom:8px">${bchip(KLAY[q.L||'meja'].chip)}${bchip('soal '+KQ[q.qt||'pasti'])}</div>
-  <div class="kcards">${q.cons.map((c,i)=>{const [ic,tx]=kCard(c,N,q.L);return`<div class="kcard ${st[i]}"><div class="kci">${ic}</div><div class="kct">${esc(N[c.a])} ${tx}${c.b!=null?' '+esc(N[c.b]):''}</div></div>`}).join('')}</div>
-  <div class="meja"><div class="tbl">${KLAY[q.L||'meja'].judul}</div><div class="chairs">${G.place.map((x,k)=>`<button class="seat chair ${x!==null?'f':''}" data-act="kuSeat" data-v="${k}" ${G.valid?'disabled':''}><span class="back"></span>${x!==null?`${kAv(x,N)}<span class="cn2">${esc(N[x])}</span>`:`<span class="cnum"${q.L==='jadwal'?' style="font-size:14px"':''}>${KLAY[q.L||'meja'].slot(k)}</span>`}</button>`).join('')}</div></div>`;
-  if(!G.valid)h+=`<div class="lobby">${N.map((n,i)=>G.place.includes(i)?'':`<button class="nm tok ${G.selName===i?'sel':''}" data-act="kuName" data-v="${i}">${kAv(i,N)}<span>${esc(n)}</span></button>`).join('')||'<span class="tiny muted">Semua sudah duduk. Kartu merah = syarat belum terpenuhi.</span>'}</div>`;
-  else{h+=`<div class="verdict" style="display:block"><b style="color:var(--ok)">Susunan sah! +1</b></div>
-    <div style="font-weight:600;margin-top:12px">${esc(q.perintah||'Pernyataan yang PASTI BENAR adalah …')}</div>
-    <div class="opts">${q.opsi.map((o,i)=>{let c='';if(G.ans!=null)c=i===q.kunci?'ok':i===G.ans?'bad':'dim';return`<button class="opt ${c}" data-act="kuAns" data-v="${i}" ${G.ans!=null?'disabled':''}><span class="k">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`}).join('')}</div>`;
-    if(G.ans!=null)h+=`<div class="fb small">${G.ans===q.kunci?'<b style="color:var(--ok)">+2.</b> ':'<b style="color:var(--bad)">Belum tepat.</b> '}${q.show!==q.sols?`Tanpa syarat tambahan ada ${q.sols.length} susunan; dengan syarat itu`:'Ada'} ${q.show.length} susunan yang sah (${q.L==='jadwal'?'Senin → Jumat':'kursi 1 → 5'}):<br>${q.show.slice(0,6).map(p=>p.map(k=>esc(N[k])).join(' – ')).join('<br>')}<br><span class="muted">${esc(q.note||'')}</span></div>
-     <button class="btn p w" style="margin-top:10px" data-act="kuNext">${G.i<G.n-1?'Meja berikutnya':'Lihat skor'}</button>`}
-  if(!G.valid&&G.place.some(x=>x!==null))h+=`<div style="text-align:center;margin-top:10px"><button class="btn sm" data-act="kuClear">Kosongkan kursi</button></div>`;
-  return h+'</div>'}
-
 /* --- Tren Selang-seling --- */
 function genTren(){const B=roundLv('tren',G.i||0,G.n||8);G.tgn=B.tantangan;const type=gVar(B.lv===1?['alt2','pm','grow']:B.lv===2?['tm','altmul','pm']:['fib','kuadrat','altmul'],G.i||0);let s=[],d='';
   if(type==='fib'){s=[ri(1,4),ri(2,6)];for(let i=2;i<7;i++)s.push(s[i-1]+s[i-2]);d='Setiap suku adalah jumlah dua suku sebelumnya.'}
@@ -2807,7 +1995,6 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'ulgSelesai':ULG=null;donePart(6);break;
   case'jemSelesai':{const p=S.paket[s.paketId];JEM=null;if(p&&!p.dipakai)p.dipakai=today();donePart(3);break}
   case'jemNext':{const p=S.paket[s.paketId];if(JEM.i<soalPaket(p).length-1){JEM={i:JEM.i+1,answered:false,bs:{}}}else{JEM=null;if(!p.dipakai)p.dipakai=today();donePart(3);break}render();window.scrollTo(0,0);break}
-  case'finish':finishSesi(v==='1');break;
   case'ulang':openUlang(v);break;
   case'ebSebab':{const[id,sb]=v.split('|');EBV.sel[id]=sb;delete EBV.err[id];render();break}
   case'ebSimpan':ebDiag(v);break;
@@ -2827,9 +2014,6 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'jCopy':copyText(jurnalPrompt(),'Jurnal tersalin');break;
   case'savePaket':savePaket();break;
   case'delPaket':delete S.paket[v];save();render();break;
-  case'wkCopy':copyText(wkPrompt(v),'Prompt mingguan tersalin');break;
-  case'wkSave':wkSave();break;
-  case'wkDel':if(S.wk){delete S.wk[v];save();WK_ON='';render()}break;
   case'backup':copyText(JSON.stringify(S),'Cadangan tersalin');break;
   case'restoreOpen':openSheet(`<h2>Pulihkan dari cadangan</h2><p class="small muted">Tempel teks cadangan. Data sekarang di peramban ini akan diganti.</p><textarea id="rtext" style="min-height:160px;margin-top:8px"></textarea><div class="row" style="margin-top:10px"><button class="btn" style="flex:1" data-act="closeSheet">Batal</button><button class="btn p" style="flex:1" data-act="restore">Pulihkan</button></div>`);break;
   case'askResetToday':askReset(false);break;
@@ -2840,69 +2024,34 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'gStart':startGame(v);break;
   case'gGo':initGame(G.id);break;
   case'gAgain':initGame(G.id);break;
-  case'sesiGo':{(s.intro||(s.intro={}))[+v]=true;save();render();window.scrollTo(0,0);break}
+  case'sesiGo':{(s.intro||(s.intro={}))[+v]=true;S.introLihat=S.introLihat||{};S.introLihat[+v===3&&sesiV4(s)?'v4':+v]=true;save();render();window.scrollTo(0,0);break}
   case'gBack':clearInterval(gTimer);G=null;render();break;
-  case'geser':answerGeser(v==='1');break;
-  case'gCepat':startCepat();break;
-  case'rkTap':rkTap(+v);break;
-  case'rkUndo':if(G.chain.length){G.chain.pop();G.used=new Set([...G.used].filter(id=>G.cur.T[id].kind!=='ok'||G.chain.includes(id)));G.msg='';render()}break;
-  case'rkAns':{if(G.ans!=null)break;G.ans=+v;const ok=G.ans===G.cur.q.kunci;gRec('geser',ok);if(ok)G.score+=2;else G.lives--;S.log.push({t:today(),src:'game',sk:'N2',ok:ok?1:0,j:ok?null:G.cur.q.j[G.ans]});save();render();break}
-  case'rkNext':if(G.lives>0&&G.round<G.n){newRantaiRound();render();window.scrollTo(0,0)}else{const r=S.games.geser||(S.games.geser={best:0,main:0});r.lvl=Math.max(r.lvl||0,G.lv);gDone(G.score,0)}break;
-  case'iOpen':bandaraDecide(true,false);break;
-  case'iPass':bandaraDecide(false,false);break;
-  case'iNext':bandaraNext();break;
-  case'iAns':{if(G.ans!=null)break;G.ans=+v;const ok=G.ans===G.cq.kunci;gRec('gerbang',ok);if(ok)G.score+=2;S.log.push({t:today(),src:'game',sk:'N2',ok:ok?1:0,j:ok?null:G.cq.j[G.ans]});save();render();break}
-  case'iLvl':if(G.lives>0&&G.lv<3){newBandaraLevel();render();window.scrollTo(0,0)}else{const r=S.games.gerbang||(S.games.gerbang={best:0,main:0});r.lvl=Math.max(r.lvl||0,G.lv);gDone(G.score,0)}break;
   case'vTool':G.tool=v;render();break;
   case'vClear':G.mk={};G.errs=null;G.msg='';render();break;
   case'vCek':vCek();break;
   case'vShow':G.mk=Object.assign({},G.cur.mk);G.errs=null;G.pst=G.cur.pre.map(()=>true);G.phase='ask';G.msg='';render();break;
   case'vAns':{if(G.ans!=null)break;G.ans=+v;const ok=G.ans===G.cur.kunci;if(ok)G.score+=2;else G.lives--;gRec('venn',ok);S.log.push({t:today(),src:'game',sk:'N3',ok:ok?1:0,j:ok?null:(G.ans===1?'J6':G.ans>=3?'J13':'J4')});save();render();break}
   case'vNext':if(G.lives>0&&G.round<G.n){newVennRound();render();window.scrollTo(0,0)}else gDone(G.score,G.n*3);break;
-  case'lpTok':if(Date.now()-(window._noClick||0)<400)break;G.tok=v;render();break;
-  case'lpPut':lpPut(+v);break;
-  case'lpRun':lpRun();break;
-  case'lpNext':if(gLanjut(G.i<G.n-1)){G.i++;newLampu();render();window.scrollTo(0,0)}else{G.qq=lpQuiz();G.phase='quiz';G.ans=null;render();window.scrollTo(0,0)}break;
-  case'lpQA':{if(G.ans!=null)break;G.ans=+v;const ok=G.ans===G.qq.kunci;if(ok)G.score+=2;S.log.push({t:today(),src:'game',sk:'N2',ok:ok?1:0,j:null});save();render();break}
-  case'lpQEnd':gDone(G.score,0);break;
-  case'bkV':bkVerdict(v==='1');break;
-  case'bkTile':bkTile(+v);break;
-  case'bkNext':if(gLanjut(G.i<G.n-1)){G.i++;newBukti();render();window.scrollTo(0,0)}else{clearInterval(gTimer);G.phase='quiz';G.qs=[WARM.negQ(),WARM.kalib5()];G.qi=0;G.ans=null;render();window.scrollTo(0,0)}break;
-  case'bkAns':{if(G.ans!=null)break;G.ans=+v;const c=G.qs[G.qi],ok=G.ans===c.kunci;if(ok)G.score+=2;S.log.push({t:today(),src:'game',sk:c.sk,ok:ok?1:0,j:ok?null:c.j[G.ans]});save();render();break}
-  case'bkQNext':if(G.qi<G.qs.length-1){G.qi++;G.ans=null;render()}else gDone(G.score,0);break;
   case'dMsg':{if(G.pick!==null)break;G.pick=+v;gHit(G.pick===G.rounds[G.i].pengalih);render();break}
   case'dStep':G.step=1;render();break;
   case'dAns':{if(G.ans!==null)break;G.ans=+v;const r=G.rounds[G.i];const ok=G.ans===(r.mode==='cek'?r.cq.kunci:r.v);gHit(ok);gRec('detektif',ok);render();break}
   case'dNext':if(gLanjut(G.i<G.rounds.length-1)){G.i++;G.step=0;G.pick=null;G.ans=null;render()}else gDone(G.score,0);break;
-  case'kAns':answerKasir(+v);break;
-  case'bPick':belanjaPick(+v);break;
-  case'bNext':belanjaNext();break;
-  case'bAns':{if(G.ans!=null)break;G.ans=+v;const q=G.qs[G.qi],ok=G.ans===q.kunci;gRec('kasir',ok);if(ok)G.bonus+=5;S.log.push({t:today(),src:'game',sk:'N8',ok:ok?1:0,j:ok?null:q.j[G.ans]});save();render();break}
-  case'bQNext':if(G.qi<G.qs.length-1){G.qi++;G.ans=null;render()}else gDone(belanjaSkor(),0);break;
   case'hAns':answerHakim(+v);break;
   case'hNext':if(gLanjut(G.i<G.n-1)){G.i++;newHakim();render()}else gDone(G.score,0);break;
   case'cBuy':cBuy(+v);break;
   case'cAnswer':cAnswer(v);break;
   case'cAns':{if(G.ans!=null)break;G.ans=+v;const ok=G.ans===G.cur.v;gRec('cukup',ok);cCoins(ok?2:-1);S.log.push({t:today(),src:'game',sk:'N8',ok:ok?1:0,j:ok?null:(G.ans===4?'J13':G.cur.v===4?'J6':null)});save();render();break}
   case'cNext':if(G.coins>0&&G.round<G.n){newCukupRound();render();window.scrollTo(0,0)}else gDone(Math.max(0,G.coins),0);break;
-  case'kuName':if(Date.now()-(window._noClick||0)<400)break;G.selName=+v;render();break;
-  case'kuSeat':{if(Date.now()-(window._noClick||0)<400)break;const k=+v;if(G.selName===null){if(G.place[k]!==null){G.selName=G.place[k];G.place[k]=null}}else{const old=G.place.indexOf(G.selName);if(old>=0)G.place[old]=null;G.place[k]=G.selName;G.selName=null}G.msg='';render();break}
-  case'kuClear':G.place=[null,null,null,null,null];G.selName=null;G.msg='';render();break;
-  case'kuCek':{if(G.place.includes(null)){G.msg='<div class="fb small">Isi kelima kursi dulu.</div>'}else{const bad=G.cur.cons.map((c,i)=>kEval(G.place,c)?null:i+1).filter(Boolean);G.msg=`<div class="fb small">${bad.length?`<b style="color:var(--bad)">Syarat ${bad.join(', ')} belum terpenuhi.</b>`:'<b style="color:var(--ok)">Susunanmu memenuhi semua syarat.</b> Tapi ingat, mungkin ada susunan lain.'}</div>`}render();break}
-  case'kuAns':if(G.ans!=null)break;G.ans=+v;gRec('kursi',G.ans===G.cur.kunci);if(G.ans===G.cur.kunci)G.score+=2;S.log.push({t:today(),src:'game',sk:'N4',ok:G.ans===G.cur.kunci?1:0,j:null});save();render();break;
-  case'kuNext':if(G.i<G.n-1){G.i++;newKursi();G.ans=null;G.valid=false;G.place=[null,null,null,null,null];G.selName=null;G.msg='';render();window.scrollTo(0,0)}else gDone(G.score,G.n);break;
   case'tAns':if(G.ans!=null||Date.now()-(window._noClick||0)<400)break;G.ans=+v;gHit(G.ans===G.cur.kunci);gRec('tren',G.ans===G.cur.kunci);render();break;
   case'tNext':if(gLanjut(G.i<G.n-1)){G.i++;G.cur=genTren();G.ans=null;render()}else gDone(G.score,0);break;
-  case'kNext':if(G.i<G.n-1){G.i++;newKasir();render()}else gDone(G.score,G.n);break;
   }
 });
 document.addEventListener('visibilitychange',()=>{const s=S.sesi[today()];if(!s||!JEM)return;
   if(document.hidden)jemJeda(s);else if(route==='hari-ini'&&s.fase===3&&!JEM.answered)render()});
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.eb)EBV.txt[t.dataset.eb]=t.value});
-document.addEventListener('keydown',e=>{if(G&&G.id==='geser'&&G.mode==='cepat'&&!G.over){if(e.key==='ArrowRight')answerGeser(true);if(e.key==='ArrowLeft')answerGeser(false)}});
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
-window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==route&&['hari-ini','main','peta','rekap','eb','jurnal','paket','mingguan'].includes(h)){route=h;G=null;render()}});
-(function init(){applyCfg();$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','eb','jurnal','paket','mingguan'].includes(h))route=h;
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==route&&['hari-ini','main','peta','rekap','eb','jurnal','paket'].includes(h)){route=h;G=null;render()}});
+(function init(){applyCfg();$('#scene').innerHTML=sceneHTML();const h=location.hash.slice(1);if(['hari-ini','main','peta','rekap','eb','jurnal','paket'].includes(h))route=h;
   const s=S.sesi[today()];if(s&&!s.selesai&&diMisi(s)){sesi(today());s.fase=0} /* muat ulang: kembali ke daftar misi */
   render();if(s&&s.selesai)writeRingkasan()})();
 </script>
@@ -3217,27 +2366,7 @@ window.SFX=(function(){
   /* --- mini game --- */
   wrap('gDone',o=>function(score,max){o.apply(this,arguments);const ov=G&&G.over;if(!ov)return;P(ov.nb?'record':'gameEnd');
     const sc=ov.max?ov.score/ov.max:Math.min(1,ov.score/15),nb=Math.max(1,Math.round(sc*10));for(let i=0;i<nb;i++)PD(350+i*60,'brick',1+i*.03)});
-  wrap('rkTap',o=>function(id){const live=G&&G.phase==='build'&&!G.used.has(id),lv=G&&G.lives,len=G&&G.chain.length;o.apply(this,arguments);if(!live||!G)return;
-    if(G.lives<lv)P('crack');else if(G.chain.length>len){P('chain');if(G.phase==='open')P('unlock',.15)}else P('error')});
-  wrap('answerGeser',o=>function(v){const live=G&&G.id==='geser'&&G.mode==='cepat'&&!G.over,sc=live&&G.score;o.apply(this,arguments);if(!live)return;P('swoosh',v?.6:-.6);P(G.score>sc?'tickOk':'tickBad')});
-  wrap('bandaraDecide',o=>function(open,auto){const live=G&&G.phase==='belt';o.apply(this,arguments);if(!live||!G.last)return;const L=G.last;
-    if(auto&&!L.open)P('timeup');
-    if(L.open){P('zipper');PD(330,L.ok?(L.x.bad?'detect':'okSoft'):'bad','game')}
-    else{P('stamp');if(L.ok)PD(120,'okSoft');else if(L.x.bad)PD(150,'alarm');else PD(150,'bad','game')}});
   wrap('answerHakim',o=>function(i){const live=G&&G.ans===null;o.apply(this,arguments);if(!live)return;P('gavel');i===-1?PD(220,'timeup'):PD(260,i===G.cur.kunci?'ok':'bad','game')});
-  wrap('belanjaPick',o=>function(i){const live=G&&G.phase==='shop',n=live&&G.cart.length;o.apply(this,arguments);if(!live)return;
-    if(i===-2)P('swoosh',0);else if(i===-1)P('timeup');else if(G.cart.length>n){P('kaching');PD(300,G.res&&G.res.ok?'ok':'meh','game')}else P('declined')});
-  wrap('bkVerdict',o=>function(v){const live=G&&G.phase==='judge';o.apply(this,arguments);if(live&&G.phase==='proof')P('proofPrompt')});
-  wrap('bkTile',o=>function(i){if(G&&G.phase==='proof')P('pop');o.apply(this,arguments)});
-  wrap('bkEnd',o=>function(ok,fb){const ph=G&&G.phase;o.apply(this,arguments);
-    if(ok===true)P(ph==='proof'?'find':'ok','game');else if(ok===null)P('hmm');else P(/Waktu habis/.test(fb||'')?'timeup':'bad','game')});
-  wrap('lpPut',o=>function(i){const pre=G&&G.pred?G.pred[i]:undefined;o.apply(this,arguments);if(!G||!G.pred)return;const now=G.pred[i];if(now!==pre)now?P('screw',now):P('unscrew')});
-  wrap('lpRun',o=>function(){const live=G&&G.phase==='play';o.apply(this,arguments);if(!live)return;
-    const q=G.cur,step=.45,reach=i=>q.st[i]!=='?',dl=i=>i===q.fi?0:reach(i)?Math.abs(i-q.fi)*step+.3:q.k*step+.2;let last=0;
-    P('zap');for(let i=0;i<q.k;i++){const at=dl(i)+.15;last=Math.max(last,at);const s=q.st[i];P(s==='on'?'bulbOn':s==='off'?'bulbOff':'bulbUnk',at);
-      if(i!==q.fi&&G.pred[i]!==q.st[i])P('bzz',at+.3)}
-    const ok=G.pred.every((p,i)=>i===q.fi||p===q.st[i]);ok?P('lampWin',last+.15):P('fizzle',last+.35)});
-  wrap('kuDrop',o=>function(name,from,cx,cy){const el=document.elementFromPoint(cx,cy),seat=el&&el.closest('.seat');o.apply(this,arguments);P(seat?'thump':'pop')});
   wrap('gHit',o=>function(ok){o.apply(this,arguments);if(!G)return;
     if(G.id==='tren')P(ok?'hopSeq':'splash');
     else if(G.id==='detektif'){if(G.step===0){P('bubble');PD(140,ok?'ok':'bad','game')}else res(ok,'game')}});
