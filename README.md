@@ -1,9 +1,9 @@
 # Nalar Harian
 
-Latihan logika PU 15 menit sehari: situasi nyata dulu, soal UTBK kemudian. Satu file `index.html`, tanpa instalasi.
+Latihan PU UTBK-SNBT 2027 sekitar 30 menit sehari: 20 soal bagian Deduktif dan Induktif, disusun dari kode kemampuan Brief Kunci Pola. Satu file `index.html`, tanpa instalasi.
 
 ## Isi
-- **Hari ini** – sesi 4 bagian: pemanasan kilat (8 kartu, dibuat aplikasi sendiri), kasus hari ini (3 langkah), jembatan UTBK (3 soal), satu kalimat nalar.
+- **Hari ini** – pemanasan kilat (opsional), **Set PU** 20 soal (Deduktif 10 lalu Induktif 10, 60 detik per soal), satu kalimat nalar. Paket versi 3 lama (kasus 3 langkah + 3 jembatan) yang masih di stok tetap berjalan.
 - **Main** – 11 mini game pendamping: Arsir Venn, Lampu Berantai, Rantai Kunci, Inspektur Bandara, Satu Bukti, Detektif Chat, Belanja Hemat, Hakim Simpulan, Beli Petunjuk, Kursi Rapat, Lompat Batu. Tidak menggantikan sesi harian dan tidak mengubah tahap.
 - **Peta** – N1–N8, tahap (Terang, Tersembunyi, Berantakan), akurasi 10 butir terakhir. Naik tahap bila ≥80%.
 - **Rekap** – jebakan terbanyak (J1–J13), kasus nyata vs jembatan, ringkasan Error Book.
@@ -14,7 +14,10 @@ Latihan logika PU 15 menit sehari: situasi nyata dulu, soal UTBK kemudian. Satu 
   - *Pola 30 hari*: penyebab, jebakan, dan keterampilan yang paling sering salah, fokus minggu ini, dan prompt analisis pola untuk Claude. Kartu pengingat muncul di halaman Hari ini.
 - **Jurnal** – kalimat nalar harian; bisa disalin untuk diulas Claude.
 - **Paket** (tombol "Paket" di kartu Sesi pada halaman Hari ini) – salin prompt ke proyek Claude "Nalar Harian", tempel JSON, cek format, stok, cadangan data.
-  - Paket versi 3 per hari: 1 kasus, 3 jembatan, 4 kartu `pemanasan`, 1 ronde `detektif`. Dua bagian terakhir opsional; paket lama tetap terbaca.
+  - Paket versi 4 per hari: 20 soal (`soal`), tiap soal membawa `kemampuan` (PU-DED-1…5, PU-IND-1…6), `jenis_pola` (L/G/B/M), `bentuk_dekat`, `format` (J1–J7), `bidang`, `latar`, `tokoh`. Komposisi per bagian 3 L / 4 G / 2 B / 1 M; paling banyak 2 soal di luar J1 per bagian; satu soal "kasus nyata" per hari.
+  - Rencana harian: semua kemampuan muncul tiap hari. Per kemampuan (±20 soal terakhir): akurasi L < 70% → hanya soal L; Indeks Kesiapan < 0,75 → porsi B dan M naik.
+  - Bila balasan Claude terpotong, ketik "lanjutkan" di chat, lalu tempel kedua potongan sekaligus; aplikasi menyambungnya sendiri.
+  - Jebakan ditampilkan dengan namanya; kode J1–J13 hanya dipakai di data. Kode "J…" yang tampil hanya kode format di baris label.
   - Prompt memberi target huruf kunci per soal, aturan anti-tebak, dan daftar kerangka yang sudah dipakai. Saat menyimpan, aplikasi menolak paket dengan pelanggaran berat: kunci menjadi opsi terpanjang di lebih dari 1 dari 5 soal, pengecoh tanpa label jebakan, opsi kembar, opsi baku yang diubah atau diacak, "tepat dua" yang dilanggar, nomor/huruf kalimat di stimulus, atau stimulus lebih dari 8 kalimat. Pelanggaran ringan cukup diberi peringatan: selisih kata opsi lebih dari 30%, kunci satu-satunya yang berhati-hati, stimulus 7–8 kalimat atau kurang dari 2, frasa khas tulisan AI, dan huruf kunci yang menumpuk.
 
 ## Paket mini game mingguan
