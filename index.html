@@ -646,18 +646,32 @@ html[data-theme="dark"] .ebrule{background:#3d3824;color:#f3ecd0}html[data-theme
 .ebtabs button{font:700 13px "Rubik",sans-serif;padding:8px 4px;border-radius:9px;border:2px solid var(--line);background:var(--plate);color:var(--text);box-shadow:0 2px 0 var(--sh);cursor:pointer;white-space:nowrap}
 .ebtabs button i{font-style:normal;display:inline-block;min-width:18px;padding:0 5px;margin-left:3px;border-radius:7px;background:var(--edge);color:var(--muted);font-size:11.5px;line-height:17px}
 .ebtabs button.on{background:var(--blue);color:#fff;border-color:color-mix(in srgb,var(--blue) 60%,#1f2a4d)}.ebtabs button.on i{background:rgba(255,255,255,.25);color:#fff}
-.ebfil{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.ebfil .chip{cursor:pointer;font-size:12.5px;padding:4px 10px}
-.ebnote2{margin:0 0 4px}
-.eblist{display:flex;flex-direction:column}
-.ebrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;color:var(--text);background:none;border:0;border-top:2px dashed var(--edge);padding:11px 2px;cursor:pointer}
-.eblist .ebrow:first-child{border-top:0}
-div.ebrow{cursor:default}
-.ebrm{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
-.ebrh{display:flex;flex-wrap:wrap;gap:5px}
-.ebrq{font-size:14px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.ebrr{font-size:12.5px;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;border-left:3px solid var(--yellow);padding-left:7px}
-.ebmeta{font-size:12px;color:var(--muted);display:flex}.ebmeta .ebwhen{margin-left:0}
+.ebfil{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 4px}.ebfil>span{font-size:12px;font-weight:700;color:var(--muted);margin-right:2px}
+.ebfil button{font:700 12px "Rubik",sans-serif;min-height:28px;padding:0 11px;border-radius:999px;border:1.5px solid #cdd7ea;background:var(--plate);color:var(--text);cursor:pointer}
+.ebfil button.on{background:var(--text);border-color:var(--text);color:var(--plate)}
+.ebcap{font-size:13px;color:var(--muted);margin:8px 0 2px;line-height:1.45}.ebcap b{color:var(--text)}
+.ebgrp{margin-top:14px}
+.ebgh{display:flex;align-items:center;gap:8px;margin:0 2px 8px;font:800 11.5px "Rubik",sans-serif;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.ebgh::after{content:"";flex:1;height:2px;background:var(--edge);border-radius:2px}.ebgh i{font-style:normal;background:var(--edge);border-radius:6px;padding:0 6px;line-height:17px}
+.ebtile{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;color:var(--text);background:#f4f7fc;border:2px solid #dbe3f1;border-radius:12px;padding:11px 10px 10px 12px;margin:0 0 8px;cursor:pointer}
+html[data-theme="dark"] .ebtile{background:#1c2332;border-color:#3a4664}
+button.ebtile:hover,button.ebtile:focus-visible{border-color:var(--blue)}button.ebtile:active{transform:translateY(1px)}
+div.ebtile{cursor:default}
+.ebtb{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.ebt1{display:flex;align-items:flex-start;gap:7px;min-width:0}
+.ebtag{flex:none;font:700 11px/1 "Rubik",sans-serif;padding:4px 7px;border-radius:6px;background:var(--purple);color:#fff}
+.ebtk{font-size:13.5px;font-weight:700;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-width:0}
+.ebtc{font-size:12.5px;color:var(--muted);font-style:italic;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ebtq{font-size:14px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ebtr{font-size:12.5px;line-height:1.35;color:#3b3a2c;background:#fff8dc;border-left:3px solid var(--yellow);border-radius:0 6px 6px 0;padding:4px 8px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+html[data-theme="dark"] .ebtr{background:#3d3824;color:#f3ecd0}
+.ebtm{display:flex;align-items:center;gap:8px;margin-top:1px}
+.ebtmeta{flex:1;min-width:0;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:20px}.ebtmeta i{font-style:normal;opacity:.6;margin:0 4px}
+.ebcode{font:700 10.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--plate);border:1.5px solid #cdd7ea;border-radius:5px;padding:0 4px}
+.ebpill{flex:none;display:inline-flex;align-items:center;gap:6px;font:700 11.5px/1 "Rubik",sans-serif;padding:4px 8px;border-radius:999px;background:var(--plate);border:1.5px solid #cdd7ea;color:var(--muted);white-space:nowrap}.ebpill .ebdots i{width:8px;height:8px}
+.ebpill.ebp-r{background:var(--bad-soft);border-color:var(--red);color:#a3302c}.ebpill.ebp-b{background:var(--accent-soft);border-color:var(--blue);color:var(--blue)}.ebpill.ebp-g{background:var(--ok-soft);border-color:var(--green);color:#1f7a45}
 .ebchv{flex:none;font:700 22px/1 "Rubik",sans-serif;color:var(--muted)}
+.ebempty{text-align:center;font-size:13.5px;color:var(--muted);padding:18px 8px 8px}
 .ebtop{display:flex;align-items:center;gap:10px;margin:0 2px 12px}.ebpos{margin-left:auto;font-size:13px;color:var(--muted)}.ebpos b{color:var(--text)}
 .ebinfo{display:flex;flex-wrap:wrap;gap:8px;margin:0 2px 12px}.ebinfo .ebwhen{margin-left:0}
 .ebnav{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:0 0 18px}.ebnav .btn[disabled]{opacity:.45;cursor:default}
@@ -1666,14 +1680,21 @@ function ebListTab(tab){const fl=x=>EBV.f==='semua'||x.src===EBV.f,D=ebDue(),A=e
   if(tab==='perlu')return ebPerlu().filter(fl);
   if(tab==='jadwal')return D.concat(A.filter(x=>!x.perlu&&!D.includes(x))).filter(fl).sort((a,b)=>a.due<b.due?-1:a.due>b.due?1:0);
   return ebAll().filter(x=>x.lulus).reverse().filter(fl)}
-function ebRow(x,tab,D){const due=D.includes(x),sn=String(x.perintah||x.teks||'');
-  const hd=`<span class="ebrh"><span class="chip a">${esc(x.sk||'-')}</span>${x.ulang?'<span class="chip bad">salah lagi</span>':''}${tab!=='perlu'&&x.sebab?`<span class="chip">${esc(EBS[x.sebab]||'-')}</span>`:''}</span>`;
-  const meta=tab==='perlu'?`<span class="ebmeta">${esc(tglPendek(x.t))} · ${esc(EB_SRC[x.src]||x.src||'')}${(x.salah||1)>1?' · salah '+x.salah+'×':''}</span>`
-    :tab==='jadwal'?`<span class="ebmeta"><span class="ebwhen${due?' due':''}">${ebDots(x)}<b>${due?'jatuh tempo':esc(ebKapan(x.due))}</b></span></span>`
-    :`<span class="ebmeta">${x.lulus&&x.lulus.length===10?'lulus '+tglPendek(x.lulus)+' · ':''}salah ${x.salah||1}×</span>`;
-  const body=hd+`<span class="ebrq">${esc(sn.slice(0,160))}${sn.length>160?'…':''}</span>`+(tab!=='perlu'&&x.aturan?`<span class="ebrr">${esc(x.aturan)}</span>`:'')+meta;
-  if(tab==='lulus')return`<div class="ebrow"><span class="ebrm">${body}</span></div>`;
-  return`<button class="ebrow" data-act="ebOpen" data-v="${esc(x.id)}"><span class="ebrm">${body}</span><span class="ebchv" aria-hidden="true">›</span></button>`}
+function ebCap(t){t=String(t||'');return t.charAt(0).toUpperCase()+t.slice(1)}
+/* kelompok daftar: Diagnosis per tanggal masuk, Jadwal per waktu ulang, Lulus satu kelompok */
+function ebGrup(tab,L){const G=[],by={},k0=today(),k1=addDays(today(),-1);
+  L.forEach(x=>{let g;
+    if(tab==='perlu')g=x.t===k0?'Hari ini':x.t===k1?'Kemarin':(x.t&&x.t.length===10?tglPendek(x.t):'Lebih lama');
+    else if(tab==='jadwal')g=!x.due||x.due<=k0?'Jatuh tempo · ulang sekarang':ebKapan(x.due)==='besok'?'Besok':'Diulang '+tglPendek(x.due)+' · '+ebKapan(x.due);
+    else g='Sudah lulus';
+    if(!by[g]){by[g]=[];G.push([g,by[g]])}by[g].push(x)});
+  return G}
+function ebTile(x,tab,D){const due=D.includes(x),ttl=KEMAMPUAN[x.sk]?ebCap(KEMAMPUAN[x.sk]):SKILLS[x.sk]||x.sk||'Butir',ctx=String(x.teks||'').split(/(?<=[.!?])\s/)[0];
+  const pill=tab==='perlu'?(x.ulang?'<span class="ebpill ebp-r">Salah lagi</span>':''):tab==='jadwal'?`<span class="ebpill${due?' ebp-b':''}">${ebDots(x)}${due?'Ulang sekarang':'Kotak '+x.box+'/4'}</span>`:'<span class="ebpill ebp-g">Lulus</span>';
+  const meta=[x.sk?`<span class="ebcode">${esc(x.sk)}</span>`:'',tab==='lulus'?(x.lulus&&x.lulus.length===10?'lulus '+tglPendek(x.lulus):''):tab==='jadwal'&&x.sebab?esc(EBS[x.sebab]||''):(x.t&&x.t.length===10?'masuk '+tglPendek(x.t):''),(x.salah||1)>1?'salah '+x.salah+'×':''].filter(Boolean).join('<i>·</i>');
+  const body=`<span class="ebt1"><span class="ebtag">${esc(EB_SRC[x.src]||x.src||'Butir')}</span><b class="ebtk">${esc(ttl)}</b></span>${ctx&&x.perintah?`<span class="ebtc">${esc(ctx)}</span>`:''}<span class="ebtq">${esc(x.perintah||x.teks||'')}</span>${tab!=='perlu'&&x.aturan?`<span class="ebtr"><b>Aturanku:</b> ${esc(x.aturan)}</span>`:''}<span class="ebtm"><span class="ebtmeta">${meta}</span>${pill}</span>`;
+  if(tab==='lulus')return`<div class="ebtile"><span class="ebtb">${body}</span></div>`;
+  return`<button class="ebtile" data-act="ebOpen" data-v="${esc(x.id)}"><span class="ebtb">${body}</span><span class="ebchv" aria-hidden="true">›</span></button>`}
 function ebFokus(){const x=S.salah.find(y=>y.id===EBV.open);if(!x||x.lulus){EBV.open=null;return null}
   const tab=x.perlu?'perlu':'jadwal',L=ebListTab(tab),i=L.indexOf(x),n=L.length,pv=i>0?L[i-1]:null,nx=i>=0&&i<n-1?L[i+1]:null,due=ebDue().includes(x);
   if(tab==='jadwal'&&EBV.edit!==x.id)EBV.edit=x.id;if(tab==='perlu')EBV.oi=Math.max(0,i);
@@ -1690,18 +1711,18 @@ function vEb(){if(EBR)return ebRun();
   ${D.length?`<button class="btn p w" style="margin-top:12px" data-act="ebStart">Ulang ${Math.min(D.length,EB_MAX)} butir jatuh tempo</button>${D.length>EB_MAX?`<div class="tiny muted" style="margin-top:8px">Paling banyak ${EB_MAX} per putaran. Sisanya bisa diulang setelah ini.</div>`:''}`:P.length?`<button class="btn p w" style="margin-top:12px" data-act="ebOpen" data-v="${esc(P[0].id)}">Mulai diagnosis (${P.length})</button><div class="tiny muted" style="margin-top:8px">Butir yang sudah didiagnosis mulai diulang besok.</div>`:A.length?`<div class="small muted" style="margin-top:12px">Tidak ada yang perlu dikerjakan sekarang. Ulangan berikutnya ${ebKapan((J[0]||{}).due)}. Mengulang lebih cepat tidak membantu ingatan jangka panjang.</div>`:''}</div>`;
   const tab=EBV.tab||(P.length?'perlu':D.length+J.length?'jadwal':'lulus'),L=ebListTab(tab),TB=[['perlu','Diagnosis',P.length],['jadwal','Jadwal',D.length+J.length],['lulus','Lulus',Lu.length]];
   const srcs=[...new Set(ebAll().map(x=>x.src).filter(Boolean))];
+  const CAP={perlu:'belum didiagnosis. Ketuk kartu untuk membuka butir dan mendiagnosisnya satu per satu.',jadwal:'menunggu diulang, urut dari yang paling dekat. Ketuk kartu untuk melihat soal atau mengubah diagnosis.',lulus:'sudah benar 4 kali berjarak.'};
   h+=`<div class="glass card has-st">${studs(3,'var(--blue)')}${tl('Daftar butir','var(--blue)')}<div class="ebtabs" role="tablist">${TB.map(y=>`<button role="tab" aria-selected="${tab===y[0]}" class="${tab===y[0]?'on':''}" data-act="ebTab" data-v="${y[0]}">${y[1]} <i>${y[2]}</i></button>`).join('')}</div>
-  ${srcs.length>1?`<div class="ebfil">${['semua'].concat(srcs).map(k=>`<button class="chip ${EBV.f===k?'a':''}" data-act="ebF" data-v="${esc(k)}">${esc(k==='semua'?'Semua':EB_SRC[k]||k)}</button>`).join('')}</div>`:''}
-  ${tab==='perlu'&&L.length?'<div class="tiny muted ebnote2">Ketuk butir untuk membuka dan mendiagnosisnya satu per satu.</div>':tab==='jadwal'&&L.length?'<div class="tiny muted ebnote2">Diurutkan dari yang paling dekat jadwal ulangnya. Ketuk untuk melihat soal atau mengubah diagnosis.</div>':''}
-  ${L.length?`<div class="eblist">${L.slice(0,EBV.n).map(x=>ebRow(x,tab,D)).join('')}</div>${L.length>EBV.n?`<button class="btn w" style="margin-top:10px" data-act="ebMore">Tampilkan ${Math.min(20,L.length-EBV.n)} lagi dari ${L.length-EBV.n}</button>`:''}`
-    :`<div class="small muted ebnote2">${tab==='perlu'?'Tidak ada butir yang menunggu diagnosis':tab==='jadwal'?'Belum ada butir terjadwal':'Belum ada butir yang lulus'}.</div>`}</div>`;
+  ${srcs.length>1?`<div class="ebfil"><span>Sumber</span>${['semua'].concat(srcs).map(k=>`<button class="${EBV.f===k?'on':''}" data-act="ebF" data-v="${esc(k)}">${esc(k==='semua'?'Semua':EB_SRC[k]||k)}</button>`).join('')}</div>`:''}
+  ${L.length?`<p class="ebcap"><b>${L.length} butir</b> ${CAP[tab]}</p>${ebGrup(tab,L.slice(0,EBV.n)).map(([g,X])=>`<div class="ebgrp"><div class="ebgh"><span>${esc(g)}</span><i>${X.length}</i></div>${X.map(x=>ebTile(x,tab,D)).join('')}</div>`).join('')}${L.length>EBV.n?`<button class="btn w" style="margin-top:10px" data-act="ebMore">Tampilkan ${Math.min(20,L.length-EBV.n)} lagi dari ${L.length-EBV.n}</button>`:''}`
+    :`<div class="ebempty">${tab==='perlu'?'Semua butir sudah didiagnosis.':tab==='jadwal'?'Belum ada butir terjadwal.':'Belum ada butir yang lulus.'}</div>`}</div>`;
   if(po.n>=3){const t=po.sb[0],f=EB_SEBAB.find(y=>y[0]===t[0]);
     h+=`<details class="glass card has-st ebfold">${studs(3,'var(--red)')}<summary><span>${tl('Pola 30 hari','var(--red)',1)} <span class="tiny muted">terbanyak: ${esc(f[1])}</span></span><span class="ebchev">›</span></summary><div class="small" style="margin-top:8px">Penyebab terbanyak: <b>${esc(f[1])}</b> (${Math.round(t[1]/po.tot*100)}% dari kesalahan yang sudah didiagnosis).</div><div class="ebfix small"><b>Fokus minggu ini:</b> ${esc(f[3])}</div>
     ${po.sb.map(([k,c])=>`<div class="kv"><span>${esc(EBS[k])}</span><span class="muted">${c}x</span></div>`).join('')}
     ${po.tj.length?`<div class="tiny muted" style="margin-top:8px">Jebakan terbanyak: ${po.tj.map(([k,c])=>`<b>${esc(TRAPS[k]||k)}</b> (${c}×)`).join(' · ')}</div>`:''}
     ${po.sk.length?`<div class="tiny muted" style="margin-top:4px">Keterampilan paling sering salah: ${po.sk.map(([k,c])=>`<b>${esc(k)}</b> (${c}×)`).join(' · ')}</div>`:''}
     <button class="btn sm" style="margin-top:10px" data-act="ebPrompt">Salin prompt analisis pola untuk Claude</button></details>`}
-  else h+='<div class="tiny muted" style="margin:-6px 4px 18px">Pola penyebab muncul setelah minimal 3 butir didiagnosis.</div>';
+  else h+=`<details class="glass card has-st ebfold">${studs(3,'var(--red)')}<summary><span>${tl('Pola 30 hari','var(--red)',1)} <span class="tiny muted">${po.n}/3 diagnosis</span></span><span class="ebchev">›</span></summary><div class="small muted" style="margin-top:8px">Pola penyebab dan fokus latihan muncul setelah minimal 3 butir didiagnosis.</div></details>`;
   h+=`<details class="glass card has-st ebfold">${studs(3,'var(--purple)')}<summary><span>${tl('Cara kerja Error Book','var(--purple)',1)}</span><span class="ebchev">›</span></summary><div class="small" style="margin-top:8px">${intro}</div></details>`;
   return h}
 
