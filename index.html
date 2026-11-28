@@ -954,6 +954,8 @@ function hitungKalimat(t){return String(t||'').split(/\n+/).map(s=>s.trim()).fil
 const opsiHitung=op=>op.every(x=>/\d/.test(x)&&kataN(x)<=4);
 function mutuPaket(p){const E=[],W=[],t=p.tgl,v4=isV4(p);let n=0,panjang=0;
   const cekOpsi=(q,loc,wajibLabel)=>{const op=q.opsi.map(String),jb=bakuJenis(op);
+    if(op.filter(x=>/\bI\b/.test(x)&&/\bII\b/.test(x)&&/pasti benar|mungkin benar|pasti salah|tidak dapat dinilai|tidak relevan/i.test(x)).length>=3)
+      E.push(`${loc}: bentuk gabungan penilaian beberapa simpulan (I, II, III) tidak dipakai; pakai satu simpulan dengan lima opsi baku kualitas simpulan, atau tabel benar/salah PASTI BENAR / BELUM TENTU.`);
     if(new Set(op.map(normO)).size<op.length)E.push(`${loc}: ada opsi kembar.`);
     if(jb){const s=bakuSalah(jb,op,v4);if(s)E.push(`${loc}: ${s}.`)}
     if(wajibLabel){const J=q.jebakan_opsi;
@@ -1200,6 +1202,8 @@ function buildPromptV4(start,salt){const plan=buildPlanV4(start,salt),L=[],P=x=>
    'Opsi setara: struktur sejajar, selisih jumlah kata opsi terpanjang dan terpendek paling banyak 30%, kunci menjadi opsi terpanjang paling banyak 1 dari 5 soal, kata hati-hati dan kata mutlak tersebar di kunci dan pengecoh. Tutup stimulus: bila kunci bisa ditebak dari bentuk opsinya, tulis ulang.',
    'Setiap pengecoh mewakili satu kesalahan nalar dan diberi label di "jebakan_opsi" (kode di bagian Label jebakan); null hanya pada kunci.',
    'Opsi baku disalin persis dan tidak diacak. Kualitas simpulan: '+KS_OPSI.map((o,i)=>HURUF(i)+'. '+o).join(' ')+' Dua pendapat dan satu temuan (urutan Brief PU-I2): A. Memperkuat pernyataan X. B. Memperkuat pernyataan Y. C. Memperlemah pernyataan X. D. Memperlemah pernyataan Y. E. Tidak relevan dengan pernyataan X dan Y. (X dan Y diganti nama tokoh, misalnya Ahli A.)',
+   'Kualitas simpulan (PU-D5 dan turunannya): satu soal menilai SATU simpulan dengan lima opsi baku. Jangan menggabungkan penilaian beberapa simpulan dalam satu opsi (misalnya "I pasti benar, II mungkin benar, III …"). Untuk menilai beberapa simpulan sekaligus, pakai tabel benar/salah dengan label PASTI BENAR / BELUM TENTU. Aplikasi menolak bentuk gabungan.',
+   'Batas "mungkin benar" dan "tidak dapat dinilai" (pakai satu aturan ini): tidak dapat dinilai = simpulan menyebut ukuran, jumlah, urutan, atau perbandingan yang tidak disebut teks (contoh: "lebih dari separuh" dari "sebagian"; "paling banyak"; "persis tiga"). Mungkin benar = simpulan adalah salah satu kemungkinan yang dibuka aturan atau fakta di teks, dan teks tidak menutupnya (contoh: boleh tetapi tidak wajib). Buat soal yang kuncinya bergantung pada batas ini hanya bila kasusnya jelas menurut aturan ini; pembahasannya wajib menyebut alasan dengan aturan ini.',
    'Tabel benar/salah: 3–4 pernyataan, 1–3 benar, urutan acak, pernyataan benar dan salah sama panjang dan sama gayanya, supaya muat dalam 60 detik.',
    'Teks terasa ditulis manusia: isi spesifik (angka, jam, lembaga fiktif), panjang kalimat bervariasi, pembuka langsung ke isi. Hindari "Di era modern ini", "Dalam kehidupan sehari-hari", "Seiring perkembangan zaman", "memainkan peran penting", "tidak dapat dimungkiri", "penting untuk dicatat", "hal ini menunjukkan bahwa", kalimat beruntun yang dibuka "Selain itu", "Oleh karena itu", atau "Dengan demikian", tanda pisah panjang berlebihan, dan penutup yang menasihati.',
    'Kata tanya negatif (TIDAK, KECUALI, PALING) ditulis kapital.',
