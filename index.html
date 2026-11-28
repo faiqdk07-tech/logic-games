@@ -641,6 +641,26 @@ html[data-theme="dark"] .rule2 .rc,html[data-theme="dark"] .vtl{background:#2831
 .ebfold summary{list-style:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer}.ebfold summary::-webkit-details-marker{display:none}
 .ebchev{font-weight:700;font-size:18px;transition:transform .2s}.ebfold[open] .ebchev{transform:rotate(90deg)}
 html[data-theme="dark"] .ebrule{background:#3d3824;color:#f3ecd0}html[data-theme="dark"] .ebtrap{color:#ffd9d6}
+/* Error Book: daftar ringkas + mode fokus */
+.ebtabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 10px}
+.ebtabs button{font:700 13px "Rubik",sans-serif;padding:8px 4px;border-radius:9px;border:2px solid var(--line);background:var(--plate);color:var(--text);box-shadow:0 2px 0 var(--sh);cursor:pointer;white-space:nowrap}
+.ebtabs button i{font-style:normal;display:inline-block;min-width:18px;padding:0 5px;margin-left:3px;border-radius:7px;background:var(--edge);color:var(--muted);font-size:11.5px;line-height:17px}
+.ebtabs button.on{background:var(--blue);color:#fff;border-color:color-mix(in srgb,var(--blue) 60%,#1f2a4d)}.ebtabs button.on i{background:rgba(255,255,255,.25);color:#fff}
+.ebfil{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.ebfil .chip{cursor:pointer;font-size:12.5px;padding:4px 10px}
+.ebnote2{margin:0 0 4px}
+.eblist{display:flex;flex-direction:column}
+.ebrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;color:var(--text);background:none;border:0;border-top:2px dashed var(--edge);padding:11px 2px;cursor:pointer}
+.eblist .ebrow:first-child{border-top:0}
+div.ebrow{cursor:default}
+.ebrm{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.ebrh{display:flex;flex-wrap:wrap;gap:5px}
+.ebrq{font-size:14px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ebrr{font-size:12.5px;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;border-left:3px solid var(--yellow);padding-left:7px}
+.ebmeta{font-size:12px;color:var(--muted);display:flex}.ebmeta .ebwhen{margin-left:0}
+.ebchv{flex:none;font:700 22px/1 "Rubik",sans-serif;color:var(--muted)}
+.ebtop{display:flex;align-items:center;gap:10px;margin:0 2px 12px}.ebpos{margin-left:auto;font-size:13px;color:var(--muted)}.ebpos b{color:var(--text)}
+.ebinfo{display:flex;flex-wrap:wrap;gap:8px;margin:0 2px 12px}.ebinfo .ebwhen{margin-left:0}
+.ebnav{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:0 0 18px}.ebnav .btn[disabled]{opacity:.45;cursor:default}
 /* ===== mode waktu Set PU: Santai / Sprint / Survival ===== */
 .mw-seg{display:flex;gap:4px;padding:4px;border:2px solid var(--line);border-radius:12px;background:var(--plate)}
 .mw-seg button{flex:1;height:38px;border-radius:9px;font-weight:700;font-size:14px;color:var(--text);background:transparent;border:0;cursor:pointer}
@@ -1255,7 +1275,7 @@ const TABS=[['hari-ini','Hari ini','<circle cx="12" cy="12" r="4"/><path d="M12 
  ['jurnal','Jurnal','<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/>']];
 const svg=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 let route='hari-ini';
-function nav(r){clearInterval(gTimer);{const ss=S.sesi[today()];if(ss&&JEM)jemJeda(ss)}if(r==='hari-ini'&&route==='hari-ini'){const s=S.sesi[today()];if(s&&diMisi(s)&&!s.selesai){leavePart();return}}if(r!=='eb')EBR=null;route=r;try{history.replaceState(null,'','#'+r)}catch(e){location.hash=r}G=null;render();window.scrollTo(0,0)}
+function nav(r){clearInterval(gTimer);{const ss=S.sesi[today()];if(ss&&JEM)jemJeda(ss)}if(r==='hari-ini'&&route==='hari-ini'){const s=S.sesi[today()];if(s&&diMisi(s)&&!s.selesai){leavePart();return}}if(r!=='eb'){EBR=null;EBV.open=null;EBV.edit=null}route=r;try{history.replaceState(null,'','#'+r)}catch(e){location.hash=r}G=null;render();window.scrollTo(0,0)}
 function renderTabs(){$('#tabs').innerHTML=TABS.map(([k,l,p])=>`<button class="${route===k?'on':''} ${yk(TABC[k])}" style="--c:${TABC[k]}" data-act="nav" data-v="${k}">${svg(p)}<span>${l}</span>${k==='eb'&&ebBadge()?`<i class="bdg">${ebBadge()}</i>`:''}</button>`).join('')}
 function render(){
   $('#sub').textContent=tglPanjang(today());
@@ -1573,7 +1593,7 @@ const EBS=Object.fromEntries(EB_SEBAB.map(x=>[x[0],x[1]]));
 /* jebakan → penyebab yang paling mungkin (hanya saran, kamu yang memutuskan) */
 const EB_JS={J1:'aturan',J2:'aturan',J3:'aturan',J4:'kunci',J5:'opsi',J6:'kuat',J7:'kuat',J8:'kuat',J9:'kuat',J10:'kuat',J11:'luar',J12:'kunci',J13:'kuat'};
 const EB_INT=[1,3,7,14],EB_MAX=10;
-let EBV={sel:{},txt:{},err:{},warn:{},edit:null,del:null,n:5},EBR=null;
+let EBV={sel:{},txt:{},err:{},warn:{},edit:null,del:null,n:20,tab:null,open:null,oi:0,f:'semua'},EBR=null;
 function ebNorm(x){if(x.box==null){x.box=0;x.log=[];x.salah=x.salah||1;if(x.tuntas)x.lulus=x.t||today();else{x.perlu=true;x.due=today()}}return x}
 function ebAll(){return S.salah.map(ebNorm)}
 function ebAktif(){return ebAll().filter(x=>!x.lulus)}
@@ -1589,7 +1609,9 @@ function ebDiag(id){const x=S.salah.find(y=>y.id===id);if(!x)return;const sb=EBV
   const w=ebKabur(at);if(at.length<12){EBV.err[id]=w;render();return}
   if(w&&EBV.warn[id]!==at){EBV.err[id]=w+' Tekan Simpan lagi bila tetap ingin memakai aturan ini.';EBV.warn[id]=at;render();return}
   const baru=x.perlu;x.sebab=sb;x.aturan=at;x.perlu=false;delete x.ulang;if(baru){x.dt=today();if(!x.due||x.due<=today())x.due=addDays(today(),1)}
-  delete EBV.sel[id];delete EBV.txt[id];delete EBV.err[id];delete EBV.warn[id];if(EBV.edit===id)EBV.edit=null;save();toast('Diagnosis tersimpan · diulang '+ebKapan(x.due));render()}
+  delete EBV.sel[id];delete EBV.txt[id];delete EBV.err[id];delete EBV.warn[id];if(EBV.edit===id)EBV.edit=null;
+  if(EBV.open===id){const P=ebPerlu().filter(y=>EBV.f==='semua'||y.src===EBV.f);EBV.open=baru&&P.length?P[Math.min(EBV.oi||0,P.length-1)].id:null}
+  save();toast('Diagnosis tersimpan · diulang '+ebKapan(x.due)+(EBV.open?' · lanjut ke butir berikutnya':''));render();window.scrollTo(0,0)}
 function ebStart(){const L=ebDue();if(!L.length){toast('Belum ada butir yang jatuh tempo');return}
   const ids=L.slice(0,EB_MAX).map(x=>x.id);for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]}
   EBR={ids,i:0,sel:{},chosen:null,answered:false,ok:false,res:{}};render();window.scrollTo(0,0)}
@@ -1637,25 +1659,52 @@ function ebRun(){const n=EBR.ids.length;
     <button class="btn p w" style="margin-top:12px" data-act="ebNext">${EBR.i<n-1?'Butir berikutnya':'Lihat hasil'}</button>`}
   return h+'</div>'}
 function ebDots(x,after){const b=x.lulus?4:x.box;return`<span class="ebdots" title="Benar berjarak ${b} dari 4">${EB_INT.map((_,i)=>`<i class="${i<b?'on':''}"></i>`).join('')}</span>`}
+/* Tampilan Error Book: (1) status + tombol ulang, (2) daftar ringkas per tab (Diagnosis · Jadwal · Lulus) dengan filter sumber,
+   (3) satu butir dibuka penuh dalam mode fokus, dengan Sebelumnya/Berikutnya. Daftar tidak lagi memuat soal utuh supaya mudah dipindai. */
+const EB_SRC={kasus:'Kasus',jembatan:'Jembatan',pemanasan:'Pemanasan'};
+function ebListTab(tab){const fl=x=>EBV.f==='semua'||x.src===EBV.f,D=ebDue(),A=ebAktif();
+  if(tab==='perlu')return ebPerlu().filter(fl);
+  if(tab==='jadwal')return D.concat(A.filter(x=>!x.perlu&&!D.includes(x))).filter(fl).sort((a,b)=>a.due<b.due?-1:a.due>b.due?1:0);
+  return ebAll().filter(x=>x.lulus).reverse().filter(fl)}
+function ebRow(x,tab,D){const due=D.includes(x),sn=String(x.perintah||x.teks||'');
+  const hd=`<span class="ebrh"><span class="chip a">${esc(x.sk||'-')}</span>${x.ulang?'<span class="chip bad">salah lagi</span>':''}${tab!=='perlu'&&x.sebab?`<span class="chip">${esc(EBS[x.sebab]||'-')}</span>`:''}</span>`;
+  const meta=tab==='perlu'?`<span class="ebmeta">${esc(tglPendek(x.t))} · ${esc(EB_SRC[x.src]||x.src||'')}${(x.salah||1)>1?' · salah '+x.salah+'×':''}</span>`
+    :tab==='jadwal'?`<span class="ebmeta"><span class="ebwhen${due?' due':''}">${ebDots(x)}<b>${due?'jatuh tempo':esc(ebKapan(x.due))}</b></span></span>`
+    :`<span class="ebmeta">${x.lulus&&x.lulus.length===10?'lulus '+tglPendek(x.lulus)+' · ':''}salah ${x.salah||1}×</span>`;
+  const body=hd+`<span class="ebrq">${esc(sn.slice(0,160))}${sn.length>160?'…':''}</span>`+(tab!=='perlu'&&x.aturan?`<span class="ebrr">${esc(x.aturan)}</span>`:'')+meta;
+  if(tab==='lulus')return`<div class="ebrow"><span class="ebrm">${body}</span></div>`;
+  return`<button class="ebrow" data-act="ebOpen" data-v="${esc(x.id)}"><span class="ebrm">${body}</span><span class="ebchv" aria-hidden="true">›</span></button>`}
+function ebFokus(){const x=S.salah.find(y=>y.id===EBV.open);if(!x||x.lulus){EBV.open=null;return null}
+  const tab=x.perlu?'perlu':'jadwal',L=ebListTab(tab),i=L.indexOf(x),n=L.length,pv=i>0?L[i-1]:null,nx=i>=0&&i<n-1?L[i+1]:null,due=ebDue().includes(x);
+  if(tab==='jadwal'&&EBV.edit!==x.id)EBV.edit=x.id;if(tab==='perlu')EBV.oi=Math.max(0,i);
+  return`<div class="ebtop"><button class="btn sm" data-act="ebTutup">‹ Daftar</button><span class="ebpos"><b>${tab==='perlu'?'Diagnosis':'Ubah diagnosis'}</b>${i>=0?' · '+(i+1)+' dari '+n:''}</span></div>`+
+    (tab==='jadwal'?`<div class="ebinfo"><span class="ebwhen${due?' due':''}">${ebDots(x)}<b>${due?'jatuh tempo':'diulang '+esc(ebKapan(x.due))}</b></span></div>`:'')+
+    ebKartu(x,tab==='perlu'?'Diagnosis':'Ubah diagnosis')+
+    `<div class="ebnav"><button class="btn" data-act="ebOpen" data-v="${pv?esc(pv.id):''}"${pv?'':' disabled'}>‹ Sebelumnya</button><button class="btn" data-act="ebOpen" data-v="${nx?esc(nx.id):''}"${nx?'':' disabled'}>Berikutnya ›</button></div>`}
 function vEb(){if(EBR)return ebRun();
-  const P=ebPerlu(),D=ebDue(),A=ebAktif(),J=A.filter(x=>!x.perlu&&!D.includes(x)).sort((a,b)=>a.due<b.due?-1:1),Lu=ebAll().filter(x=>x.lulus).reverse(),po=ebPola(30);
-  let h=`<p class="intro" style="margin-bottom:22px">Butir yang salah di kasus dan jembatan masuk ke sini. <b>Diagnosis</b> kenapa kamu memilih itu dan tulis aturan untuk dirimu, <b>ulang</b> tanpa melihat kunci mulai besok, lalu <b>lulus</b> setelah benar 4 kali berjarak (1, 3, 7, 14 hari). Salah lagi berarti mulai dari awal.</p>
-  <div class="glass card has-st">${studs(4,'var(--purple)')}${tl('Status','var(--purple)')}<div class="ebsum">${[['Diagnosis',P.length,'var(--red)'],['Jatuh tempo',D.length,'var(--blue)'],['Terjadwal',J.length,'var(--orange)'],['Lulus',Lu.length,'var(--green)']].map(y=>`<div style="--c:${y[2]}"><b>${y[1]}</b><span class="tiny muted">${y[0]}</span></div>`).join('')}</div>
-  ${D.length?`<button class="btn p w" style="margin-top:12px" data-act="ebStart">Ulang ${Math.min(D.length,EB_MAX)} butir jatuh tempo</button>${D.length>EB_MAX?`<div class="tiny muted" style="margin-top:8px">Paling banyak ${EB_MAX} per putaran. Sisanya bisa diulang setelah ini.</div>`:''}`:P.length?'<div class="small muted" style="margin-top:12px">Diagnosis dulu butir di bawah. Butirnya mulai diulang besok.</div>':A.length?`<div class="small muted" style="margin-top:12px">Tidak ada yang perlu dikerjakan sekarang. Ulangan berikutnya ${ebKapan((J[0]||{}).due)}. Mengulang lebih cepat tidak membantu ingatan jangka panjang.</div>`:''}</div>`;
+  if(EBV.open){const fk=ebFokus();if(fk)return fk}
+  const P=ebPerlu(),D=ebDue(),A=ebAktif(),J=A.filter(x=>!x.perlu&&!D.includes(x)).sort((a,b)=>a.due<b.due?-1:1),Lu=ebAll().filter(x=>x.lulus),po=ebPola(30);
+  const intro='Butir yang salah di kasus dan jembatan masuk ke sini. <b>Diagnosis</b> kenapa kamu memilih itu dan tulis aturan untuk dirimu, <b>ulang</b> tanpa melihat kunci mulai besok, lalu <b>lulus</b> setelah benar 4 kali berjarak (1, 3, 7, 14 hari). Salah lagi berarti mulai dari awal.';
+  if(!ebAll().length)return`<p class="intro" style="margin-bottom:22px">${intro}</p><div class="glass card has-st">${studs(3,'var(--purple)')}${tl('Masih kosong','var(--purple)')}<div class="small muted">Butir yang salah di kasus dan jembatan UTBK otomatis masuk ke sini.</div></div>`;
+  let h=`<div class="glass card has-st">${studs(4,'var(--purple)')}${tl('Status','var(--purple)')}<div class="ebsum">${[['Diagnosis',P.length,'var(--red)'],['Jatuh tempo',D.length,'var(--blue)'],['Terjadwal',J.length,'var(--orange)'],['Lulus',Lu.length,'var(--green)']].map(y=>`<div style="--c:${y[2]}"><b>${y[1]}</b><span class="tiny muted">${y[0]}</span></div>`).join('')}</div>
+  ${D.length?`<button class="btn p w" style="margin-top:12px" data-act="ebStart">Ulang ${Math.min(D.length,EB_MAX)} butir jatuh tempo</button>${D.length>EB_MAX?`<div class="tiny muted" style="margin-top:8px">Paling banyak ${EB_MAX} per putaran. Sisanya bisa diulang setelah ini.</div>`:''}`:P.length?`<button class="btn p w" style="margin-top:12px" data-act="ebOpen" data-v="${esc(P[0].id)}">Mulai diagnosis (${P.length})</button><div class="tiny muted" style="margin-top:8px">Butir yang sudah didiagnosis mulai diulang besok.</div>`:A.length?`<div class="small muted" style="margin-top:12px">Tidak ada yang perlu dikerjakan sekarang. Ulangan berikutnya ${ebKapan((J[0]||{}).due)}. Mengulang lebih cepat tidak membantu ingatan jangka panjang.</div>`:''}</div>`;
+  const tab=EBV.tab||(P.length?'perlu':D.length+J.length?'jadwal':'lulus'),L=ebListTab(tab),TB=[['perlu','Diagnosis',P.length],['jadwal','Jadwal',D.length+J.length],['lulus','Lulus',Lu.length]];
+  const srcs=[...new Set(ebAll().map(x=>x.src).filter(Boolean))];
+  h+=`<div class="glass card has-st">${studs(3,'var(--blue)')}${tl('Daftar butir','var(--blue)')}<div class="ebtabs" role="tablist">${TB.map(y=>`<button role="tab" aria-selected="${tab===y[0]}" class="${tab===y[0]?'on':''}" data-act="ebTab" data-v="${y[0]}">${y[1]} <i>${y[2]}</i></button>`).join('')}</div>
+  ${srcs.length>1?`<div class="ebfil">${['semua'].concat(srcs).map(k=>`<button class="chip ${EBV.f===k?'a':''}" data-act="ebF" data-v="${esc(k)}">${esc(k==='semua'?'Semua':EB_SRC[k]||k)}</button>`).join('')}</div>`:''}
+  ${tab==='perlu'&&L.length?'<div class="tiny muted ebnote2">Ketuk butir untuk membuka dan mendiagnosisnya satu per satu.</div>':tab==='jadwal'&&L.length?'<div class="tiny muted ebnote2">Diurutkan dari yang paling dekat jadwal ulangnya. Ketuk untuk melihat soal atau mengubah diagnosis.</div>':''}
+  ${L.length?`<div class="eblist">${L.slice(0,EBV.n).map(x=>ebRow(x,tab,D)).join('')}</div>${L.length>EBV.n?`<button class="btn w" style="margin-top:10px" data-act="ebMore">Tampilkan ${Math.min(20,L.length-EBV.n)} lagi dari ${L.length-EBV.n}</button>`:''}`
+    :`<div class="small muted ebnote2">${tab==='perlu'?'Tidak ada butir yang menunggu diagnosis':tab==='jadwal'?'Belum ada butir terjadwal':'Belum ada butir yang lulus'}.</div>`}</div>`;
   if(po.n>=3){const t=po.sb[0],f=EB_SEBAB.find(y=>y[0]===t[0]);
-    h+=`<div class="glass card has-st">${studs(3,'var(--red)')}${tl('Pola 30 hari','var(--red)')}<div class="small">Penyebab terbanyak: <b>${esc(f[1])}</b> (${Math.round(t[1]/po.tot*100)}% dari kesalahan yang sudah didiagnosis).</div><div class="ebfix small"><b>Fokus minggu ini:</b> ${esc(f[3])}</div>
+    h+=`<details class="glass card has-st ebfold">${studs(3,'var(--red)')}<summary><span>${tl('Pola 30 hari','var(--red)',1)} <span class="tiny muted">terbanyak: ${esc(f[1])}</span></span><span class="ebchev">›</span></summary><div class="small" style="margin-top:8px">Penyebab terbanyak: <b>${esc(f[1])}</b> (${Math.round(t[1]/po.tot*100)}% dari kesalahan yang sudah didiagnosis).</div><div class="ebfix small"><b>Fokus minggu ini:</b> ${esc(f[3])}</div>
     ${po.sb.map(([k,c])=>`<div class="kv"><span>${esc(EBS[k])}</span><span class="muted">${c}x</span></div>`).join('')}
     ${po.tj.length?`<div class="tiny muted" style="margin-top:8px">Jebakan terbanyak: ${po.tj.map(([k,c])=>`<b>${esc(TRAPS[k]||k)}</b> (${c}×)`).join(' · ')}</div>`:''}
     ${po.sk.length?`<div class="tiny muted" style="margin-top:4px">Keterampilan paling sering salah: ${po.sk.map(([k,c])=>`<b>${esc(k)}</b> (${c}×)`).join(' · ')}</div>`:''}
-    <button class="btn sm" style="margin-top:10px" data-act="ebPrompt">Salin prompt analisis pola untuk Claude</button></div>`}
-  else if(ebAll().length)h+='<div class="tiny muted" style="margin:-6px 4px 18px">Pola penyebab muncul setelah minimal 3 butir didiagnosis.</div>';
-  if(P.length)h+=P.slice(0,EBV.n).map((x,i)=>ebKartu(x,'Diagnosis '+(i+1)+' dari '+P.length)).join('')+(P.length>EBV.n?`<div style="text-align:center;margin-bottom:16px"><button class="btn sm" data-act="ebMore">Tampilkan ${Math.min(5,P.length-EBV.n)} lagi</button></div>`:'');
-  const list=D.concat(J);
-  if(list.length){h+=`<div class="glass card has-st">${studs(3,'var(--blue)')}${tl('Jadwal ulang ('+list.length+')','var(--blue)')}<div class="list">`+list.map(x=>EBV.edit===x.id?`</div></div>${ebKartu(x,'Ubah diagnosis')}<div class="glass card"><div class="list">`:`<div class="ebit"><div class="row" style="gap:6px;flex-wrap:wrap"><span class="chip a">${esc(x.sk||'-')}</span><span class="chip">${esc(EBS[x.sebab]||'-')}</span><span class="ebwhen${D.includes(x)?' due':''}">${ebDots(x)}<b>${D.includes(x)?'jatuh tempo':esc(ebKapan(x.due))}</b></span></div>
-    <div class="small ebsnip">${esc(x.perintah||x.teks||'')}</div><div class="ebrule">${esc(x.aturan||'')}</div><button class="btn sm" style="margin-top:10px" data-act="ebEdit" data-v="${esc(x.id)}">Ubah diagnosis</button></div>`).join('')+'</div></div>'}
-  if(Lu.length)h+=`<details class="glass card has-st ebfold">${studs(3,'var(--green)')}<summary><span>${tl('Lulus ('+Lu.length+')','var(--green)',1)} <span class="tiny muted">benar 4 kali berjarak</span></span><span class="ebchev">›</span></summary><div class="list" style="margin-top:8px">${Lu.slice(0,30).map(x=>`<div class="it" style="align-items:flex-start"><span class="chip a">${esc(x.sk||'-')}</span><div class="small" style="flex:1">${esc(x.aturan||x.perintah||'')}</div><span class="muted tiny">${x.lulus&&x.lulus.length===10?tglPendek(x.lulus):''}</span></div>`).join('')}</div></details>`;
-  if(!ebAll().length)h+=`<div class="glass card has-st">${studs(3,'var(--purple)')}${tl('Masih kosong','var(--purple)')}<div class="small muted">Butir yang salah di kasus dan jembatan UTBK otomatis masuk ke sini.</div></div>`;
+    <button class="btn sm" style="margin-top:10px" data-act="ebPrompt">Salin prompt analisis pola untuk Claude</button></details>`}
+  else h+='<div class="tiny muted" style="margin:-6px 4px 18px">Pola penyebab muncul setelah minimal 3 butir didiagnosis.</div>';
+  h+=`<details class="glass card has-st ebfold">${studs(3,'var(--purple)')}<summary><span>${tl('Cara kerja Error Book','var(--purple)',1)}</span><span class="ebchev">›</span></summary><div class="small" style="margin-top:8px">${intro}</div></details>`;
   return h}
+
 function ebKartuHari(){const p=ebPerlu().length,d=ebDue().length;if(!p&&!d)return'';
   return`<button class="glass card row sp" style="width:100%;text-align:left" data-act="nav" data-v="eb"><span class="row"><span class="pn" style="width:30px;height:26px;border-radius:6px;background:var(--purple);border:2px solid var(--line);display:grid;place-items:center;color:#fff">${svg(EB_IC).replace('<svg','<svg width="16" height="16"')}</span><span><span style="font-weight:600;display:block">Error Book</span><span class="tiny muted">${[p?p+' perlu diagnosis':'',d?d+' jatuh tempo diulang':''].filter(Boolean).join(' · ')}</span></span></span><span style="font-weight:700">›</span></button>`}
 
@@ -2114,10 +2163,13 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(
   case'ulang':openUlang(v);break;
   case'ebSebab':{const[id,sb]=v.split('|');EBV.sel[id]=sb;delete EBV.err[id];render();break}
   case'ebSimpan':ebDiag(v);break;
-  case'ebEdit':EBV.edit=v;render();{const el=document.getElementById('eb-'+v);if(el)el.scrollIntoView({block:'start'})}break;
-  case'ebBatal':EBV.edit=null;delete EBV.sel[v];delete EBV.txt[v];delete EBV.err[v];render();break;
-  case'ebHapus':if(EBV.del===v){S.salah=S.salah.filter(x=>x.id!==v);EBV.del=null;save();toast('Dihapus dari Error Book');render()}else{EBV.del=v;toast('Tekan sekali lagi untuk menghapus')}break;
-  case'ebMore':EBV.n+=5;render();break;
+  case'ebEdit':case'ebOpen':if(!v)break;EBV.open=v;EBV.edit=null;render();window.scrollTo(0,0);break;
+  case'ebTutup':EBV.open=null;EBV.edit=null;render();window.scrollTo(0,0);break;
+  case'ebTab':EBV.tab=v;EBV.n=20;render();break;
+  case'ebF':EBV.f=v;EBV.n=20;render();break;
+  case'ebBatal':EBV.edit=null;EBV.open=null;delete EBV.sel[v];delete EBV.txt[v];delete EBV.err[v];render();break;
+  case'ebHapus':if(EBV.del===v){S.salah=S.salah.filter(x=>x.id!==v);EBV.del=null;if(EBV.open===v)EBV.open=null;save();toast('Dihapus dari Error Book');render()}else{EBV.del=v;toast('Tekan sekali lagi untuk menghapus')}break;
+  case'ebMore':EBV.n+=20;render();break;
   case'ebPrompt':copyText(ebPrompt(),'Prompt analisis tersalin');break;
   case'ebStart':ebStart();break;
   case'ebOpt':if(EBR&&!EBR.answered){const x=S.salah.find(y=>y.id===EBR.ids[EBR.i]);EBR.chosen=+v;ebAnswer(+v===x.kunci)}break;
